@@ -29,8 +29,8 @@ public class DemoRedisRedissonCommandApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) {
-        String key = "myzset1";
-        double score = redisComponent.firstScore(key);
-        System.out.println("最小分数值：" + score);
+//        String key = "myzset1";
+//        double score = redisComponent.firstScore(key);
+//        System.out.println("最小分数值：" + score);
     }
 }
