@@ -1,0 +1,31 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: demo-rocketmq-consumer
+  redis:
+    port: 6379
+    timeout: 2000 # 连接或读取超时时长（毫秒）
+    database: 1
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 800
+        max-idle: 8
+        min-idle: 2
+    host: 192.168.56.1
+
+logging:
+  level:
+    root: info
+  file:
+    path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
+
+rocketmq:
+  namesrvAddr: 172.31.184.43:9876
+  consumer:
+    groupName: timmy-consumer-group
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    batchMaxSize: 1

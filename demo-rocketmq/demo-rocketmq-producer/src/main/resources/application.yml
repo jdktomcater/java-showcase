@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: demo-rocketmq-producer
+rocketmq:
+  name-server: 172.31.184.43:9876
+  producer:
+    sendMessageTimeout: 300000
+    maxMessageSize: 131072
+    group: timmy-group
+
+
+logging:
+  level:
+    root: info
+  file:
+    path: /home/timmy/workspace/hand-run/rocketmq/producer/log
+    name: producer.log
+
+demo:
+  rocketmq:
+    topic: telegram_send_topic:telegram_send_normal_tag
+    dis:
+      topic: channelDistribution:findDistributionMatchupJob
+    delay:
+      topic: DELAY_MESSAGE_TOPIC_NEW:voucher

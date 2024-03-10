@@ -1,0 +1,3 @@
+### GET request one
+GET http://localhost:8080/order/one
+Accept: application/json

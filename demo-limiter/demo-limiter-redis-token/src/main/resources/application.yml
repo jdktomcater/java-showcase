@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: demo-limiter-redis-fixed-window
+  redis:
+    port: 6379
+    timeout: 2000 # 连接或读取超时时长（毫秒）
+    database: 0
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 800
+        max-idle: 8
+        min-idle: 2
+    host: 192.168.56.1
+logging:
+  level:
+    com:
+      jdktomcat:
+        demo:
+          limiter:
+            redis: info

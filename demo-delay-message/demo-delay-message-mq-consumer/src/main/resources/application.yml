@@ -1,0 +1,27 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: demo-delay-message-mq-consumer
+logging:
+  level:
+    com:
+      jdktomcat:
+        demo:
+          delay: info
+
+rocketmq:
+  name-server: 172.31.184.43:9876
+  # When set rocketmq.pull-consumer.group and rocketmq.pull-consumer.topic, rocketmqTemplate will start lite pull consumer
+  # If you do not want to use lite pull consumer, please do not set rocketmq.pull-consumer.group and rocketmq.pull-consumer.topic
+  pull-consumer:
+    group: timmy-consumer-group
+    topic: timmy-topic
+  # properties used in application code
+demo:
+  rocketmq:
+    topic: timmy-topic
+    tag: delay
+    tlsEnable: false
+
