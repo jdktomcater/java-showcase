@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-skywalking-dubbo</module>
-        <module>demo-skywalking-gateway</module>
+        <module>showcase-skywalking-gateway</module>
     </modules>
 
     <properties>

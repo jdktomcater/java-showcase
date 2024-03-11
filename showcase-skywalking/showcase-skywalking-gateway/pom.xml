@@ -8,11 +8,11 @@
         <artifactId>showcase-skywalking</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>demo-skywalking-gateway</artifactId>
+    <artifactId>showcase-skywalking-gateway</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>demo-skywalking-gateway-route</module>
-        <module>demo-skywalking-gateway-service</module>
+        <module>showcase-skywalking-gateway-route</module>
+        <module>showcase-skywalking-gateway-service</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
