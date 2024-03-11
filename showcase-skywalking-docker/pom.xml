@@ -13,9 +13,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>demo-skywalking-docker-dubbo</module>
-        <module>demo-skywalking-gateway-docker</module>
-        <module>demo-skywalking-docker-flink-spend-report</module>
+        <module>showcase-skywalking-docker-dubbo</module>
+        <module>showcase-skywalking-gateway-docker</module>
+        <module>showcase-skywalking-docker-flink-spend-report</module>
     </modules>
 
     <properties>

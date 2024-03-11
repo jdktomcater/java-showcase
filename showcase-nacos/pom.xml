@@ -4,9 +4,8 @@
   <groupId>com.jdktomcat.demo.nacos</groupId>
   <artifactId>showcase-nacos</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>showcase-nacos</name>
   <modules>
-    <module>demo-nacos-application</module>
+    <module>showcase-nacos-application</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>

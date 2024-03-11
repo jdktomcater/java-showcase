@@ -3,7 +3,6 @@
     <groupId>jdktomcat.demo</groupId>
     <artifactId>showcase-redis-template</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>showcase-redis-template</name>
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -12,7 +11,7 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>demo-redis-template-command</module>
+        <module>showcase-redis-template-command</module>
     </modules>
 
     <properties>

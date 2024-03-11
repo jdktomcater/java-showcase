@@ -11,10 +11,10 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>demo-limiter-mq-producer</module>
-        <module>demo-limiter-mq-consumer</module>
-        <module>demo-limiter-redis-fixed-window</module>
-        <module>demo-limiter-redis-token</module>
+        <module>showcase-limiter-mq-producer</module>
+        <module>showcase-limiter-mq-consumer</module>
+        <module>showcase-limiter-redis-fixed-window</module>
+        <module>showcase-limiter-redis-token</module>
     </modules>
 
     <properties>
