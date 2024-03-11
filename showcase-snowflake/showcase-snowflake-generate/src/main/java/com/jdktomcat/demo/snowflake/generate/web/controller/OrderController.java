@@ -24,4 +24,15 @@ public class OrderController {
         }
 
     }
+
+    @GetMapping("/generate")
+    public Result<?> generate() {
+        //统一返回值
+        try {
+            return Result.success(withdrawOrderService.generate());
+        } catch (Exception exception) {
+            return Result.failed(exception.getMessage());
+        }
+
+    }
 }
