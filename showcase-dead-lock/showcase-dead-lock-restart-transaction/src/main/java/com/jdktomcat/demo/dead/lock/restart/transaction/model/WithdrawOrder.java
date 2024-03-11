@@ -11,25 +11,25 @@ import java.util.Date;
 @TableName("`t_withdraw_order`")
 public class WithdrawOrder {
 
-    @TableId(value = "OrderIndex")
-    private Long orderIndex;
+    @TableId(value = "id")
+    private Long id;
 
-    @TableField(value = "OrderId")
+    @TableField(value = "order_id")
     private String orderId;
 
-    @TableField(value = "MerchantOrderId")
+    @TableField(value = "merchant_order_id")
     private String merchantOrderId;
 
-    @TableField(value = "OrderStatus")
+    @TableField(value = "order_status")
     private int orderStatus;
 
-    @TableField(value = "PriorityMatchStatus")
+    @TableField(value = "priority_match_status")
     private int priorityMatchStatus;
 
-    @TableField(value = "ParentOrderStatus")
+    @TableField(value = "parent_order_status")
     private int parentOrderStatus;
 
-    @TableField(value = "CreateTime")
+    @TableField(value = "create_time")
     private Date createTime;
 
 }
