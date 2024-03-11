@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface WithdrawOrderMapper extends BaseMapper<WithdrawOrder> {
-    @Select("select OrderId from typayv2.t_withdraw_order where find_in_set(OrderId, #{orderIds}) for update ")
+    @Select("select order_id from typayv2.t_withdraw_order where find_in_set(order_id, #{orderIds}) for update ")
     List<String> queryListForUpdate(String orderIds);
 
 }
