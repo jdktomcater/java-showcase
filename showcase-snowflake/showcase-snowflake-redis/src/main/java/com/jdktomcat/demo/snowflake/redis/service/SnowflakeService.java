@@ -15,13 +15,14 @@ public class SnowflakeService {
     private ExecutorService executors;
     @Autowired
     private RedisComponent redisComponent;
+
     public void generate() {
-        for(int i=0;i<5;i++){
+        for (int i = 0; i < 5; i++) {
             executors.submit(() -> {
-                for(int index=0;index<10000;index++){
+                for (int index = 0; index < 10000; index++) {
                     Long id = SnowflakeIdWorker.createTableId();
-                    if(!redisComponent.addSet(id)){
-                        log.error("生成id异常！：{}",id);
+                    if (!redisComponent.addSet(id)) {
+                        log.error("生成id异常！：{}", id);
                     }
                 }
             });
