@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.spring.boot.admin;
+package com.jdktomcat.showcase.spring.boot.admin;
 
 import de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
