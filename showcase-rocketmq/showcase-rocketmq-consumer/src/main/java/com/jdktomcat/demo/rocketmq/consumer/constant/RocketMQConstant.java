@@ -12,6 +12,10 @@ public class RocketMQConstant {
      * 延迟消息队列主题
      */
     public static final String DELAY_MESSAGE_TOPIC = "DELAY_MESSAGE_TOPIC_NEW";
+
+    public static final String WITHDRAW_MESSAGE_TOPIC = "queue_notify_withdraw";
+
+    public static final String DEPOSIT_MESSAGE_TOPIC = "queue_notify_deposit";
     /**
      * 延迟消息队列主题
      */

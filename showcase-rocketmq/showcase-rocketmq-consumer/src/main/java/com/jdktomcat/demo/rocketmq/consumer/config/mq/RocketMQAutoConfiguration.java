@@ -2,7 +2,8 @@ package com.jdktomcat.demo.rocketmq.consumer.config.mq;
 
 import com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant;
 import com.jdktomcat.demo.rocketmq.consumer.listener.BaseConsumerListener;
-import com.jdktomcat.demo.rocketmq.consumer.listener.DelayMessageConsumeListener;
+import com.jdktomcat.demo.rocketmq.consumer.listener.DepositMessageConsumerListener;
+import com.jdktomcat.demo.rocketmq.consumer.listener.WithdrawMessageConsumerListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -15,7 +16,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.DELAY_MESSAGE_TOPIC;
+import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.DEPOSIT_MESSAGE_TOPIC;
+import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.WITHDRAW_MESSAGE_TOPIC;
 
 
 /**
@@ -28,11 +30,12 @@ public class RocketMQAutoConfiguration {
     @Autowired
     private RocketMQProperties properties;
 
-    /**
-     * 延迟消息消费者
-     */
+
     @Autowired
-    private DelayMessageConsumeListener delayMessageConsumeListener;
+    private WithdrawMessageConsumerListener withdrawMessageConsumerListener;
+
+    @Autowired
+    private DepositMessageConsumerListener depositMessageConsumerListener;
 
     /**
      * 注册新的消費者
@@ -41,8 +44,19 @@ public class RocketMQAutoConfiguration {
      * @throws MQClientException
      */
     @Bean
-    public DefaultMQPushConsumer pushDelayMessageConsumer() {
-        return getDefaultMQPushConsumer(DELAY_MESSAGE_TOPIC, delayMessageConsumeListener);
+    public DefaultMQPushConsumer pushWithdrawMessageConsumer() {
+        return getDefaultMQPushConsumer(WITHDRAW_MESSAGE_TOPIC, withdrawMessageConsumerListener);
+    }
+
+    /**
+     * 注册新的消費者
+     *
+     * @return
+     * @throws MQClientException
+     */
+    @Bean
+    public DefaultMQPushConsumer pushDepositMessageConsumer() {
+        return getDefaultMQPushConsumer(DEPOSIT_MESSAGE_TOPIC, depositMessageConsumerListener);
     }
 
     /**

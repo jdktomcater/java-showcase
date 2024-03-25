@@ -23,9 +23,9 @@ logging:
     path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
 
 rocketmq:
-  namesrvAddr: 172.31.184.43:9876
+  namesrvAddr: 172.31.184.104:9876
   consumer:
-    groupName: timmy-consumer-group
-    consumeThreadMin: 20
-    consumeThreadMax: 64
-    batchMaxSize: 1
+    groupName: tradeNoConsumerGroup
+    consumeThreadMin: 50
+    consumeThreadMax: 192
+    batchMaxSize: 100
