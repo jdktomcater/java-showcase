@@ -26,6 +26,6 @@ rocketmq:
   namesrvAddr: 172.31.184.104:9876
   consumer:
     groupName: tradeNoConsumerGroup
-    consumeThreadMin: 50
-    consumeThreadMax: 192
-    batchMaxSize: 100
+    consumeThreadMin: 20
+    consumeThreadMax: 128
+    batchMaxSize: 10
