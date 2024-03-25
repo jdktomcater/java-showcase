@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.snowflake.redis.config;
+package com.jdktomcat.showcase.snowflake.redis.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

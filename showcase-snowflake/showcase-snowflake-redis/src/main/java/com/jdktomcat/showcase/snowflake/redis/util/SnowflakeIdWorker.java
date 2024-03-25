@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.snowflake.redis.util;
+package com.jdktomcat.showcase.snowflake.redis.util;
 
 import lombok.extern.slf4j.Slf4j;
 

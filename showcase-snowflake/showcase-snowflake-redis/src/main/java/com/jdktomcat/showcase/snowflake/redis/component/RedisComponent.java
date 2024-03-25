@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.snowflake.redis.component;
+package com.jdktomcat.showcase.snowflake.redis.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSet;

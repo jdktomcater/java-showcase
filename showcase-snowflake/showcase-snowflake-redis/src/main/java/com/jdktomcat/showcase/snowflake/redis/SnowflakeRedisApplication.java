@@ -1,6 +1,6 @@
-package com.jdktomcat.demo.snowflake.redis;
+package com.jdktomcat.showcase.snowflake.redis;
 
-import com.jdktomcat.demo.snowflake.redis.service.SnowflakeService;
+import com.jdktomcat.showcase.snowflake.redis.service.SnowflakeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
