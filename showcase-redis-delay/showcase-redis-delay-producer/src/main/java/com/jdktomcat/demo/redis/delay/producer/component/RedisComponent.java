@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisComponent {
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+//    @Autowired
+//    private StringRedisTemplate stringRedisTemplate;
 
     /**
      * 普通缓存放入并设置时间
@@ -28,12 +28,12 @@ public class RedisComponent {
      * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
-    public boolean setString(String key, String value, long time) {
-        try {
-            return Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(key, value, time, TimeUnit.SECONDS));
-        } catch (Exception e) {
-            log.error("redis Exception: {}", e.getMessage(), e);
-            return false;
-        }
-    }
+//    public boolean setString(String key, String value, long time) {
+//        try {
+//            return Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(key, value, time, TimeUnit.SECONDS));
+//        } catch (Exception e) {
+//            log.error("redis Exception: {}", e.getMessage(), e);
+//            return false;
+//        }
+//    }
 }
