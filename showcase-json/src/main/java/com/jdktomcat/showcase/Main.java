@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Main {
 
     private static void handle(String filePath) throws IOException {
-        Scanner scanner = new Scanner(new File(filePath), StandardCharsets.UTF_8);
+        Scanner scanner = new Scanner(new File(filePath), String.valueOf(StandardCharsets.UTF_8));
         StringBuilder stringBuffer = new StringBuilder();
         while (scanner.hasNext()) {
             stringBuffer.append(scanner.next());
