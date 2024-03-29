@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2024/1/12
  */
 @Slf4j
-@RestController(value = "/business")
+@RestController(value = "/business/")
 public class BusinessController {
 
     @Autowired
@@ -66,7 +66,7 @@ public class BusinessController {
     @PostMapping("/set")
     public String setCache(String orderId) {
         String key = StringConstant.CACHE_ORDER + orderId;
-        boolean setResult = redisComponent.set(key, StringConstant.ORDER_JSON,3);
+        boolean setResult = redisComponent.set(key, StringConstant.ORDER_JSON,TimeUnit.DAYS.toSeconds(15));
         log.info("set cache{}，result：{}", key, setResult);
         return setResult?"1":"0";
     }
