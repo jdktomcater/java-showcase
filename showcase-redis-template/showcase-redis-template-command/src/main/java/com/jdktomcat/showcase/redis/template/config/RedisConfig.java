@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.redis.template.config;
+package com.jdktomcat.showcase.redis.template.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

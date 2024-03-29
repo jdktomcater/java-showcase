@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.redis.template;
+package com.jdktomcat.showcase.redis.template;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

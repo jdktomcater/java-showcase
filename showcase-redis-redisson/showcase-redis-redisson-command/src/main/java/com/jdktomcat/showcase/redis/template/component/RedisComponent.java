@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.redis.template.component;
+package com.jdktomcat.showcase.redis.template.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;

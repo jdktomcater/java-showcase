@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.redis.template.component;
+package com.jdktomcat.showcase.redis.template.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,24 @@ public class RedisComponent {
             return true;
         });
         return result;
+    }
+
+    /**
+     * 普通缓存放入并设置时间
+     *
+     * @param key   键
+     * @param value 值
+     * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
+     * @return true成功 false 失败
+     */
+    public boolean set(String key, Object value, long time) {
+        try {
+            redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+            return true;
+        } catch (Exception e) {
+            log.error("redis Exception: {}", e.getMessage(), e);
+            return false;
+        }
     }
 
     public boolean expire(String key, long time) {
@@ -106,4 +124,6 @@ public class RedisComponent {
             return null;
         }
     }
+
+
 }

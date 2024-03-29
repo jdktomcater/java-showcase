@@ -1,7 +1,7 @@
-package com.jdktomcat.demo.redis.template.controller;
+package com.jdktomcat.showcase.redis.template.controller;
 
-import com.jdktomcat.demo.redis.template.constant.StringConstant;
-import com.jdktomcat.demo.redis.template.component.RedisComponent;
+import com.jdktomcat.showcase.redis.template.constant.StringConstant;
+import com.jdktomcat.showcase.redis.template.component.RedisComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,5 +61,13 @@ public class BusinessController {
             log.error("缓存-查询{} 异常:{} 已返回NULL_将查询数据库", orderId, e.getMessage(), e);
             return null;
         }
+    }
+
+    @PostMapping("/set")
+    public String setCache(String orderId) {
+        String key = StringConstant.CACHE_ORDER + orderId;
+        boolean setResult = redisComponent.set(key, StringConstant.ORDER_JSON,3);
+        log.info("set cache{}，result：{}", key, setResult);
+        return setResult?"1":"0";
     }
 }

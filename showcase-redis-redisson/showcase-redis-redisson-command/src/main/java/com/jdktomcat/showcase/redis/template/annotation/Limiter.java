@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.redis.template.annotation;
+package com.jdktomcat.showcase.redis.template.annotation;
 
 
 import java.lang.annotation.*;

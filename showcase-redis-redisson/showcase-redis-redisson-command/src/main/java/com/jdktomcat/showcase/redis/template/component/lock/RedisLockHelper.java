@@ -1,14 +1,10 @@
-package com.jdktomcat.demo.redis.template.component.lock;
+package com.jdktomcat.showcase.redis.template.component.lock;
 
-import com.jdktomcat.demo.redis.template.component.RedisComponent;
+import com.jdktomcat.showcase.redis.template.component.RedisComponent;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Redis锁助手，返回的锁使用 try with resource 代码块可以自动关闭
