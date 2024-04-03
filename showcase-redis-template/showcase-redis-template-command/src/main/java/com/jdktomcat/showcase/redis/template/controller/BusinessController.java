@@ -27,9 +27,9 @@ public class BusinessController {
     @PostMapping("/cache")
     public String addCache(String orderId) {
         String key = StringConstant.CACHE_ORDER + orderId;
-        boolean addResult = redisComponent.setIfAbsent(key, StringConstant.ORDER_JSON,3,TimeUnit.SECONDS);
+        boolean addResult = redisComponent.setIfAbsent(key, StringConstant.ORDER_JSON, 3, TimeUnit.SECONDS);
         log.info("添加缓存{}，结果：{}", key, addResult);
-        return addResult?"1":"0";
+        return addResult ? "1" : "0";
     }
 
     @DeleteMapping("/del")
@@ -66,8 +66,8 @@ public class BusinessController {
     @PostMapping("/set")
     public String setCache(String orderId) {
         String key = StringConstant.CACHE_ORDER + orderId;
-        boolean setResult = redisComponent.set(key, StringConstant.ORDER_JSON,TimeUnit.DAYS.toSeconds(15));
+        boolean setResult = redisComponent.set(key, StringConstant.ORDER_JSON, TimeUnit.DAYS.toSeconds(15));
         log.info("set cache{}，result：{}", key, setResult);
-        return setResult?"1":"0";
+        return setResult ? "1" : "0";
     }
 }
