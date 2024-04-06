@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.showcase.prometheus.demo;
+package com.jdktomcat.showcase.prometheus;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
