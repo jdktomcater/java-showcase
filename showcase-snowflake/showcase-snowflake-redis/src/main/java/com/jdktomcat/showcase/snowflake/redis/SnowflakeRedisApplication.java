@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.snowflake.redis;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jdktomcat.showcase.snowflake.redis.service.SnowflakeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class SnowflakeRedisApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        for(int i=0;i<10000;i++){
-            snowflakeService.generate();
-        }
+        String code = "200";
+        JSONObject jsonObject = JSONObject.parseObject(code);
+        System.out.println(jsonObject);
     }
 }
 
