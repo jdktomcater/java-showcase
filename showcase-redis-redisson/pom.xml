@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-redis-redisson-command</module>
+        <module>showcase-redis-redisson-semaphore</module>
     </modules>
 
     <properties>

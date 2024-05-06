@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.template.annotation;
+package com.jdktomcat.showcase.redis.redisson.semaphore.annotation;
 
 
 import java.lang.annotation.*;

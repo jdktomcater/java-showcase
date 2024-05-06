@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.redis.template.controller;
+package com.jdktomcat.showcase.redis.redisson.semaphore.controller;
 
-import com.jdktomcat.showcase.redis.template.constant.StringConstant;
-import com.jdktomcat.showcase.redis.template.component.RedisComponent;
+import com.jdktomcat.showcase.redis.redisson.semaphore.constant.StringConstant;
+import com.jdktomcat.showcase.redis.redisson.semaphore.component.RedisComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;

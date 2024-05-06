@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.template.constant;
+package com.jdktomcat.showcase.redis.redisson.semaphore.constant;
 
 /**
  * @author ZF-Timmy

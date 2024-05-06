@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.template.component.lock;
+package com.jdktomcat.showcase.redis.redisson.semaphore.component.lock;
 
 import lombok.Getter;
 

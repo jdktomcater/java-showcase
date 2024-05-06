@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.template.config;
+package com.jdktomcat.showcase.redis.redisson.semaphore.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
