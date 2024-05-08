@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:17
 EXPOSE 7001
 MAINTAINER jdktomcater jdktomcater@gmail.com
 ADD target/demo-skywalking-gateway-docker-service*.jar /spring-boot.jar
