@@ -12,3 +12,6 @@ spring:
         max-wait: 800
         max-idle: 8
         min-idle: 2
+server:
+  address: 192.168.56.204
+  port: 8080
