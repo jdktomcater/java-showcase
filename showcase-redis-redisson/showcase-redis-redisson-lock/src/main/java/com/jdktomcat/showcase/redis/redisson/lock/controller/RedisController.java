@@ -23,12 +23,17 @@ public class RedisController {
      * @return
      */
     @RequestMapping(value = "/lock", method = RequestMethod.GET)
-    public String check(String key) {
-        RLock lock = redissonClient.getLock(key);
-        lock.lock(500, TimeUnit.MILLISECONDS);
-        System.out.println("lock:"+lock.isLocked());
-        lock.unlock();
-        System.out.println("lock:"+lock.isLocked());
-        return "";
+    public String lock(String key) {
+        try{
+            RLock lock = redissonClient.getLock(key);
+            lock.lock(500, TimeUnit.MILLISECONDS);
+            log.info("lock:{}", lock.isLocked());
+            lock.unlock();
+            log.info("lock:{}", lock.isLocked());
+        }catch (Exception e){
+            log.error("lock error", e);
+            return "error";
+        }
+        return "ok";
     }
 }
