@@ -1,10 +1,16 @@
-package com.jdktomcat.showcase.redis.redisson.semaphore;
+package com.jdktomcat.showcase.redis.redisson.lock;
 
-import com.jdktomcat.showcase.redis.redisson.semaphore.component.RedisComponent;
+import jodd.util.StringUtil;
+import org.redisson.api.RPermitExpirableSemaphore;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ZF-Timmy
@@ -13,13 +19,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2023/11/13
  */
 @SpringBootApplication
-public class DemoRedisRedissonCommandApplication implements CommandLineRunner {
+public class RedissonLockApplication implements CommandLineRunner {
 
     @Autowired
-    private RedisComponent redisComponent;
+    private RedissonClient redissonClient;
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoRedisRedissonCommandApplication.class, args);
+        SpringApplication.run(RedissonLockApplication.class, args);
     }
 
     /**
@@ -28,9 +34,7 @@ public class DemoRedisRedissonCommandApplication implements CommandLineRunner {
      * @param args incoming main method arguments
      */
     @Override
-    public void run(String... args) {
-//        String key = "myzset1";
-//        double score = redisComponent.firstScore(key);
-//        System.out.println("最小分数值：" + score);
+    public void run(String... args) throws InterruptedException {
+
     }
 }

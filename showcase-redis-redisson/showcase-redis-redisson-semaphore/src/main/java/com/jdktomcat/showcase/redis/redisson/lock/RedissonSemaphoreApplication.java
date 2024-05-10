@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.redisson.semaphore;
+package com.jdktomcat.showcase.redis.redisson.lock;
 
 import jodd.util.StringUtil;
 import org.redisson.api.RPermitExpirableSemaphore;

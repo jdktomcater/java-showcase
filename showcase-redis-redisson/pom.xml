@@ -13,6 +13,7 @@
     <modules>
         <module>showcase-redis-redisson-command</module>
         <module>showcase-redis-redisson-semaphore</module>
+        <module>showcase-redis-redisson-lock</module>
     </modules>
 
     <properties>

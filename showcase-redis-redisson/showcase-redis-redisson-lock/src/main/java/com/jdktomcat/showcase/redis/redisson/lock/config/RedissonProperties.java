@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.redisson.semaphore.config;
+package com.jdktomcat.showcase.redis.redisson.lock.config;
 
 import lombok.Getter;
 import lombok.Setter;

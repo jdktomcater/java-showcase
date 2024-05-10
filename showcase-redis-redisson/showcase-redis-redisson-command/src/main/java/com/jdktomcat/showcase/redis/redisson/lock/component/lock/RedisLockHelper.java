@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.redis.redisson.semaphore.component.lock;
+package com.jdktomcat.showcase.redis.redisson.lock.component.lock;
 
-import com.jdktomcat.showcase.redis.redisson.semaphore.component.RedisComponent;
+import com.jdktomcat.showcase.redis.redisson.lock.component.RedisComponent;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

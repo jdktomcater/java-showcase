@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.redis.redisson.semaphore.annotation;
+package com.jdktomcat.showcase.redis.redisson.lock.annotation;
 
 
 import java.lang.annotation.*;
