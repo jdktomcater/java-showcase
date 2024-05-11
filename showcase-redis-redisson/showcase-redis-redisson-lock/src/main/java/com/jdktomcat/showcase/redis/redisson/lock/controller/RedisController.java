@@ -20,16 +20,20 @@ public class RedisController {
 
     @RequestMapping(value = "/lock", method = RequestMethod.GET)
     public String lock(String key) {
-        try{
+        try {
             RLock lock = redissonClient.getLock(key);
-            lock.lock(15, TimeUnit.SECONDS);
+            boolean result = lock.tryLock(10, TimeUnit.SECONDS);
             log.info("lock:{}", lock.isLocked());
-            lock.unlock();
-            log.info("lock:{}", lock.isLocked());
-        }catch (Exception e){
+            if (result) {
+                lock.unlock();
+                log.info("lock:{}", lock.isLocked());
+                return "ok";
+            } else {
+                return "fail";
+            }
+        } catch (Exception e) {
             log.error("lock error", e);
             return "error";
         }
-        return "ok";
     }
 }
