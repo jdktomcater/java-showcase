@@ -67,7 +67,8 @@ public class RedissonConfig {
                 .setConnectTimeout(redissonProperties.getConnectTimeout())
                 .setMasterConnectionMinimumIdleSize(redissonProperties.getMasterConnectionMinimumIdleSize())
                 .setMasterConnectionPoolSize(redissonProperties.getMasterConnectionPoolSize())
-                .setSubscriptionsPerConnection(redissonProperties.getSubscriptionsPerConnection());
+                .setSubscriptionsPerConnection(redissonProperties.getSubscriptionsPerConnection())
+                .setSubscriptionConnectionPoolSize(redissonProperties.getSubscriptionConnectionPoolSize());
         return Redisson.create(config);
     }
 
