@@ -22,7 +22,7 @@ public class RedisController {
     public String lock(String key) {
         try{
             RLock lock = redissonClient.getLock(key);
-            lock.lock(500, TimeUnit.MILLISECONDS);
+            lock.lock(15, TimeUnit.SECONDS);
             log.info("lock:{}", lock.isLocked());
             lock.unlock();
             log.info("lock:{}", lock.isLocked());
