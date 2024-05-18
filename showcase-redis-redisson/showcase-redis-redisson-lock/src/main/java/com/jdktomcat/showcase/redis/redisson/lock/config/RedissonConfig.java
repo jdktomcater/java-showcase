@@ -79,7 +79,7 @@ public class RedissonConfig {
     public ClusterConnectionManager connectionManager(RedissonClient redissonClient){
         Config config = redissonClient.getConfig();
         ClusterServersConfig clusterServersConfig = config.useClusterServers();
-        UUID uuid =  UUID.fromString(redissonClient.getId());
+        UUID uuid =  UUID.randomUUID();
         return new ClusterConnectionManager(clusterServersConfig,config, uuid);
     }
 
