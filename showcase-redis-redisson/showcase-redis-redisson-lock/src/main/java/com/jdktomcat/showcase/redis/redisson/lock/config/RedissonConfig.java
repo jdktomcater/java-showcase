@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.cluster.ClusterConnectionManager;
+import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.ReadMode;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -15,6 +17,7 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @EnableConfigurationProperties({RedissonProperties.class})
 @RequiredArgsConstructor
@@ -70,6 +73,14 @@ public class RedissonConfig {
                 .setSubscriptionsPerConnection(redissonProperties.getSubscriptionsPerConnection())
                 .setSubscriptionConnectionPoolSize(redissonProperties.getSubscriptionConnectionPoolSize());
         return Redisson.create(config);
+    }
+
+    @Bean
+    public ClusterConnectionManager connectionManager(RedissonClient redissonClient){
+        Config config = redissonClient.getConfig();
+        ClusterServersConfig clusterServersConfig = config.useClusterServers();
+        UUID uuid =  UUID.fromString(redissonClient.getId());
+        return new ClusterConnectionManager(clusterServersConfig,config, uuid);
     }
 
     private String[] convert(List<String> nodesObject) {
