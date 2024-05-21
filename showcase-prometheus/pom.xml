@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.jdktomcat.showcase</groupId>
-    <artifactId>showcase-prometheus-demo</artifactId>
+    <artifactId>showcase-prometheus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>showcase-prometheus-demo</name>
     <description>showcase-prometheus-demo</description>
