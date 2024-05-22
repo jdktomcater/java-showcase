@@ -89,7 +89,7 @@ public class FactoryInfoComponent {
         Map<String, Object> queryParams = makeupQueryParam(keywords);
         Map<String, String> headerParams = makeupHeaderParam();
         HttpCookie[] cookies = makeHttpCookies();
-        String body = HttpRequest.get(QUERY_URL).form(makeupQueryParam(keywords)).addHeaders(makeupHeaderParam()).execute().body();
+        String body = HttpRequest.get(QUERY_URL).form(queryParams).addHeaders(headerParams).cookie(cookies).execute().body();
         log.info("resp: {}", body);
         return body;
     }
