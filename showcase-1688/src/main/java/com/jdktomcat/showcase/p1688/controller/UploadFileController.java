@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.fastdfs.controller;
+package com.jdktomcat.showcase.p1688.controller;
 
 import cn.hutool.core.io.resource.InputStreamResource;
 import cn.hutool.http.HttpUtil;
