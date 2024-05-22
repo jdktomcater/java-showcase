@@ -1,15 +1,13 @@
 package com.jdktomcat.showcase.p1688.component;
 
 import cn.hutool.core.net.url.UrlBuilder;
-import cn.hutool.http.HttpRequest;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.HttpCookie;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @Slf4j
