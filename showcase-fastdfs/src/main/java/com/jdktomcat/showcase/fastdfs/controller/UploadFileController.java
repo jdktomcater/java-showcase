@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,11 +16,11 @@ import java.util.Map;
 /**
  * upload file controller
  */
-@Controller
+@RestController
 @Slf4j
 public class UploadFileController {
 
-    public static final String UPLOAD_PATH = "https://txfile-gofast.fbnma.com/group/upload";
+    public static final String UPLOAD_PATH = "https://txfile-gofast.fbnma.com/upload";
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String  upload(MultipartFile file) {
