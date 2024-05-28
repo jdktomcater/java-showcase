@@ -1,6 +1,8 @@
 package com.jdktomcat.showcase.p1688.component;
 
 import cn.hutool.core.net.url.UrlBuilder;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -87,12 +89,25 @@ public class FactoryInfoComponent {
     public String export(String keywords) {
         try {
             String body = exportOk(keywords);
-            String uri = makeupQueryParam(keywords);
-            log.info("body:{} uri:{}", body, uri);
-            return body;
+            return "OK";
         } catch (Exception ex) {
             log.error("异常！", ex);
             return ex.getMessage();
+        }
+    }
+
+    private void handle(String body){
+        JSONObject jsonObject = new JSONObject(body);
+        JSONObject dataObject = jsonObject.getJSONObject("data");
+        JSONArray companyList = dataObject.getJSONArray("companyWithOfferLists");
+        for(int i=0;i<companyList.size();i++){
+            JSONObject company = companyList.getJSONObject(i);
+            JSONObject factoryInfo = company.getJSONObject("factoryInfo");
+            String detailUrl = factoryInfo.getStr("factoryDetailUrl")+"&topOfferIds=";
+            JSONArray offerList = company.getJSONArray("factoryOfferList");
+            for(int j=0;j<offerList.size();j++){
+//                detailUrl = detailUrl+ offerList.get
+            }
         }
     }
 }
