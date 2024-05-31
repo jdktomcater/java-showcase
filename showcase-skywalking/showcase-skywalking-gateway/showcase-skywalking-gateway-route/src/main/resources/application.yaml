@@ -1,10 +1,19 @@
 server:
   port: 7000
-
 spring:
   application:
     name: demo-skywalking-gateway-route
-
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: PT20s
+        pool:
+          max-connections: 10000
+          acquire-timeout: 2000
+          max-idle-time: 120000
+          eviction-interval: 180000
+          type: fixed
 logging:
   level:
     root: info

@@ -19,8 +19,8 @@ public class SkywalkingGatewayRouteApplication {
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(p -> p.path("/reset").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.1:7001"))
-                .route(p -> p.path("/keep").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.1:7001"))
+                .route(p -> p.path("/reset").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.204:7001"))
+                .route(p -> p.path("/keep").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.204:7001"))
                 .build();
     }
 
