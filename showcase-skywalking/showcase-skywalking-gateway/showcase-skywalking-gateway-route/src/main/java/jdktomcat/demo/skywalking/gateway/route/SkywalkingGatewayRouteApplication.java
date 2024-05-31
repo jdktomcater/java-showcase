@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import reactor.netty.ReactorNetty;
 
 /**
  * 启动类
@@ -13,15 +14,13 @@ import org.springframework.context.annotation.Bean;
 public class SkywalkingGatewayRouteApplication {
 
     public static void main(String[] args) {
+        System.setProperty(ReactorNetty.IO_SELECT_COUNT, "4");
+        System.setProperty(ReactorNetty.IO_WORKER_COUNT, "2048");
         SpringApplication.run(SkywalkingGatewayRouteApplication.class);
     }
 
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route(p -> p.path("/reset").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.204:7001"))
-                .route(p -> p.path("/keep").filters(f -> f.addRequestHeader("Hello", "World")).uri("http://192.168.56.204:7001"))
-                .build();
+        return builder.routes().route(p -> p.path("/keep").uri("http://192.168.56.204:7001")).build();
     }
-
 }

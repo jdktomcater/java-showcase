@@ -7,13 +7,12 @@ spring:
     gateway:
       httpclient:
         connect-timeout: 5000
-        response-timeout: PT20s
+        response-timeout: 5s
         pool:
           max-connections: 10000
-          acquire-timeout: 2000
-          max-idle-time: 120000
-          eviction-interval: 180000
+          acquire-timeout: 5000
           type: fixed
+          max-idle-time: 5000
 logging:
   level:
     root: info
