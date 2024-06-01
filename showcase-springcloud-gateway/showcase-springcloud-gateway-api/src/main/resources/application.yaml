@@ -1,0 +1,18 @@
+server:
+  port: 7000
+spring:
+  application:
+    name: demo-skywalking-gateway-api
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 50000
+        response-timeout: 20s
+        pool:
+          max-connections: 10000
+          acquire-timeout: 80000
+          type: fixed
+logging:
+  level:
+    root: info
+  config: classpath:logback.xml
