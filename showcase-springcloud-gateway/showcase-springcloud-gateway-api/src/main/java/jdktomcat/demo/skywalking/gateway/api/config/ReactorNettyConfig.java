@@ -1,6 +1,7 @@
 package jdktomcat.demo.skywalking.gateway.api.config;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,9 @@ import java.lang.reflect.Field;
 
 @Data
 @Configuration
-public class ReactorNettyConfig implements InitializingBean , ApplicationContextAware {
+@Slf4j
+public class ReactorNettyConfig implements InitializingBean, ApplicationContextAware {
+
     @Value("${reactor.ipc.netty.select:4}")
     private String select;
 
@@ -30,21 +33,38 @@ public class ReactorNettyConfig implements InitializingBean , ApplicationContext
     }
 
 
-
     @Override
     public void afterPropertiesSet() {
-        System.setProperty("reactor.ipc.netty.workerCount", worker);
-        System.setProperty("reactor.ipc.netty.selectCount", select);
-        if(applicationContext instanceof ReactiveWebServerApplicationContext){
-            ReactiveWebServerApplicationContext reactiveWebServerApplicationContext = (ReactiveWebServerApplicationContext)applicationContext;
-            try{
-                Field field = ReactiveWebServerApplicationContext.class.getDeclaredField("serverManager");
-                field.setAccessible(true);
-                Object fieldValue = field.get(reactiveWebServerApplicationContext);
-            }catch (Exception exception){
-
+        if (applicationContext instanceof ReactiveWebServerApplicationContext) {
+            ReactiveWebServerApplicationContext reactiveWebServerApplicationContext = (ReactiveWebServerApplicationContext) applicationContext;
+            try {
+                Field fServerManager = ReactiveWebServerApplicationContext.class.getDeclaredField("serverManager");
+                fServerManager.setAccessible(true);
+                Object serverManager = fServerManager.get(reactiveWebServerApplicationContext);
+                Field fServer = serverManager.getClass().getDeclaredField("server");
+                fServer.setAccessible(true);
+                Object server = fServer.get(serverManager);
+                Field fHttpServer = server.getClass().getDeclaredField("httpServer");
+                fHttpServer.setAccessible(true);
+                Object httpServer = fHttpServer.get(server);
+                Field fOptions = httpServer.getClass().getDeclaredField("options");
+                fOptions.setAccessible(true);
+                Object options = fOptions.get(httpServer);
+                Field fLoopResources = options.getClass().getSuperclass().getSuperclass().getDeclaredField("loopResources");
+                fLoopResources.setAccessible(true);
+                Object loopResources = fLoopResources.get(options);
+                Field fDefaultLoops = loopResources.getClass().getSuperclass().getDeclaredField("defaultLoops");
+                fDefaultLoops.setAccessible(true);
+                Object defaultLoops = fDefaultLoops.get(loopResources);
+                Field fSelectCount = defaultLoops.getClass().getDeclaredField("selectCount");
+                fSelectCount.setAccessible(true);
+                fSelectCount.set(defaultLoops, Integer.parseInt(select));
+                Field fWorkerCount = defaultLoops.getClass().getDeclaredField("workerCount");
+                fWorkerCount.setAccessible(true);
+                fWorkerCount.set(defaultLoops, Integer.parseInt(worker));
+            } catch (Exception exception) {
+                log.error("reset reactor netty config error", exception);
             }
-
         }
     }
 }
