@@ -1,4 +1,4 @@
-package jdktomcat.demo.skywalking.gateway.service.controller;
+package jdktomcat.showcase.springcloud.gateway.service.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
