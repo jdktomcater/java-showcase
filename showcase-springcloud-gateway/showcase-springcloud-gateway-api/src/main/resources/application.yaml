@@ -13,11 +13,6 @@ spring:
           max-connections: 10000
           acquire-timeout: 80000
           type: fixed
-reactor:
-  ipc:
-    netty:
-      select: 4
-      worker: 64
 logging:
   level:
     root: info

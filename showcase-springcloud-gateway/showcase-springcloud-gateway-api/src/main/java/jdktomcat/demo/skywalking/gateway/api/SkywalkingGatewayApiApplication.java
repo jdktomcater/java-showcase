@@ -18,6 +18,6 @@ public class SkywalkingGatewayApiApplication {
 
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
-        return builder.routes().route(p -> p.path("/health/check").uri("http://172.31.184.87:8082")).build();
+        return builder.routes().route(p -> p.path("/health/check").uri("http://192.168.56.204:7001")).build();
     }
 }

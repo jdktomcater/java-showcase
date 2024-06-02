@@ -63,5 +63,6 @@
     </dependencies>
     <modules>
         <module>showcase-springcloud-gateway-api</module>
+        <module>showcase-springcloud-gateway-service</module>
     </modules>
 </project>
