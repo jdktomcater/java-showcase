@@ -3,15 +3,14 @@ server:
 
 spring:
   application:
-    name: demo-skywalking-gateway-api
+    name: showcase-springcloud-gateway-api
   cloud:
     gateway:
       httpclient:
         connect-timeout: 50000
         response-timeout: 20s
         pool:
-          max-connections: 10000
-          acquire-timeout: 80000
+          max-connections: 2000
           type: fixed
 logging:
   level:
