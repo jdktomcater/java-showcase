@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.rest.conf.http;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationListener;

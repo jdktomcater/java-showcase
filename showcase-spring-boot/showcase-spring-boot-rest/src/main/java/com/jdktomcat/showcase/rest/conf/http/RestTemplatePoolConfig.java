@@ -1,8 +1,7 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.rest.conf.http;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -21,12 +20,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * spring boot的RestTemplate连接池相关配置
- *
- * @author Tracy
- * @version 1.0.0
- * @fileName RestTemplatePoolConfig.java
- * @Description
- * @date 2019年01月29日
  */
 @Configuration
 @Slf4j
@@ -62,81 +55,27 @@ public class RestTemplatePoolConfig {
     @Value("${third.proxy.active:false}")
     private boolean proxyActive = false;
 
-    // 全民代理开关，默认：关
-    @Value("${third.qmproxy.active:false}")
-    private boolean qmProxyActive = false;
-
-    /**
-     * 设置代理请求
-     *
-     * @param restTemplate
-     */
-//    public void setProxy(RestTemplate restTemplate, boolean enabledProxy) {
-//        if (proxyActive) {
-//            log.debug("请求代理服务  {}:{}", proxyIp, proxyPort);
-//            //设置代理服务
-//            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-//            // 连接超时时间：毫秒
-//            requestFactory.setConnectTimeout(connectTimeout);
-//            // 读写超时时间：毫秒
-//            requestFactory.setReadTimeout(socketTimeout);
-//            requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyIp, proxyPort)));
-//            restTemplate.setRequestFactory(requestFactory);
-//        } else {
-//            restTemplate.setRequestFactory(clientHttpRequestFactory(enabledProxy));
-//        }
-
-//        restTemplate.setRequestFactory(clientHttpRequestFactory(enabledProxy));
-//    }
-
-    // endregion
-
-    /**
-     * 让spring管理RestTemplate,参数相关配置
-     * <p>
-     *
-     * @param builder
-     * @return
-     */
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         // 生成一个RestTemplate实例
-        RestTemplate restTemplate = builder.requestFactory(
-                () -> proxyActive ? clientHttpRequestFactory() : clientHttpRequestFactoryWithoutProxy())
-                .build();
+        RestTemplate restTemplate = builder.requestFactory(() -> proxyActive ? clientHttpRequestFactory() : clientHttpRequestFactoryWithoutProxy()).build();
         restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         return restTemplate;
     }
 
     /**
      * 让spring管理RestTemplate,参数相关配置（不走代理）
-     * <p>
-     *
-     * @param builder
-     * @return
      */
     @Bean
-    public RestTemplate restNoProxyeTemplat(RestTemplateBuilder builder) {
+    public RestTemplate restNoProxyTemplate(RestTemplateBuilder builder) {
         // 生成一个RestTemplate实例
-        RestTemplate restTemplate = builder.requestFactory(() ->
-                qmProxyActive && proxyActive ? clientHttpRequestFactory() : clientHttpRequestFactoryWithoutProxy())
-                .build();
-//        if (qmProxyActive) {
-//            log.info("=====>qmProxyActive全民支付代理开关：开启");
-//            setProxy(restTemplate, qmProxyActive && proxyActive);
-//        } else {
-//            log.info("=====>qmProxyActive全民支付代理开关：关闭");
-//            restTemplate.setRequestFactory(clientHttpRequestFactory());
-//        }
-//        restTemplate.setRequestFactory();
+        RestTemplate restTemplate = builder.requestFactory(() -> proxyActive ? clientHttpRequestFactory() : clientHttpRequestFactoryWithoutProxy()).build();
         restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         return restTemplate;
     }
 
     /**
      * 客户端请求链接策略
-     *
-     * @return
      */
     @Bean
     @Primary
@@ -176,16 +115,8 @@ public class RestTemplatePoolConfig {
     @Primary
     public HttpClientBuilder httpClientBuilder() {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-        httpClientBuilder.setConnectionManager(poolingConnectionManager())
-                .setProxy(getProxy());
+        httpClientBuilder.setConnectionManager(poolingConnectionManager()).setProxy(getProxy());
         return httpClientBuilder;
-    }
-
-    public RequestConfig.Builder getDefaultRequestConfigBuilder() {
-        return RequestConfig.custom()
-                .setConnectTimeout(this.connectTimeout)
-                .setSocketTimeout(this.socketTimeout)
-                .setConnectionRequestTimeout(this.connectionRequestTimeout);
     }
 
     @Bean
@@ -204,8 +135,6 @@ public class RestTemplatePoolConfig {
      * MaxTotal 连接池最大连接数
      * DefaultMaxPerRoute 每个主机的并发
      * ValidateAfterInactivity 可用空闲连接过期时间,重用空闲连接时会先检查是否空闲时间超过这个时间，如果超过，释放socket重新建立
-     *
-     * @return
      */
     @Bean
     public HttpClientConnectionManager poolingConnectionManager() {
@@ -214,33 +143,5 @@ public class RestTemplatePoolConfig {
         poolingConnectionManager.setDefaultMaxPerRoute(defaultMaxPerRoute);
         poolingConnectionManager.setValidateAfterInactivity(validateAfterInactivity);
         return poolingConnectionManager;
-    }
-
-    int connectionRequestTimeout() {
-        return connectionRequestTimeout;
-    }
-
-    int connectTimeout() {
-        return connectTimeout;
-    }
-
-    int socketTimeout() {
-        return socketTimeout;
-    }
-
-    public int retryCount() {
-        return retryCount;
-    }
-
-    public int maxTotal() {
-        return maxTotal;
-    }
-
-    public int defaultMaxPerRoute() {
-        return defaultMaxPerRoute;
-    }
-
-    public int validateAfterInactivity() {
-        return validateAfterInactivity;
     }
 }

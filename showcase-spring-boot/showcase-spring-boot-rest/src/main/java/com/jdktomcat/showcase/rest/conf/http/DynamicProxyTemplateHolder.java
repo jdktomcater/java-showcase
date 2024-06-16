@@ -1,9 +1,8 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.rest.conf.http;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
 import org.apache.http.client.config.RequestConfig;
@@ -53,13 +52,6 @@ public final class DynamicProxyTemplateHolder {
     private DynamicProxyTemplateHolder() {
     }
 
-    public static HttpProxy getProxy(String ip, Integer port) {
-        if (StringUtils.isBlank(ip) || port == null) {
-            return chooseDefaultProxy();
-        }
-        return getProxy(ip + PROXY_DELIMITER + port);
-    }
-
     public static HttpProxy getProxy(String name) {
         HttpProxy proxy = NAMED_PROXY_MAP.get(name);
         if (Objects.isNull(proxy)) {
@@ -77,16 +69,8 @@ public final class DynamicProxyTemplateHolder {
         return proxy;
     }
 
-    public static HttpComponentsClientHttpRequestFactory getFactory(HttpProxy proxy) {
-        return templateGenerator.getRequestFactory(proxy);
-    }
-
     public static HttpProxy chooseDefaultProxy() {
         return getProxy(getDefaultProxyName());
-    }
-
-    public static HttpProxy chooseDefaultSpecialProxy() {
-        return getProxy(getDefaultSpecialProxyName());
     }
 
     public static HttpProxy getInternalProxy() {
@@ -95,14 +79,6 @@ public final class DynamicProxyTemplateHolder {
 
     private static String getDefaultProxyName() {
         return templateConfiguration.proxyActive() ? RestTemplateConfiguration.DEFAULT_PROXY : RestTemplateConfiguration.INTERNAL;
-    }
-
-    private static String getDefaultSpecialProxyName() {
-        return templateConfiguration.specialProxyActive() ? RestTemplateConfiguration.SPECIAL_PROXY : RestTemplateConfiguration.INTERNAL;
-    }
-
-    public static RestTemplate get(String ip, Integer port) {
-        return get(generateProxy(ip, port));
     }
 
     public static RestTemplate get(HttpProxy proxy) {
@@ -125,10 +101,6 @@ public final class DynamicProxyTemplateHolder {
             }
         }
         return template;
-    }
-
-    private static HttpProxy generateProxy(String ip, Integer port) {
-        return HttpProxy.of(null, ip, port, true);
     }
 
     static synchronized void init(RestTemplateBuilder restTemplateBuilder, StringHttpMessageConverter stringHttpMessageConverter,
@@ -215,7 +187,7 @@ public final class DynamicProxyTemplateHolder {
                                 }
                             }
                         }
-                        return templateConfiguration.getKeepAlive() * 1000L;
+                        return templateConfiguration.keepAlive() * 1000L;
                     });
         }
 
@@ -234,7 +206,5 @@ public final class DynamicProxyTemplateHolder {
             poolingConnectionManager.setValidateAfterInactivity(templateConfiguration.validateAfterInactivity());
             return poolingConnectionManager;
         }
-
     }
-
 }

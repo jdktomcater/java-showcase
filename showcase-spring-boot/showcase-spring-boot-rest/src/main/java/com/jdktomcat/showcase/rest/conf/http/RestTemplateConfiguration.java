@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.rest.conf.http;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,7 +60,7 @@ public class RestTemplateConfiguration {
     @Value("${third.proxy.special.port:13080}")
     private int specialProxyPort;
 
-    public int getKeepAlive() {
+    public int keepAlive() {
         return keepAlive;
     }
 
@@ -94,10 +94,6 @@ public class RestTemplateConfiguration {
 
     public boolean proxyActive() {
         return proxyActive;
-    }
-
-    public boolean specialProxyActive() {
-        return specialProxyActive;
     }
 
     public List<HttpProxy> getProxyList() {

@@ -1,5 +1,6 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.rest.conf.http;
 
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 
@@ -8,6 +9,7 @@ import java.util.Objects;
 /**
  * @author luxun
  */
+@Data
 public class HttpProxy {
 
     private final String name;
@@ -38,18 +40,6 @@ public class HttpProxy {
         this.enabled = enabled;
         this.name = defaultName(name);
         this.host = StringUtils.isNotBlank(ip) && Objects.nonNull(port) ? new HttpHost(ip, port) : null;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public String ip() {
-        return this.ip;
-    }
-
-    public Integer port() {
-        return this.port;
     }
 
     public String name() {
