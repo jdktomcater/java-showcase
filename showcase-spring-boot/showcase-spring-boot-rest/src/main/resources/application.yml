@@ -6,7 +6,7 @@ server:
   port: 7001
 
 remote:
-  url: http://localhost:7002/remote/say
+  url: http://dc.timmy.com/remote/say
 
 rest:
   http:
