@@ -9,4 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class RemoteConfig {
     @Value("${remote.url}")
     private String remoteUrl;
+    @Value("${remote.retry:5}")
+    private  int retry;
 }

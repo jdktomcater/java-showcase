@@ -20,7 +20,6 @@ public class RemoteServiceImpl implements IRemoteService {
     @Autowired
     private RemoteConfig remoteConfig;
 
-
     @Override
     public String say(String word) {
         Content content = new Content();
@@ -31,21 +30,23 @@ public class RemoteServiceImpl implements IRemoteService {
         RequestWrapper requestWrapper = Rwh.internalPostJson(remoteConfig.getRemoteUrl());
         // 设置请求代理
         ResponseEntity<String> response;
-        try {
-            response = requestWrapper.contentType(headers).body(paramJson).exec();
-        } catch (Exception exception) {
-            log.error("请求出现异常！",exception);
-            Throwable cause = exception;
-            while (cause != null && !(cause instanceof NoHttpResponseException)) {
-                cause = cause.getCause();
-            }
-            if (cause != null) {
-                log.warn("服务端主动断开连接导致connection不可用，请求重试！");
-                response = requestWrapper.body(paramJson).exec();
-            } else {
-                throw exception;
+        int retry = remoteConfig.getRetry();
+        while(retry -- > 0){
+            try {
+                response = requestWrapper.contentType(headers).body(paramJson).exec();
+                return response.getBody();
+            } catch (Exception exception) {
+                log.error("请求出现异常！", exception);
+                if(retry == 0){
+                    throw exception;
+                }
+                Throwable cause = exception;
+                while (cause != null && !(cause instanceof NoHttpResponseException)) {
+                    cause = cause.getCause();
+                }
+                log.warn("服务端主动断开连接导致connection不可用，请求重试:{}！", retry);
             }
         }
-        return response.getBody();
+        throw new RuntimeException("处理异常！");
     }
 }
