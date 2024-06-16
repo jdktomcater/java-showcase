@@ -84,9 +84,6 @@ public class RequestWrapper implements Serializable {
         } catch (RuntimeException e) {
             log.error("RequestWrapper#exec catch RuntimeException.", e);
             throw e;
-        } catch (Exception e) {
-            log.error("RequestWrapper#exec catch {}.", e.getClass().getName(), e);
-            throw new RuntimeException(e);
         }
     }
 }
