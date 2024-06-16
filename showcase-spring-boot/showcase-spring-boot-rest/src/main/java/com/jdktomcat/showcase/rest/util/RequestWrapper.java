@@ -1,10 +1,12 @@
 package com.jdktomcat.showcase.rest.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jdktomcat.showcase.rest.conf.http.DynamicProxyTemplateHolder;
 import com.jdktomcat.showcase.rest.conf.http.HttpProxy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -17,8 +19,6 @@ import java.util.Objects;
  */
 @Slf4j
 public class RequestWrapper implements Serializable {
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final String url;
 
