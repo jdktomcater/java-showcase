@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.rest.controller;
 
 import com.jdktomcat.showcase.rest.vo.Content;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RemoteController {
 
     @PostMapping(value = "/say")
-    public String say(Content content) {
+    public String say(@RequestBody Content content) {
         return "hello " + content.getWord();
     }
 }

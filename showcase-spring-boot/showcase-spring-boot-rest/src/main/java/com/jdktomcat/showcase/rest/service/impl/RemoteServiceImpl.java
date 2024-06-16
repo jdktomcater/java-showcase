@@ -9,6 +9,7 @@ import com.jdktomcat.showcase.rest.vo.Content;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NoHttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +26,13 @@ public class RemoteServiceImpl implements IRemoteService {
         Content content = new Content();
         content.setWord(word);
         String paramJson = JSONObject.toJSONString(content);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json;charset=utf-8");
         RequestWrapper requestWrapper = Rwh.internalPostJson(remoteConfig.getRemoteUrl());
         // 设置请求代理
         ResponseEntity<String> response;
         try {
-            response = requestWrapper.body(paramJson).exec();
+            response = requestWrapper.contentType(headers).body(paramJson).exec();
         } catch (Exception exception) {
             log.error("请求出现异常！",exception);
             Throwable cause = exception;

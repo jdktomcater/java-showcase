@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: showcase-spring-boot-rest
+
+remote:
+  url: http://localhost:8080/remote/say
+
+rest:
+  http:
+    connectionRequestTimeout: 20000
+    connectTimeout: 20000
+    socketTimeout: 20000
+    retryCount: 3
+  pool:
+    maxTotal: 1000
+    defaultMaxPerRoute: 5000
+    validateAfterInactivity: 30000

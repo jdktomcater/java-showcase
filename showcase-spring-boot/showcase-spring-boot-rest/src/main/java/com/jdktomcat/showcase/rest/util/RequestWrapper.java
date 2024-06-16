@@ -46,10 +46,11 @@ public class RequestWrapper implements Serializable {
         return this;
     }
 
-    protected RequestWrapper contentType(HttpHeaders contentType) {
+    public RequestWrapper contentType(HttpHeaders contentType) {
         this.contentType = contentType;
         return this;
     }
+
     public RequestWrapper body(Object body) {
         this.body = body;
         return this;
@@ -73,18 +74,13 @@ public class RequestWrapper implements Serializable {
             HttpHeaders headersCopy = contentType;
             // build body
             Object bodyCopy = body;
-            if (MediaType.APPLICATION_JSON_UTF8.equals(contentType.getContentType()) && !(bodyCopy instanceof String)) {
-                bodyCopy = OBJECT_MAPPER.writeValueAsString(bodyCopy);
-            }
             // build proxy
             HttpProxy proxyCopy = this.proxy;
             if (Objects.isNull(proxyCopy)) {
                 proxyCopy = DynamicProxyTemplateHolder.chooseDefaultProxy();
             }
             RequestEntity<?> request = new RequestEntity<>(bodyCopy, headersCopy, method, URI.create(url));
-            ResponseEntity<T> response = DynamicProxyTemplateHolder.get(proxyCopy).exchange(request, responseType);
-            log.info("RequestWrapper#exec\nproxy: {}\nrequest: {}\nresponse{}", proxyCopy, request, response);
-            return response;
+            return DynamicProxyTemplateHolder.get(proxyCopy).exchange(request, responseType);
         } catch (RuntimeException e) {
             log.error("RequestWrapper#exec catch RuntimeException.", e);
             throw e;
