@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf;
+package com.jdktomcat.showcase.remote.conf;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

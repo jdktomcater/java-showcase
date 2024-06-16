@@ -1,11 +1,11 @@
-package com.jdktomcat.showcase.rest.service.impl;
+package com.jdktomcat.showcase.remote.service.impl;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.jdktomcat.showcase.rest.conf.RemoteConfig;
-import com.jdktomcat.showcase.rest.service.IRemoteService;
-import com.jdktomcat.showcase.rest.util.RequestWrapper;
-import com.jdktomcat.showcase.rest.util.Rwh;
-import com.jdktomcat.showcase.rest.vo.Content;
+import com.jdktomcat.showcase.remote.conf.RemoteConfig;
+import com.jdktomcat.showcase.remote.service.IRemoteService;
+import com.jdktomcat.showcase.remote.util.RequestWrapper;
+import com.jdktomcat.showcase.remote.util.Rwh;
+import com.jdktomcat.showcase.remote.vo.Content;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NoHttpResponseException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest;
+package com.jdktomcat.showcase.remote;
 
 
 import org.springframework.boot.SpringApplication;

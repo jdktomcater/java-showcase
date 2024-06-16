@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf.http;
+package com.jdktomcat.showcase.remote.conf.http;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Value;

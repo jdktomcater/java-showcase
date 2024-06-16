@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.rest.util;
+package com.jdktomcat.showcase.remote.util;
 
 import com.google.common.collect.Lists;
-import com.jdktomcat.showcase.rest.conf.http.DynamicProxyTemplateHolder;
+import com.jdktomcat.showcase.remote.conf.http.DynamicProxyTemplateHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.jdktomcat.showcase.rest.util.Rwh.Headers.json;
+import static com.jdktomcat.showcase.remote.util.Rwh.Headers.json;
 
 
 /**

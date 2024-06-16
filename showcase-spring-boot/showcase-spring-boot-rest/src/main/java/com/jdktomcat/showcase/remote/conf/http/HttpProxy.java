@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf.http;
+package com.jdktomcat.showcase.remote.conf.http;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;

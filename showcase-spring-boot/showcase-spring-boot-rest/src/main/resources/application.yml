@@ -2,8 +2,11 @@ spring:
   application:
     name: showcase-spring-boot-rest
 
+server:
+  port: 7001
+
 remote:
-  url: http://localhost:8080/remote/say
+  url: http://localhost:7002/remote/say
 
 rest:
   http:

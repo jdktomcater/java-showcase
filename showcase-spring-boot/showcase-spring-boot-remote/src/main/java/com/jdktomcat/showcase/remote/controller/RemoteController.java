@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.rest.controller;
+package com.jdktomcat.showcase.remote.controller;
 
-import com.jdktomcat.showcase.rest.vo.Content;
+import com.jdktomcat.showcase.remote.vo.Content;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -15,6 +15,7 @@
     <description>showcase-spring-boot</description>
     <modules>
         <module>showcase-spring-boot-rest</module>
+        <module>showcase-spring-boot-remote</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

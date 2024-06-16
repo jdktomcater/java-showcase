@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.vo;
+package com.jdktomcat.showcase.remote.vo;
 
 import lombok.Data;
 

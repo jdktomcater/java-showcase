@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: showcase-spring-boot-remote
+server:
+  port: 7002

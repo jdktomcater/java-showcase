@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rest.conf.http;
+package com.jdktomcat.showcase.remote.conf.http;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;

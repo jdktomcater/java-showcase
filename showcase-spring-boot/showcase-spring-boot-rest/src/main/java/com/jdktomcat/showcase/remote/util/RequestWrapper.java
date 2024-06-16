@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.rest.util;
+package com.jdktomcat.showcase.remote.util;
 
-import com.jdktomcat.showcase.rest.conf.http.DynamicProxyTemplateHolder;
-import com.jdktomcat.showcase.rest.conf.http.HttpProxy;
+import com.jdktomcat.showcase.remote.conf.http.DynamicProxyTemplateHolder;
+import com.jdktomcat.showcase.remote.conf.http.HttpProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
