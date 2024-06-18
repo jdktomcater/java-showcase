@@ -1,6 +1,6 @@
 spring:
   application:
-    name: demo-rocketmq-producer
+    name: showcase-rocketmq-producer
 rocketmq:
   name-server: 172.31.184.43:9876
   producer:
