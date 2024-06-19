@@ -3,7 +3,7 @@ spring:
     name: showcase-rocketmq-transaction-producer
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.56.1:3307/typayv2?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://192.168.56.1:3306/timmy?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 1234
   redis:

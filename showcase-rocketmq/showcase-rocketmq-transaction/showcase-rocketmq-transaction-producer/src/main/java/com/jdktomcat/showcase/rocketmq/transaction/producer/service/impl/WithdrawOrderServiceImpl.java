@@ -62,8 +62,6 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
             macRecord.setPostAvailable(postMerchant.getAvailable());
             macRecord.setPostFrozen(postMerchant.getFrozen());
             macRecord.setType(1);
-            macRecord.setRemark("remark"+orderTO.getMerchantOrderId());
-            macRecord.setCreateTime(new Date());
             int insertRecord = macRecordMapper.insert(macRecord);
             Assert.isTrue(insertRecord > 0, String.format("保存商户帐变失败！merchantId: %s", orderTO.getMerchantId()));
         });
@@ -71,9 +69,9 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
         WithdrawOrder withdrawOrder = new WithdrawOrder();
         withdrawOrder.setOrderId(OrderUtil.getPltOrderID(ORDER_PRE, merchant.getCode()));
         withdrawOrder.setMerchantOrderId(orderTO.getMerchantOrderId());
-        withdrawOrder.setPayAmount(orderTO.getAmount());
+        withdrawOrder.setAmount(orderTO.getAmount());
         withdrawOrder.setFee(merchant.getFee());
-        withdrawOrder.setOrderStatus(1);
+        withdrawOrder.setStatus(1);
         withdrawOrder.setOrderType(1);
         withdrawOrder.setPayType(912);
         withdrawOrder.setCreateTime(new Date());
