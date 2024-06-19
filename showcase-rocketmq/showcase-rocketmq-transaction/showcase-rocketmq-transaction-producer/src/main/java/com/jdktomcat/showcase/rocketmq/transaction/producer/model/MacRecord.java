@@ -14,8 +14,10 @@ import java.util.Date;
  * 商户帐变记录信息
  */
 @Data
-@TableName("mac_record")
+@TableName("t_mac_record")
 public class MacRecord implements Serializable {
+
+    private static final long serialVersionUID = -4466829302339920271L;
 
     @TableId(value = "id", type = IdType.AUTO)
     Long id;

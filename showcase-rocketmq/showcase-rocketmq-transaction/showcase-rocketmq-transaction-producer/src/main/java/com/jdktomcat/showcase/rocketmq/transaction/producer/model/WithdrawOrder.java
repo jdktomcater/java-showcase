@@ -5,31 +5,79 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
 @TableName("`t_withdraw_order`")
-public class WithdrawOrder {
+public class WithdrawOrder implements Serializable {
 
-    @TableId(value = "id")
-    private Long id;
+    private static final long serialVersionUID = -1021319405726511752L;
 
-    @TableField(value = "order_id")
-    private String orderId;
+    /**
+     * 订单索引
+     */
+    @TableId("order_index")
+    protected Long orderIndex;
 
-    @TableField(value = "merchant_order_id")
-    private String merchantOrderId;
+    /**
+     * 订单号
+     */
+    @TableField("order_id")
+    protected String orderId;
 
-    @TableField(value = "order_status")
-    private int orderStatus;
+    /**
+     * 商户订单号最长64位
+     */
+    @TableField("merchant_order_id")
+    protected String merchantOrderId;
 
-    @TableField(value = "priority_match_status")
-    private int priorityMatchStatus;
+    /**
+     * 商户编号
+     */
+    @TableField("merchant_id")
+    protected Integer merchantId;
 
-    @TableField(value = "parent_order_status")
-    private int parentOrderStatus;
+    /**
+     * 订单状态
+     */
+    @TableField("status")
+    protected Integer orderStatus;
 
-    @TableField(value = "create_time")
+    /**
+     * 支付方式
+     */
+    @TableField("pay_type")
+    protected Integer payType;
+
+    /**
+     * 下单金额
+     */
+    @TableField("pay_amount")
+    protected BigDecimal payAmount;
+
+    /**
+     * 渠道费
+     */
+    @TableField("fee")
+    protected BigDecimal fee;
+
+    /**
+     * 订单类型
+     */
+    @TableField("order_type")
+    private Integer orderType;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
     private Date createTime;
 
+    /**
+     * 更新时间
+     */
+    @TableField("update_time")
+    private Date updateTime;
 }

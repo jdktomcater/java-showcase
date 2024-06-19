@@ -10,6 +10,7 @@ import java.math.BigDecimal;
  */
 @Data
 public class OrderTO implements Serializable {
+
     private static final long serialVersionUID = -1758967799297014054L;
 
     private String merchantOrderId;
@@ -17,5 +18,4 @@ public class OrderTO implements Serializable {
     private Integer merchantId;
 
     private BigDecimal amount;
-
 }
