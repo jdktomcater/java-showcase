@@ -36,6 +36,8 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
 
     private static final String ORDER_PRE = "JSTWZYC";
 
+    private static final String TABLE_INDEX_LOCK = "t_withdraw_order_index_lock";
+
     private static final String MERCHANT_BALANCE_LOCK = "merchant:balance:lock:";
 
     @Override
@@ -67,8 +69,10 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
         });
         Merchant merchant = merchantMapper.selectById(orderTO.getMerchantId());
         WithdrawOrder withdrawOrder = new WithdrawOrder();
+        withdrawOrder.setOrderIndex(redisComponent.getIncrementSeq(TABLE_INDEX_LOCK));
         withdrawOrder.setOrderId(OrderUtil.getPltOrderID(ORDER_PRE, merchant.getCode()));
         withdrawOrder.setMerchantOrderId(orderTO.getMerchantOrderId());
+        withdrawOrder.setMerchantId(orderTO.getMerchantId());
         withdrawOrder.setAmount(orderTO.getAmount());
         withdrawOrder.setFee(merchant.getFee());
         withdrawOrder.setStatus(1);

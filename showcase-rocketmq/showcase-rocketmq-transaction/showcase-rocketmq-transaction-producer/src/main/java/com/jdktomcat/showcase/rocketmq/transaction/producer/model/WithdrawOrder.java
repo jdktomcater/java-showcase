@@ -18,8 +18,8 @@ public class WithdrawOrder implements Serializable {
     /**
      * 订单索引
      */
-    @TableId("index")
-    protected Long index;
+    @TableId("order_index")
+    protected Long orderIndex;
 
     /**
      * 订单号

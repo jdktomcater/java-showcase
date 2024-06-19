@@ -1,14 +1,17 @@
 package com.jdktomcat.showcase.rocketmq.transaction.producer.component;
 
+import com.jdktomcat.showcase.rocketmq.transaction.producer.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.types.Expiration;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -27,6 +30,20 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class RedisComponent {
+
+    /**
+     * 日期格式，月日时，例如：20092316
+     */
+    public static final String DATE_TIME_FORMAT_YYMMDDHHMMSS = "YYMMddHHmmss";
+    /**
+     * 7位尾数拼接
+     */
+    public static final long DATE_TIME_BASE = 1000000L;
+    /**
+     * 7位尾数拼接,超过500万
+     */
+    public static final long MAX_DATE_TIME_BASE = 5000000L;
+
 
     @Autowired
     private RedissonClient redissonClient;
@@ -56,6 +73,40 @@ public class RedisComponent {
                 lock.unlock();
             }
         }
+    }
+
+    /**
+     * 获取自增序列
+     *
+     * @param seqKey key名称
+     * @return 自增值
+     */
+    public long getIncrementSeq(String seqKey) {
+        // 构造函数传factory会重新创建 redisTemplate 并初始化相关序列化逻辑
+        // 直接传入 redisTemplate 避免重新初始化开销
+        RedisAtomicLong counter = new RedisAtomicLong(seqKey, Objects.requireNonNull(redisStringTemplate.getConnectionFactory()));
+        long inLong = counter.incrementAndGet();
+        if (inLong <= 1) {
+            counter.expire(10L, TimeUnit.DAYS);
+        } else if (inLong == MAX_DATE_TIME_BASE) {
+            //超过最大值重置
+            counter.expire(1L, TimeUnit.MILLISECONDS);
+        } else if (inLong > MAX_DATE_TIME_BASE + 100L) {
+            //inLong==MAX_DATE_TIME_BASE处理异常情况下的兼容性处理
+            counter.expire(1L, TimeUnit.MILLISECONDS);
+        }
+        //唯一id：当前时间字符串精确到秒+redis计数
+        String nowStr = DateUtil.parseDateToStr(new Date(), DATE_TIME_FORMAT_YYMMDDHHMMSS) + (DATE_TIME_BASE + inLong);
+        int iLen = nowStr.length();
+        if (iLen > 19) {
+            if (iLen == 20) {
+                //当长度到达20位时，时间在9月23至9月30，会出现超过long类型范围的情况,需要截取首位，排除掉
+                nowStr = nowStr.substring(iLen - 18, iLen);
+            } else {
+                nowStr = nowStr.substring(iLen - 19, iLen);
+            }
+        }
+        return Long.parseLong(nowStr);
     }
 
     public boolean getLock(String lockKey){
