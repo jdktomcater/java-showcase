@@ -43,6 +43,21 @@ public class RedisComponent {
         }
     }
 
+    public interface Task {
+        void run();
+    }
+
+    public  void exeDistSync(String synKey, long wait, long lease, Task task) throws InterruptedException {
+        RLock lock = redissonClient.getLock(synKey);
+        if(lock.tryLock(wait,lease, TimeUnit.SECONDS)){
+            try{
+                task.run();
+            }finally {
+                lock.unlock();
+            }
+        }
+    }
+
     public boolean getLock(String lockKey){
         return Boolean.TRUE.equals(redisStringTemplate.opsForValue().setIfAbsent(lockKey, "1", 2L, TimeUnit.SECONDS));
     }

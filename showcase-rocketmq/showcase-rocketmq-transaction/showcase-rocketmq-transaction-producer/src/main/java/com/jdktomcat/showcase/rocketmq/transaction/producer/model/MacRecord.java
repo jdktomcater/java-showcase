@@ -22,9 +22,6 @@ public class MacRecord implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     Long id;
 
-    @TableField("order_id")
-    String orderId;
-
     @TableField("merchant_order_id")
     String merchantOrderId;
 
@@ -56,7 +53,7 @@ public class MacRecord implements Serializable {
     String remark;
 
     @TableField("created_time")
-    Date createAt;
+    Date createTime;
 
     @TableField("update_time")
     Date updateTime;
