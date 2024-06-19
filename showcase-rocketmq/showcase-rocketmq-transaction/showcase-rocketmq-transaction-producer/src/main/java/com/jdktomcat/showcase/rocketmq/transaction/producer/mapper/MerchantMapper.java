@@ -11,6 +11,6 @@ import java.math.BigDecimal;
 @Mapper
 public interface MerchantMapper extends BaseMapper<Merchant> {
 
-    @Update("update typayv2.t_merchant set available = (available - #{amount}),frozen = (frozen + #{amount}) where id = #{merchantId} and available >= #{amount} and available >= #{amount}")
+    @Update("update t_merchant set available = (available - #{amount}),frozen = (frozen + #{amount}) where id = #{merchantId} and available >= #{amount} and available >= #{amount};")
     int subtract(@Param("merchantId") Integer merchantId, @Param("amount") BigDecimal amount);
 }

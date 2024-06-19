@@ -5,6 +5,7 @@ import com.jdktomcat.showcase.rocketmq.transaction.producer.web.to.OrderTO;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.web.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class WithdrawController {
     private IWithdrawOrderService withdrawOrderService;
 
     @PostMapping(value = "/create")
-    public Result<?> create(OrderTO orderTO) throws InterruptedException {
+    public Result<?> create(@RequestBody OrderTO orderTO) throws InterruptedException {
         //统一返回值
         return Result.success(withdrawOrderService.createOrder(orderTO));
     }
