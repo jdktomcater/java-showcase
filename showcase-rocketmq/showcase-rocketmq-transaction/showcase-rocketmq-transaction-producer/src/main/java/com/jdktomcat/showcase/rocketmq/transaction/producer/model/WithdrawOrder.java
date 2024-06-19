@@ -18,8 +18,8 @@ public class WithdrawOrder implements Serializable {
     /**
      * 订单索引
      */
-    @TableId("order_index")
-    protected Long orderIndex;
+    @TableId("index")
+    protected Long index;
 
     /**
      * 订单号
@@ -43,7 +43,7 @@ public class WithdrawOrder implements Serializable {
      * 订单状态
      */
     @TableField("status")
-    protected Integer orderStatus;
+    protected Integer status;
 
     /**
      * 支付方式
@@ -54,8 +54,8 @@ public class WithdrawOrder implements Serializable {
     /**
      * 下单金额
      */
-    @TableField("pay_amount")
-    protected BigDecimal payAmount;
+    @TableField("amount")
+    protected BigDecimal amount;
 
     /**
      * 渠道费
@@ -66,7 +66,7 @@ public class WithdrawOrder implements Serializable {
     /**
      * 订单类型
      */
-    @TableField("order_type")
+    @TableField("type")
     private Integer orderType;
 
     /**

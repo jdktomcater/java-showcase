@@ -49,10 +49,7 @@ public class MacRecord implements Serializable {
     @TableField("post_frozen")
     BigDecimal postFrozen;
 
-    @TableField("remark")
-    String remark;
-
-    @TableField("created_time")
+    @TableField("create_time")
     Date createTime;
 
     @TableField("update_time")
