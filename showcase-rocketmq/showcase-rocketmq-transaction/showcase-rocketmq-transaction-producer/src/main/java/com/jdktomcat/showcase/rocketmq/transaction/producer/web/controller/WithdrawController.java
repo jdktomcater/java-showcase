@@ -1,7 +1,7 @@
 package com.jdktomcat.showcase.rocketmq.transaction.producer.web.controller;
 
 import com.jdktomcat.showcase.rocketmq.transaction.producer.service.IWithdrawOrderService;
-import com.jdktomcat.showcase.rocketmq.transaction.producer.web.OrderTO;
+import com.jdktomcat.showcase.rocketmq.transaction.producer.web.to.OrderTO;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.web.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

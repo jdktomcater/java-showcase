@@ -9,7 +9,7 @@ import com.jdktomcat.showcase.rocketmq.transaction.producer.model.Merchant;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.model.WithdrawOrder;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.service.IWithdrawOrderService;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.util.OrderUtil;
-import com.jdktomcat.showcase.rocketmq.transaction.producer.web.OrderTO;
+import com.jdktomcat.showcase.rocketmq.transaction.producer.web.to.OrderTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
