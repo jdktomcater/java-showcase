@@ -16,7 +16,7 @@ public class WithdrawController {
     private IWithdrawOrderService withdrawOrderService;
 
     @GetMapping("/create")
-    public Result<?> create(OrderTO orderTO){
+    public Result<?> create(OrderTO orderTO) throws InterruptedException {
         //统一返回值
         return Result.success(withdrawOrderService.createOrder(orderTO));
     }
