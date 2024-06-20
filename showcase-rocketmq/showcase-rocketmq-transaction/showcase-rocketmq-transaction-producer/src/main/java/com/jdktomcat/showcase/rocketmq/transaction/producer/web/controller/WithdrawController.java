@@ -21,4 +21,10 @@ public class WithdrawController {
         //统一返回值
         return Result.success(withdrawOrderService.createOrder(orderTO));
     }
+
+    @PostMapping(value = "/create/new")
+    public Result<?> createNew(@RequestBody OrderTO orderTO) {
+        //统一返回值
+        return Result.success(withdrawOrderService.createOrderWithoutLock(orderTO));
+    }
 }
