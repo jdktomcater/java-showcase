@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.rocketmq.transaction.producer.service.impl;
 
+import com.jdktomcat.showcase.rocketmq.transaction.producer.component.MqProducerComponent;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.component.RedisComponent;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.mapper.MacRecordMapper;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.mapper.MerchantMapper;
@@ -11,6 +12,7 @@ import com.jdktomcat.showcase.rocketmq.transaction.producer.service.IWithdrawOrd
 import com.jdktomcat.showcase.rocketmq.transaction.producer.util.OrderUtil;
 import com.jdktomcat.showcase.rocketmq.transaction.producer.web.to.OrderTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,9 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
 
     @Autowired
     private RedisComponent redisComponent;
+
+    @Autowired
+    private MqProducerComponent mqProducerComponent;
 
     private static final String ORDER_PRE = "JSTWZYC";
 
@@ -81,6 +86,37 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
         withdrawOrder.setCreateTime(new Date());
         int insertOrder = withdrawOrderMapper.insert(withdrawOrder);
         Assert.isTrue(insertOrder > 0, String.format("保存订单失败！merchantOrderId: %s", orderTO.getMerchantOrderId()));
+        return withdrawOrder;
+    }
+
+
+    @Override
+    @Transactional
+    public WithdrawOrder createOrderWithoutLock(OrderTO orderTO) {
+        Integer merchantId = orderTO.getMerchantId();
+        Merchant merchant = merchantMapper.selectById(merchantId);
+        // 扣款
+        int update = merchantMapper.subtract(merchantId, orderTO.getAmount().add(merchant.getFee()));
+        Assert.isTrue(update > 0, String.format("预扣费失败！merchantId: %s", orderTO.getMerchantId()));
+
+
+        TransactionSendResult transactionSendResult = mqProducerComponent.sendTransactionMessage(orderTO.getMerchantOrderId());
+
+        WithdrawOrder withdrawOrder = new WithdrawOrder();
+        withdrawOrder.setOrderIndex(redisComponent.getIncrementSeq(TABLE_INDEX_LOCK));
+        withdrawOrder.setOrderId(OrderUtil.getPltOrderID(ORDER_PRE, merchant.getCode()));
+        withdrawOrder.setMerchantOrderId(orderTO.getMerchantOrderId());
+        withdrawOrder.setMerchantId(orderTO.getMerchantId());
+        withdrawOrder.setAmount(orderTO.getAmount());
+        withdrawOrder.setFee(merchant.getFee());
+        withdrawOrder.setStatus(1);
+        withdrawOrder.setOrderType(1);
+        withdrawOrder.setPayType(912);
+        withdrawOrder.setCreateTime(new Date());
+        int insertOrder = withdrawOrderMapper.insert(withdrawOrder);
+        Assert.isTrue(insertOrder > 0, String.format("保存订单失败！merchantOrderId: %s", orderTO.getMerchantOrderId()));
+
+
         return withdrawOrder;
     }
 }
