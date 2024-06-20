@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: showcase-rocketmq-transaction-producer
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.1:3306/timmy?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 1234
+
+rocketmq:
+  name-server: 172.31.184.43:9876
+  consumer:
+    groupName: tradeNoConsumerGroup
+    consumeThreadMin: 20
+    consumeThreadMax: 128
+    batchMaxSize: 10
+
+logging:
+  level:
+    root: info
+  file:
+    path: /home/timmy/workspace/hand-run/rocketmq/producer/log
+    name: producer.log
+
+showcase:
+  rocketmq:
+    transaction:
+      topic: transaction_message_topic:transaction_message_topic_tag

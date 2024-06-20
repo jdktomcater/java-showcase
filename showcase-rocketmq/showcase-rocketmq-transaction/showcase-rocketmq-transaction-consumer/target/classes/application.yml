@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: showcase-rocketmq-transaction-producer
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.56.1:3306/timmy?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 1234
+  redis:
+    port: 6379
+    timeout: 2000 # 连接或读取超时时长（毫秒）
+    database: 1
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 800
+        max-idle: 8
+        min-idle: 2
+    host: 192.168.56.1
+rocketmq:
+  name-server: 172.31.184.43:9876
+  producer:
+    sendMessageTimeout: 300000
+    maxMessageSize: 131072
+    group: timmy-group
+
+logging:
+  level:
+    root: info
+  file:
+    path: /home/timmy/workspace/hand-run/rocketmq/producer/log
+    name: producer.log
+
+showcase:
+  rocketmq:
+    transaction:
+      topic: transaction_message_topic:transaction_message_topic_tag
