@@ -20,6 +20,7 @@ public class MacTransactionListener extends BaseConsumerListener {
     @Override
     protected void consume(String tag, String topic, MessageExt messageExt) {
         String body = new String(messageExt.getBody(), StandardCharsets.UTF_8).trim();
+        log.info("message body:{}",body);
         Order order = JSONObject.parseObject(body, Order.class);
         withdrawOrderService.saveMac(order);
     }
