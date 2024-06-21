@@ -9,6 +9,11 @@
     <artifactId>showcase-rocketmq-transaction</artifactId>
     <packaging>pom</packaging>
     <name>showcase-rocketmq-transaction</name>
+
+    <modules>
+        <module>showcase-rocketmq-transaction-producer</module>
+        <module>showcase-rocketmq-transaction-consumer</module>
+    </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

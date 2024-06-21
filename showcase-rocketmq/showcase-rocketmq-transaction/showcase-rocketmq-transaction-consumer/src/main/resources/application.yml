@@ -11,8 +11,8 @@ rocketmq:
   name-server: 172.31.184.43:9876
   consumer:
     groupName: tradeNoConsumerGroup
-    consumeThreadMin: 20
-    consumeThreadMax: 128
+    threadMin: 20
+    threadMax: 128
     batchMaxSize: 10
 
 logging:
