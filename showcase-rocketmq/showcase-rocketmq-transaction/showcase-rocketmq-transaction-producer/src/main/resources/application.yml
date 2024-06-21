@@ -7,6 +7,7 @@ spring:
     username: root
     password: 1234
   redis:
+    host: 192.168.56.1
     port: 6379
     timeout: 2000 # 连接或读取超时时长（毫秒）
     database: 1
@@ -16,7 +17,6 @@ spring:
         max-wait: 800
         max-idle: 8
         min-idle: 2
-    host: 192.168.56.1
 rocketmq:
   name-server: 172.31.184.43:9876
   producer:
