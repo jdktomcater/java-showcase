@@ -1,6 +1,5 @@
 package com.jdktomcat.showcase.rocketmq.transaction.consumer.config;
 
-import com.jdktomcat.showcase.rocketmq.transaction.consumer.constant.RocketMQConstant;
 import com.jdktomcat.showcase.rocketmq.transaction.consumer.listener.BaseConsumerListener;
 import com.jdktomcat.showcase.rocketmq.transaction.consumer.listener.MacTransactionListener;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,6 +35,12 @@ public class RocketMQAutoConfiguration {
     @Value("${rocketmq.consumer.batchMaxSize}")
     private int batchMaxSize;
 
+    @Value("${showcase.rocketmq.transaction.topic}")
+    private String topic;
+
+    @Value("${showcase.rocketmq.transaction.tag}")
+    private String tag;
+
 
     @Autowired
     private MacTransactionListener macTransactionListener;
@@ -59,41 +62,21 @@ public class RocketMQAutoConfiguration {
      * @return 消费者
      */
     private DefaultMQPushConsumer getDefaultMQPushConsumer(BaseConsumerListener listener){
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName.concat(RocketMQConstant.MAC_TRANSACTION_TOPIC));
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(groupName.concat(topic));
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         consumer.setNamesrvAddr(nameServer);
         consumer.setInstanceName(UUID.randomUUID().toString());
         consumer.setConsumeThreadMin(threadMin);
         consumer.setConsumeThreadMax(threadMax);
         consumer.setConsumeMessageBatchMaxSize(batchMaxSize);
-        String tagsTtr = getTags();
         try {
-            consumer.subscribe(RocketMQConstant.MAC_TRANSACTION_TOPIC,tagsTtr);
+            consumer.subscribe(topic,tag);
             consumer.registerMessageListener(listener);
             consumer.start();
         } catch (MQClientException e) {
             log.error("MQClientException",e);
         }
         return consumer;
-    }
-
-    /**
-     * 多个tag用||拼接
-     *
-     * @return tagA||tagB...
-     */
-    private String getTags() {
-        Map<String,String[]> stringMap = RocketMQConstant.fetchTopicArray();
-        String[] strings = stringMap.get(RocketMQConstant.MAC_TRANSACTION_TOPIC);
-        if (strings!=null && strings.length!=0){
-            String string = Arrays.asList(strings).toString();
-            string = string.substring(1,string.length()-1);
-            if (string.contains(",")){
-                return string.replaceAll(",","||");
-            }
-            return string;
-        }
-        return "";
     }
 }
 

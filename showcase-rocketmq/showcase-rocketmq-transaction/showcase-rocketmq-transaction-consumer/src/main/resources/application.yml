@@ -10,7 +10,7 @@ spring:
 rocketmq:
   name-server: 172.31.184.43:9876
   consumer:
-    groupName: tradeNoConsumerGroup
+    groupName: timmy_group
     threadMin: 20
     threadMax: 128
     batchMaxSize: 10
@@ -19,10 +19,11 @@ logging:
   level:
     root: info
   file:
-    path: /home/timmy/workspace/hand-run/rocketmq/producer/log
+    path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
     name: producer.log
 
 showcase:
   rocketmq:
     transaction:
-      topic: transaction_message_topic:transaction_message_topic_tag
+      topic: transaction_message_topic
+      tag: transaction_message_topic_tag
