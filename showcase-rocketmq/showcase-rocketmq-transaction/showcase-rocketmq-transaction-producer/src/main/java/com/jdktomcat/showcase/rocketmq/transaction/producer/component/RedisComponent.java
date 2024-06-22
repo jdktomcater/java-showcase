@@ -61,19 +61,21 @@ public class RedisComponent {
         }
     }
 
-    public interface Task {
-        void run();
-    }
 
     public void exeDistSync(String synKey, long wait, long lease, OrderTO orderTO, Consumer<OrderTO> consumer) throws InterruptedException {
         RLock lock = redissonClient.getLock(synKey);
+        long start = System.currentTimeMillis();
         if(lock.tryLock(wait,lease, TimeUnit.SECONDS)){
+            long end = System.currentTimeMillis();
+            log.info("get lock cost:{}", end - start);
             try{
                 consumer.accept(orderTO);
             }finally {
                 lock.unlock();
             }
         }else{
+            long end = System.currentTimeMillis();
+            log.info("get lock cost:{}", end - start);
             throw new RuntimeException("tryLock exception！");
         }
     }
@@ -209,12 +211,7 @@ public class RedisComponent {
      */
     public boolean setIfAbsent(String key, String value, long timeout, TimeUnit timeUnit) {
         if (!StringUtils.isEmpty(key) && !StringUtils.isEmpty(value)) {
-            Object result = redisStringTemplate.execute((RedisCallback<Boolean>) connection -> {
-                Boolean setResult = connection.set(key.getBytes(StandardCharsets.UTF_8), value.getBytes(StandardCharsets.UTF_8), Expiration.from(timeout, timeUnit), RedisStringCommands.SetOption.SET_IF_ABSENT);
-                log.info("redis设值缓存,connection:{} key:{} value:{} timeout:{} unit:{} result:{}", connection, key, value, timeout, timeUnit, setResult);
-                return setResult;
-            });
-            log.info("redis设值缓存,key:{} value:{} timeout:{} unit:{} result:{}", key, value, timeout, timeUnit, result);
+            Object result = redisStringTemplate.execute((RedisCallback<Boolean>) connection -> connection.set(key.getBytes(StandardCharsets.UTF_8), value.getBytes(StandardCharsets.UTF_8), Expiration.from(timeout, timeUnit), RedisStringCommands.SetOption.SET_IF_ABSENT));
             return Boolean.TRUE.equals(result);
         }
         return false;

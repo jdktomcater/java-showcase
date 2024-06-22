@@ -1,38 +1,42 @@
 package com.jdktomcat.showcase.rocketmq.transaction.producer;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import com.jdktomcat.showcase.rocketmq.transaction.producer.component.RedisComponent;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
-/**
- * Unit test for simple App.
- */
-public class TransactionProducerApplicationTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public TransactionProducerApplicationTest(String testName )
-    {
-        super( testName );
+import java.util.concurrent.TimeUnit;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@State(Scope.Thread)
+public class TransactionProducerApplicationTest {
+
+    private ConfigurableApplicationContext context;
+
+    private RedisComponent redisComponent;
+
+    public static void main(String[] args) throws RunnerException {
+        Options options = new OptionsBuilder().include(TransactionProducerApplicationTest.class.getName()+".*")
+                .warmupIterations(1).measurementIterations(20).forks(2).build();
+        new Runner(options).run();
     }
 
     /**
-     * @return the suite of tests being tested
+     * setup初始化容器的时候只执行一次
      */
-    public static Test suite()
-    {
-        return new TestSuite( TransactionProducerApplicationTest.class );
+    @Setup(Level.Trial)
+    public void init(){
+        context = SpringApplication.run(TransactionProducerApplication.class);
+        redisComponent = context.getBean(RedisComponent.class);
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Benchmark
+    public void testSetIfAbsent() {
+        boolean result = redisComponent.setIfAbsent("key","1",5,TimeUnit.SECONDS);
     }
 }
