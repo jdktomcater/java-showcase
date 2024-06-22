@@ -11,6 +11,7 @@
     <name>showcase-rocketmq-transaction</name>
 
     <modules>
+        <module>showcase-rocketmq-transaction-canal</module>
         <module>showcase-rocketmq-transaction-producer</module>
         <module>showcase-rocketmq-transaction-consumer</module>
     </modules>
