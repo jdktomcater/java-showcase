@@ -1,6 +1,7 @@
 package com.jdktomcat.showcase.rocketmq.transaction.producer.component;
 
 import com.jdktomcat.showcase.rocketmq.transaction.producer.util.DateUtil;
+import com.jdktomcat.showcase.rocketmq.transaction.producer.web.to.OrderTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * @author ZF-Timmy
@@ -63,14 +65,16 @@ public class RedisComponent {
         void run();
     }
 
-    public  void exeDistSync(String synKey, long wait, long lease, Task task) throws InterruptedException {
+    public void exeDistSync(String synKey, long wait, long lease, OrderTO orderTO, Consumer<OrderTO> consumer) throws InterruptedException {
         RLock lock = redissonClient.getLock(synKey);
         if(lock.tryLock(wait,lease, TimeUnit.SECONDS)){
             try{
-                task.run();
+                consumer.accept(orderTO);
             }finally {
                 lock.unlock();
             }
+        }else{
+            throw new RuntimeException("tryLock exception！");
         }
     }
 

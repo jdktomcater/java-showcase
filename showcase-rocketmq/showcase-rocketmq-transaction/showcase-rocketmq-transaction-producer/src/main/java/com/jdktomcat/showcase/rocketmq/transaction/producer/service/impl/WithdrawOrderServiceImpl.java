@@ -48,19 +48,17 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
     @Transactional
     public WithdrawOrder createOrder(OrderTO orderTO) throws InterruptedException {
         Integer merchantId = orderTO.getMerchantId();
-        redisComponent.exeDistSync(MERCHANT_BALANCE_LOCK + merchantId, 8, 10, () -> {
-            Merchant preMerchant = merchantMapper.selectById(orderTO.getMerchantId());
-            log.info("商户：{} 账变前账户余额记录,总余额：{} 可用余额：{} 冻结余额：{} 商户服务费：{}", merchantId, preMerchant.getBalance(), preMerchant.getAvailable(), preMerchant.getFrozen(), preMerchant.getFee());
+        redisComponent.exeDistSync(MERCHANT_BALANCE_LOCK + merchantId, 8, 10,orderTO, (order) -> {
+            Merchant preMerchant = merchantMapper.selectById(order.getMerchantId());
             // 扣款
-            int update = merchantMapper.subtract(merchantId, orderTO.getAmount().add(preMerchant.getFee()));
-            Assert.isTrue(update > 0, String.format("预扣费失败！merchantId: %s", orderTO.getMerchantId()));
+            int update = merchantMapper.subtract(merchantId, order.getAmount().add(preMerchant.getFee()));
+            Assert.isTrue(update > 0, String.format("预扣费失败！merchantId: %s", order.getMerchantId()));
             // 扣款后商户信息
-            Merchant postMerchant = merchantMapper.selectById(orderTO.getMerchantId());
-            log.info("商户：{} 账变后账户余额记录,总余额：{} 可用余额：{} 冻结余额：{} 商户服务费：{}", merchantId, postMerchant.getBalance(), postMerchant.getAvailable(), postMerchant.getFrozen(), postMerchant.getFee());
+            Merchant postMerchant = merchantMapper.selectById(order.getMerchantId());
             // 保存账变记录信息
             MacRecord macRecord = new MacRecord();
-            macRecord.setMerchantOrderId(orderTO.getMerchantOrderId());
-            macRecord.setMerchantId(orderTO.getMerchantId());
+            macRecord.setMerchantOrderId(order.getMerchantOrderId());
+            macRecord.setMerchantId(order.getMerchantId());
             macRecord.setPre(preMerchant.getBalance());
             macRecord.setPreAvailable(preMerchant.getAvailable());
             macRecord.setPreFrozen(preMerchant.getFrozen());
@@ -69,7 +67,7 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
             macRecord.setPostFrozen(postMerchant.getFrozen());
             macRecord.setType(1);
             int insertRecord = macRecordMapper.insert(macRecord);
-            Assert.isTrue(insertRecord > 0, String.format("保存商户帐变失败！merchantId: %s", orderTO.getMerchantId()));
+            Assert.isTrue(insertRecord > 0, String.format("保存商户帐变失败！merchantId: %s", order.getMerchantId()));
         });
         Merchant merchant = merchantMapper.selectById(orderTO.getMerchantId());
         WithdrawOrder withdrawOrder = new WithdrawOrder();

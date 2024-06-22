@@ -9,7 +9,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       minimum-idle: 200
-      maximum-pool-size: 200
+      maximum-pool-size: 500
       auto-commit: true
       idle-timeout: 600
       pool-name: HikariCP
@@ -22,10 +22,12 @@ spring:
     database: 1
     jedis:
       pool:
-        max-active: 8
+        max-active: 200
         max-wait: 800
-        max-idle: 8
-        min-idle: 2
+        max-idle: 200
+        min-idle: 100
+
+
 rocketmq:
   name-server: 172.31.184.43:9876
   producer:
@@ -44,3 +46,7 @@ showcase:
   rocketmq:
     transaction:
       topic: transaction_message_topic:transaction_message_topic_tag
+server:
+  tomcat:
+    threads:
+      max: 300
