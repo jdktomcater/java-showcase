@@ -35,12 +35,12 @@ rocketmq:
     group: timmy-group
 
 canal:
-  server: 127.0.0.1
-  port: 1111
-  destination: canal
-
-
-
+  sever: 127.0.0.1
+  port: 11111
+  destination: example
+  user: canal
+  password: canal
+  subscribe: .*\\..*
 
 logging:
   level:

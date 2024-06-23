@@ -16,25 +16,25 @@ import java.util.List;
 @Component
 public class CanalOriginalListener {
 
-    @Value("canal.sever")
+    @Value("${canal.sever}")
     private String server;
 
-    @Value("canal.port")
+    @Value("${canal.port}")
     private Integer port;
 
-    @Value("canal.destination")
+    @Value("${canal.destination}")
     private String destination;
 
-    @Value("canal.user")
+    @Value("${canal.user}")
     private String user;
 
-    @Value("canal.password")
+    @Value("${canal.password}")
     private String password;
 
-    @Value("canal.batch:100")
+    @Value("${canal.batch:1}")
     private Integer batch;
 
-    @Value("canal.subscribe")
+    @Value("${canal.subscribe}")
     private String subscribe;
 
     /**
@@ -66,7 +66,7 @@ public class CanalOriginalListener {
         CanalConnector conn = CanalConnectors.newSingleConnector(new InetSocketAddress(server, port), destination, user, password);
         while (true) {
             conn.connect();
-            conn.subscribe(subscribe);
+            conn.subscribe();
             // 回滚到未进行ack的地方
             conn.rollback();
             // 获取数据 每次获取一百条改变数据
@@ -111,7 +111,6 @@ public class CanalOriginalListener {
                 long timestamp = entry.getHeader().getExecuteTime();
                 for (CanalEntry.RowData rowData : rowChange.getRowDatasList()) {
                     dataDetails(rowData.getBeforeColumnsList(), rowData.getAfterColumnsList(), dbName, tableName, eventType, timestamp);
-
                 }
             }
         }
