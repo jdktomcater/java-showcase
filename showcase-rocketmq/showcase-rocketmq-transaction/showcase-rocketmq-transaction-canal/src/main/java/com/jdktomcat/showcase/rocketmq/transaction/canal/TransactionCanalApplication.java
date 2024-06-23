@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @SpringBootApplication
-@MapperScan("com.jdktomcat.showcase.rocketmq.transaction.producer.mapper")
 public class TransactionCanalApplication {
     public static void main( String[] args ) {
         SpringApplication.run(TransactionCanalApplication.class, args);

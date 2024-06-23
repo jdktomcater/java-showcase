@@ -1,6 +1,6 @@
 spring:
   application:
-    name: showcase-rocketmq-transaction-producer
+    name: showcase-rocketmq-transaction-canal
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.56.1:3306/timmy?useSSL=false&useUnicode=true&characterEncoding=UTF-8
@@ -27,7 +27,6 @@ spring:
         max-idle: 200
         min-idle: 100
 
-
 rocketmq:
   name-server: 172.31.184.43:9876
   producer:
@@ -35,18 +34,17 @@ rocketmq:
     maxMessageSize: 131072
     group: timmy-group
 
+canal:
+  server: 127.0.0.1
+  port: 1111
+  destination: canal
+
+
+
+
 logging:
   level:
     root: info
   file:
-    path: /home/timmy/workspace/hand-run/rocketmq/producer/log
-    name: producer.log
-
-showcase:
-  rocketmq:
-    transaction:
-      topic: transaction_message_topic:transaction_message_topic_tag
-server:
-  tomcat:
-    threads:
-      max: 300
+    path: /home/timmy/workspace/hand-run/rocketmq/canal/log
+    name: canal.log
