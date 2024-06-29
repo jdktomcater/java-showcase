@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>jdktomcat.demo</groupId>
+        <groupId>jdktomcat.showcase</groupId>
         <artifactId>showcase-skywalking</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -18,7 +18,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skywaling.toolkit.version>8.13.0</skywaling.toolkit.version>
+        <skywaling.toolkit.version>9.2.0</skywaling.toolkit.version>
     </properties>
 
     <dependencies>
