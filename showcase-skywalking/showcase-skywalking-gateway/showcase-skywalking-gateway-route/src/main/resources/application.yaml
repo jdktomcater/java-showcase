@@ -2,7 +2,7 @@ server:
   port: 7000
 spring:
   application:
-    name: demo-skywalking-gateway-route
+    name: showcase-skywalking-gateway-route
   cloud:
     gateway:
       httpclient:
