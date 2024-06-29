@@ -21,6 +21,6 @@ public class RouteApplication {
 
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
-        return builder.routes().route(p -> p.path("/keep").uri("http://192.168.56.204:7001")).build();
+        return builder.routes().route(p -> p.path("/keep").uri("http://192.168.56.202:7001")).build();
     }
 }
