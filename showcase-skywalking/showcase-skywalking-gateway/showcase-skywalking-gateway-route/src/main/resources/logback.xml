@@ -8,10 +8,6 @@
         </encoder>
     </appender>
 
-    <!--显示日志-->
-    <logger name="org.springframework.jdbc.core" additivity="false" level="DEBUG" >
-        <appender-ref ref="STDOUT"/>
-    </logger>
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

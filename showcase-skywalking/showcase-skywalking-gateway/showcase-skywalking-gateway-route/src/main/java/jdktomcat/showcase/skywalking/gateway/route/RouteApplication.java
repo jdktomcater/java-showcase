@@ -11,12 +11,12 @@ import reactor.netty.ReactorNetty;
  * 启动类
  */
 @SpringBootApplication
-public class SkywalkingGatewayRouteApplication {
+public class RouteApplication {
 
     public static void main(String[] args) {
         System.setProperty(ReactorNetty.IO_SELECT_COUNT, "4");
         System.setProperty(ReactorNetty.IO_WORKER_COUNT, "32");
-        SpringApplication.run(SkywalkingGatewayRouteApplication.class);
+        SpringApplication.run(RouteApplication.class);
     }
 
     @Bean
