@@ -35,14 +35,12 @@ public class ResetTraceIdFilter implements GlobalFilter, Ordered {
         if (matchContext(uri)) {
             ServerHttpRequest.Builder requestBuilder = request.mutate();
             Map<String, List<String>> sourceHeaders = request.getHeaders();
-            requestBuilder.headers(headers -> {
-                sourceHeaders.forEach((key, dataList) -> {
-                    if (key.contains("sw")) {
-                        headers.remove(key);
-                        log.info("request reset head param key:{} value:{}", key, Arrays.toString(dataList.toArray()));
-                    }
-                });
-            });
+            requestBuilder.headers(headers -> sourceHeaders.forEach((key, dataList) -> {
+                if (key.contains("sw")) {
+                    headers.remove(key);
+                    log.info("request reset head param key:{} value:{}", key, Arrays.toString(dataList.toArray()));
+                }
+            }));
             ServerHttpRequest newRequest = requestBuilder.build();
             exchange.mutate().request(newRequest).build();
             return chain.filter(exchange.mutate().request(newRequest).build());
@@ -51,7 +49,7 @@ public class ResetTraceIdFilter implements GlobalFilter, Ordered {
     }
 
     private boolean matchContext(String uri) {
-        if (StringUtils.isEmpty(resetTraceIdUris)) {
+        if (StringUtils.hasLength(resetTraceIdUris) && !resetTraceIdUris.isEmpty()) {
             return false;
         }
         return Arrays.stream(resetTraceIdUris.split(",")).anyMatch(uri::contains);
