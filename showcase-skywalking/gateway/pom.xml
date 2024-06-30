@@ -8,11 +8,11 @@
         <artifactId>showcase-skywalking</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>showcase-skywalking-gateway</artifactId>
+    <artifactId>gateway</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-skywalking-gateway-route</module>
-        <module>showcase-skywalking-gateway-service</module>
+        <module>route</module>
+        <module>service</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

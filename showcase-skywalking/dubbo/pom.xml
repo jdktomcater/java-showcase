@@ -9,13 +9,13 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>showcase-skywalking-dubbo</artifactId>
+    <artifactId>dubbo</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>showcase-service-dubbo-api</module>
-        <module>showcase-service-dubbo-provider</module>
-        <module>showcase-service-dubbo-consumer</module>
+        <module>api</module>
+        <module>provider</module>
+        <module>consumer</module>
     </modules>
 
     <properties>

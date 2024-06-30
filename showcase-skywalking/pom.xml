@@ -13,8 +13,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-skywalking-dubbo</module>
-        <module>showcase-skywalking-gateway</module>
+        <module>dubbo</module>
+        <module>gateway</module>
     </modules>
 
     <properties>
