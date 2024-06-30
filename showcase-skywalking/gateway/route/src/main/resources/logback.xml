@@ -9,7 +9,15 @@
             </layout>
         </encoder>
     </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <Pattern>${APM_PATTERN}</Pattern>
+            </layout>
+        </encoder>
+    </appender>
     <root level="INFO">
         <appender-ref ref="APM_LOG"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
