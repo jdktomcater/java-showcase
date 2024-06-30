@@ -21,4 +21,11 @@ public class RedisComponent {
         log.info("lock:{}", result);
         return lock;
     }
+
+    public RLock getFairLock(String key) throws InterruptedException {
+        RLock lock = redissonClient.getFairLock(key);
+        boolean result = lock.tryLock(10, TimeUnit.SECONDS);
+        log.info("fair lock:{}", result);
+        return lock;
+    }
 }

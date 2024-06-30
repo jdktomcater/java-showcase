@@ -33,4 +33,22 @@ public class RedisController {
             return "error";
         }
     }
+
+    @RequestMapping(value = "/FairLock", method = RequestMethod.GET)
+    public String fairLock(String key) {
+        try {
+            RLock lock = redisComponent.getFairLock(key);
+            log.info("lock:{}", lock.isLocked());
+            if (lock.isLocked()) {
+                lock.unlock();
+                log.info("lock:{}", lock.isLocked());
+                return "ok";
+            } else {
+                return "fail";
+            }
+        } catch (Exception e) {
+            log.error("lock error", e);
+            return "error";
+        }
+    }
 }
