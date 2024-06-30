@@ -27,7 +27,7 @@ public class SkywalkingUtil {
             Class<?> ownerClazz = ownerInstance.getClass();
             Method getTraceId = ownerClazz.getMethod("getReadablePrimaryTraceId");
             String traceId = (String) getTraceId.invoke(ownerInstance);
-            MDC.put("tid", traceId);
+            MDC.put("traceId", traceId);
         } catch (Exception e) {
             log.error("gateway追踪码获取失败", e);
         }

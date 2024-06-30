@@ -29,7 +29,6 @@ public class CostTimeLogFilter implements GlobalFilter, Ordered {
             if (startTime != null) {
                 SkywalkingUtil.putTidIntoMdc(exchange);
                 log.info("{} cost: {}ms",exchange.getRequest().getURI().getRawPath(),(System.currentTimeMillis() - startTime));
-                SkywalkingUtil.putTidIntoMdc(exchange);
             }
         }));
     }
