@@ -23,11 +23,11 @@ public class CostTimeLogFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        SkywalkingUtil.putTidIntoMdc(exchange);
         exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             Long startTime = exchange.getAttribute(START_TIME);
             if (startTime != null) {
+                SkywalkingUtil.putTidIntoMdc(exchange);
                 log.info("{} cost: {}ms",exchange.getRequest().getURI().getRawPath(),(System.currentTimeMillis() - startTime));
                 SkywalkingUtil.putTidIntoMdc(exchange);
             }
