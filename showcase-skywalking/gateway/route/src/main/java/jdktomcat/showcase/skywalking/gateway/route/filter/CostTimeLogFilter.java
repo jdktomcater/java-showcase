@@ -1,19 +1,13 @@
 package jdktomcat.showcase.skywalking.gateway.route.filter;
 
+import jdktomcat.showcase.skywalking.gateway.route.util.SkywalkingUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Timmy
@@ -29,11 +23,13 @@ public class CostTimeLogFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        SkywalkingUtil.putTidIntoMdc(exchange);
         exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
         return chain.filter(exchange).then(Mono.fromRunnable(() -> {
             Long startTime = exchange.getAttribute(START_TIME);
             if (startTime != null) {
                 log.info("{} cost: {}ms",exchange.getRequest().getURI().getRawPath(),(System.currentTimeMillis() - startTime));
+                SkywalkingUtil.putTidIntoMdc(exchange);
             }
         }));
     }
