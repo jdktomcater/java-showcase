@@ -36,7 +36,7 @@ public class RedisLogAspect {
             int slot = connectionManager.calcSlot(key);
             MasterSlaveEntry masterSlaveEntry = connectionManager.getEntry(slot);
             MasterSlaveServersConfig masterSlaveServersConfig = masterSlaveEntry.getConfig();
-            String master = masterSlaveServersConfig.getMasterAddress();
+            String master = masterSlaveServersConfig.getMasterAddress().toString();
             String slave = Arrays.toString(masterSlaveServersConfig.getSlaveAddresses().toArray());
             log.info("LogAspect method={}, key={}, slot={}, master={}, slave={}", method, key, slot, master, slave);
         }
