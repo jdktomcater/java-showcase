@@ -23,36 +23,19 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class ResetTraceIdFilter implements GlobalFilter, Ordered {
+public class CostTimeLogFilter implements GlobalFilter, Ordered {
 
-    @Value("${resetTraceIdUris:/reset}")
-    private String resetTraceIdUris;
+    private static final String START_TIME = "startTime";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        ServerHttpRequest request = exchange.getRequest();
-        String uri = request.getURI().toString();
-        if (matchContext(uri)) {
-            ServerHttpRequest.Builder requestBuilder = request.mutate();
-            Map<String, List<String>> sourceHeaders = request.getHeaders();
-            requestBuilder.headers(headers -> sourceHeaders.forEach((key, dataList) -> {
-                if (key.contains("sw")) {
-                    headers.remove(key);
-                    log.info("request reset head param key:{} value:{}", key, Arrays.toString(dataList.toArray()));
-                }
-            }));
-            ServerHttpRequest newRequest = requestBuilder.build();
-            exchange.mutate().request(newRequest).build();
-            return chain.filter(exchange.mutate().request(newRequest).build());
-        }
-        return chain.filter(exchange);
-    }
-
-    private boolean matchContext(String uri) {
-        if (StringUtils.hasLength(resetTraceIdUris) && !resetTraceIdUris.isEmpty()) {
-            return false;
-        }
-        return Arrays.stream(resetTraceIdUris.split(",")).anyMatch(uri::contains);
+        exchange.getAttributes().put(START_TIME, System.currentTimeMillis());
+        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+            Long startTime = exchange.getAttribute(START_TIME);
+            if (startTime != null) {
+                log.info("{} cost: {}ms",exchange.getRequest().getURI().getRawPath(),(System.currentTimeMillis() - startTime));
+            }
+        }));
     }
 
     /**
