@@ -11,7 +11,7 @@ server:
 
 spring:
   application:
-    name: demo-skywalking-gateway-service
+    name: showcase-skywalking-gateway-service
 
 logging:
   level:
