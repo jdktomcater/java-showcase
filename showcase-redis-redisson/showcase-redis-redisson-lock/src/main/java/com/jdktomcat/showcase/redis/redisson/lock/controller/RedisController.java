@@ -34,7 +34,7 @@ public class RedisController {
         }
     }
 
-    @RequestMapping(value = "/FairLock", method = RequestMethod.GET)
+    @RequestMapping(value = "/fairLock", method = RequestMethod.GET)
     public String fairLock(String key) {
         try {
             RLock lock = redisComponent.getFairLock(key);
