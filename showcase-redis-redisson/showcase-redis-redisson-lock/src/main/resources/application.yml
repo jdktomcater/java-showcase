@@ -1,6 +1,6 @@
 spring:
   application:
-    name: redisson-semaphore
+    name: redisson-lock
   redis:
     password: guess_guess_101
     timeout: 2000
