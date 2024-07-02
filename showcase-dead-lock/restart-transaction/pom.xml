@@ -6,7 +6,7 @@
         <artifactId>showcase-dead-lock</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>showcase-dead-lock-restart-transaction</artifactId>
+    <artifactId>restart-transaction</artifactId>
     <packaging>jar</packaging>
 
     <properties>

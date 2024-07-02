@@ -12,7 +12,7 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-dead-lock-restart-transaction</module>
+        <module>restart-transaction</module>
     </modules>
 
     <properties>
