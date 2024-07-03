@@ -9,12 +9,14 @@
             </layout>
         </encoder>
     </appender>
-    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
-        <discardingThreshold>0</discardingThreshold>
-        <queueSize>512</queueSize>
-        <appender-ref ref="APM_LOG" />
-    </appender>
+    <!-- 异步日志 -->
+<!--    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">-->
+<!--        <discardingThreshold>0</discardingThreshold>-->
+<!--        <queueSize>512</queueSize>-->
+<!--        <appender-ref ref="APM_LOG" />-->
+<!--    </appender>-->
     <root level="INFO">
-        <appender-ref ref="async"/>
+<!--        <appender-ref ref="async"/>-->
+        <appender-ref ref="APM_LOG"/>
     </root>
 </configuration>
