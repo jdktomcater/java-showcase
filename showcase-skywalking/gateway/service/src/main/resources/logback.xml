@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="10 seconds">
     <property name="APM_PATTERN" value="[%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} |%file :%line - [%X{tid}] -%msg%n" />
     <!--  skyWalking日志采集  -->
-    <appender name="APM_LOG" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
                 <Pattern>${APM_PATTERN}</Pattern>
@@ -17,6 +17,6 @@
 <!--    </appender>-->
     <root level="INFO">
 <!--        <appender-ref ref="async"/>-->
-        <appender-ref ref="APM_LOG"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
