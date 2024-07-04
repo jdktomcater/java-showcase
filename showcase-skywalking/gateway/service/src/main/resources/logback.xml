@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
-    <property name="APM_PATTERN" value="[%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} |%file :%line - [%X{tid}] -%msg%n" />
+    <property name="APM_PATTERN" value="[%-5level %d{MM-dd HH:mm:ss.SSS} %r [%thread] %c.%method:%5line - [%X{tid}] -%msg%n" />
     <!--  skyWalking日志采集  -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
