@@ -16,3 +16,5 @@ logging:
   level:
     root: info
   config: classpath:logback.xml
+  file:
+    path: /Users/jhw-admin/workspace/idea/java-showcase/showcase-skywalking/gateway/service/src/main/logs/gateway-service.log
