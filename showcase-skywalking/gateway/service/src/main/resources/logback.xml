@@ -12,12 +12,11 @@
     <!-- 异步日志 -->
     <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
-        <queueSize>4096</queueSize>
+        <queueSize>16384</queueSize>
         <includeCallerData>true</includeCallerData>
         <appender-ref ref="STDOUT" />
     </appender>
     <root level="INFO">
         <appender-ref ref="async"/>
-<!--        <appender-ref ref="STDOUT"/>-->
     </root>
 </configuration>
