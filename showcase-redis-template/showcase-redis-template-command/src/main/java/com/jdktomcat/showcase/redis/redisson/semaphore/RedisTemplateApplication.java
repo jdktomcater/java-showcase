@@ -12,10 +12,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @SpringBootApplication
-public class DemoRedisTemplateApplication {
+public class RedisTemplateApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoRedisTemplateApplication.class, args);
+        SpringApplication.run(RedisTemplateApplication.class, args);
     }
 
 }

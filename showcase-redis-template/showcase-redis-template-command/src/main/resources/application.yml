@@ -2,16 +2,23 @@ spring:
   application:
     name: demo-redis-template-command
   redis:
-    password: guess_guess_101
-    timeout: 2000 # 连接或读取超时时长（毫秒）
-    cluster:
-      nodes: 192.168.56.111:7001,192.168.56.112:7001,192.168.56.113:7001
+    password: DeGxqg19x0aext
+    timeout: 5000
     jedis:
       pool:
-        max-active: 8
-        max-wait: 800
+        max-wait: 5000
+        max-active: 50
         max-idle: 8
-        min-idle: 2
+        min-idle: 0
+    lettuce:
+      pool:
+        max-wait: 5000
+        max-active: 32
+        max-idle: 16
+        min-idle: 0
+    cluster:
+      #节点信息
+      nodes: 172.31.185.66:7001,172.31.185.67:7001,172.31.185.68:7001,172.31.185.66:7002,172.31.185.67:7002,172.31.185.68:7002
 server:
-  address: 192.168.56.204
+  address: 192.168.56.202
   port: 7001
