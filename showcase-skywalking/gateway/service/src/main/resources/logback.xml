@@ -14,6 +14,7 @@
         <discardingThreshold>0</discardingThreshold>
         <queueSize>16384</queueSize>
         <includeCallerData>true</includeCallerData>
+        <neverBlock>true</neverBlock>
         <appender-ref ref="STDOUT" />
     </appender>
     <root level="INFO">
