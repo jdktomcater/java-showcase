@@ -63,6 +63,22 @@ public class BusinessController {
         }
     }
 
+
+    @GetMapping("/getKey")
+    public String getKey(String key) {
+        try {
+            Object orderCacheIn = redisComponent.get(key);
+            if(orderCacheIn!=null){
+                return orderCacheIn.toString();
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+
     @PostMapping("/set")
     public String setCache(String orderId) {
         String key = StringConstant.CACHE_ORDER + orderId;
