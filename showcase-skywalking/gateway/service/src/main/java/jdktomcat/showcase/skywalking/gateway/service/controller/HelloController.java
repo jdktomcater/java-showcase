@@ -26,9 +26,7 @@ public class HelloController {
         String host = request.getRemoteHost();
         String addr = request.getRemoteAddr();
         int port = request.getRemotePort();
-        for (int i = 0; i < 20; i++) {
-            log.warn("request host:{} ip:{} port:{} name:{}", host, addr, port, name);
-        }
+        log.warn("request host:{} ip:{} port:{} name:{}", host, addr, port, name);
         return "keep " + name;
     }
 }

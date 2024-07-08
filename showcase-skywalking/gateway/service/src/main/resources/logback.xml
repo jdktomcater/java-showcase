@@ -2,7 +2,11 @@
 <configuration scan="true" scanPeriod="10 seconds">
     <property name="APM_PATTERN" value="[%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} %r [%thread] %c.%M:%L - [%X{tid}] -%msg%n" />
     <!--  skyWalking日志采集  -->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>gateway-service.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <maxHistory>24</maxHistory>
+        </rollingPolicy>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
                 <Pattern>${APM_PATTERN}</Pattern>
@@ -10,11 +14,10 @@
         </encoder>
     </appender>
     <!-- 异步日志 -->
-    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="async" class="jdktomcat.showcase.skywalking.gateway.service.log.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
-        <queueSize>16384</queueSize>
+        <queueSize>1500</queueSize>
         <includeCallerData>true</includeCallerData>
-        <neverBlock>true</neverBlock>
         <appender-ref ref="STDOUT" />
     </appender>
     <root level="INFO">
