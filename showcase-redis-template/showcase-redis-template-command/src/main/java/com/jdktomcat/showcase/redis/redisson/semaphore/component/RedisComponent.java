@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisComponent {
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String,Object> redisTemplate;
 
     public boolean del(String... key) {
         if (key != null && key.length > 0) {
@@ -39,12 +39,11 @@ public class RedisComponent {
     }
 
     public boolean set(String key, String value) {
-        boolean result = (boolean) redisTemplate.execute((RedisCallback<Boolean>) connection -> {
+        return redisTemplate.execute((RedisCallback<Boolean>) connection -> {
             RedisSerializer<String> serializer = redisTemplate.getStringSerializer();
             connection.set(serializer.serialize(key), serializer.serialize(value));
             return true;
         });
-        return result;
     }
 
     /**
@@ -125,5 +124,17 @@ public class RedisComponent {
         }
     }
 
-
+    public String getExe(String key) {
+        try {
+            return redisTemplate.execute((RedisCallback<String>) action -> {
+                byte[] bytes = action.get(key.getBytes(StandardCharsets.UTF_8));
+                if(bytes!=null && bytes.length>0){
+                    return new String(bytes, StandardCharsets.UTF_8);
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

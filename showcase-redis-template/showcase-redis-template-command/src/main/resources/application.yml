@@ -2,23 +2,17 @@ spring:
   application:
     name: demo-redis-template-command
   redis:
-    password: DeGxqg19x0aext
-    timeout: 5000
+    password: gueaz_gueaz_102
+    timeout: 2000
+    cluster:
+      nodes: 172.31.185.46:7001,172.31.185.47:7001,172.31.185.48:7001,172.31.185.46:7002,172.31.185.47:7002,172.31.185.48:7002
     jedis:
       pool:
-        max-wait: 5000
-        max-active: 50
-        max-idle: 8
-        min-idle: 0
-    lettuce:
-      pool:
-        max-wait: 5000
-        max-active: 32
-        max-idle: 16
-        min-idle: 0
-    cluster:
-      #节点信息
-      nodes: 172.31.185.66:7001,172.31.185.67:7001,172.31.185.68:7001,172.31.185.66:7002,172.31.185.67:7002,172.31.185.68:7002
+        max-active: 200
+        max-wait: 800
+        max-idle: 200
+        min-idle: 100
+
 server:
-  address: 192.168.56.202
-  port: 7001
+  address: 172.19.8.41
+  port: 8037
