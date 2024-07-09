@@ -2,10 +2,10 @@ spring:
   application:
     name: redisson-lock
   redis:
-    password: guess_guess_101
+    password: gueaz_gueaz_102
     timeout: 2000
     cluster:
-      nodes: 192.168.56.1:7001,192.168.56.1:7002,192.168.56.1:7003,192.168.56.1:7004,192.168.56.1:7005,192.168.56.1:7006
+      nodes: 172.31.185.46:7001,172.31.185.47:7001,172.31.185.48:7001,172.31.185.46:7002,172.31.185.47:7002,172.31.185.48:7002
     jedis:
       pool:
         max-active: 200
@@ -14,5 +14,5 @@ spring:
         min-idle: 100
 
 server:
-  address: 192.168.56.202
-  port: 8081
+  address: 172.19.8.41
+  port: 8037
