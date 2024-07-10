@@ -1,0 +1,29 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+业务主流程 -> org.slf4j.Logger: log.info("日志")
+org.slf4j.Logger -> ch.qos.logback.classic.Logger: log.info("日志")
+ch.qos.logback.classic.Logger -> ch.qos.logback.core.spi.AppenderAttachableImpl:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.spi.AppenderAttachableImpl -> ch.qos.logback.core.AsyncAppenderBase:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.AsyncAppenderBase -> 缓存队列:ch.qos.logback.classic.spi.LoggingEvent("日志")
+activate 缓存队列 #FFBBBB
+autonumber stop
+缓存队列 -> ch.qos.logback.core.AsyncAppenderBase
+ch.qos.logback.core.AsyncAppenderBase -> ch.qos.logback.core.spi.AppenderAttachableImpl
+ch.qos.logback.core.spi.AppenderAttachableImpl -> ch.qos.logback.classic.Logger
+ch.qos.logback.classic.Logger -> org.slf4j.Logger
+org.slf4j.Logger -> 业务主流程
+
+autonumber
+缓存队列 --> ch.qos.logback.core.AsyncAppenderBase.Worker:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.AsyncAppenderBase.Worker -> ch.qos.logback.core.FileAppender:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.FileAppender -> 文件输出流:日志字节流
+文件输出流 --> 硬盘日志文件:异步输出流刷新
+文件输出流 -> 硬盘日志文件:同步输出流刷新
+autonumber stop
+文件输出流 -> ch.qos.logback.core.FileAppender
+ch.qos.logback.core.FileAppender -> ch.qos.logback.core.AsyncAppenderBase.Worker
+ch.qos.logback.core.AsyncAppenderBase.Worker -> 缓存队列
+deactivate 缓存队列
+@enduml
