@@ -14,12 +14,12 @@
         </encoder>
     </appender>
     <!-- 异步日志 -->
-<!--    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">-->
-<!--        <discardingThreshold>0</discardingThreshold>-->
-<!--        <queueSize>1500</queueSize>-->
-<!--        <includeCallerData>true</includeCallerData>-->
-<!--        <appender-ref ref="STDOUT" />-->
-<!--    </appender>-->
+    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>1500</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="STDOUT" />
+    </appender>
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
