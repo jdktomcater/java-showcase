@@ -12,6 +12,12 @@ spring:
         max-wait: 800
         max-idle: 200
         min-idle: 100
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: 200ms
+        max-idle: 200
+        min-idle: 50
 
 server:
   address: 172.19.8.41
