@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+业务主流程 -> org.slf4j.Logger: log.info("日志")
+org.slf4j.Logger -> ch.qos.logback.classic.Logger: log.info("日志")
+ch.qos.logback.classic.Logger -> ch.qos.logback.core.spi.AppenderAttachableImpl:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.spi.AppenderAttachableImpl -> ch.qos.logback.core.rolling.RollingFileAppender:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.rolling.RollingFileAppender -> ch.qos.logback.core.FileAppender:ch.qos.logback.classic.spi.LoggingEvent("日志")
+ch.qos.logback.core.FileAppender -> 文件输出流:日志字节流
+文件输出流 --> 硬盘日志文件:异步输出流刷新
+文件输出流 -> 硬盘日志文件:同步输出流刷新
+note right:根据日志配置参数immediateFlush来刷新
+autonumber stop
+硬盘日志文件 -> 文件输出流
+文件输出流 -> ch.qos.logback.core.FileAppender
+ch.qos.logback.core.FileAppender -> ch.qos.logback.core.rolling.RollingFileAppender
+ch.qos.logback.core.rolling.RollingFileAppender -> ch.qos.logback.core.spi.AppenderAttachableImpl
+ch.qos.logback.core.spi.AppenderAttachableImpl -> ch.qos.logback.classic.Logger
+ch.qos.logback.classic.Logger -> org.slf4j.Logger
+org.slf4j.Logger -> 业务主流程
+
+@enduml
