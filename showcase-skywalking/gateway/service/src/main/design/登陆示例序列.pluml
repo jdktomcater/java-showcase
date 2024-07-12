@@ -1,0 +1,65 @@
+@startuml
+skinparam ParticipantBackgroundColor #DeepSkyBlue
+
+actor 用户 as c  #DeepSkyBlue
+participant "客户端" as client
+participant "服务网关" as ga
+participant "用户服务" as user
+database "数据库" as DB  #DeepSkyBlue
+participant "Google服务" as google  #LightCoral
+
+activate c #DeepSkyBlue
+activate client #DeepSkyBlue
+
+c->client:用户登录
+
+group#LightCoral #LightCoral Google登录客户端流程
+  client -> google : 请求Google OAuth登录
+            activate google #DeepSkyBlue
+            google-->client:登录url
+            client->google:跳转登录页
+            google -> google : 用户登录
+            google --> client : Google登录Token
+            deactivate google
+end
+
+|||
+
+client -> ga : 登录请求
+note right#LightCoral:新增登录方式，三方登录请求实体
+activate ga #DeepSkyBlue
+ga ->user:请求转发
+activate user #DeepSkyBlue
+
+
+alt#DeepSkyBlue 常规登录
+    user -> DB : 查询用户信息
+    activate DB #DeepSkyBlue
+    DB -> user : 用户信息
+    deactivate DB
+    user->user:登录密码校验
+
+|||
+else Google登录
+    group#LightCoral #LightCoral Google登录服务端流程
+          user->google:验证token
+          activate google #DeepSkyBlue
+          google-->user:用户信息
+          deactivate google
+          user->user:存储或更新用户信息
+    end group
+end
+
+
+user-->ga:登录结果
+deactivate user
+ga -> client : 响应
+deactivate ga
+alt#DeepSkyBlue 成功
+        client -> c : 登录成功
+else 失败
+        client -> c : 登录失败
+end
+deactivate client
+|||
+@enduml
