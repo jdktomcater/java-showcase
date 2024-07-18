@@ -1,4 +1,4 @@
-package jdktomcat.showcase.skywalking.gateway.service;
+package com.jdktomcat.showcase.skywalking.gateway.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -14,7 +14,7 @@
         </encoder>
     </appender>
     <!-- 异步日志 -->
-    <appender name="async" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="async" class="com.jdktomcat.showcase.skywalking.gateway.service.log.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
         <queueSize>1500</queueSize>
         <includeCallerData>true</includeCallerData>

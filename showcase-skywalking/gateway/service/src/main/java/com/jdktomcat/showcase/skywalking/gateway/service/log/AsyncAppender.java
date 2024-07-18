@@ -1,4 +1,4 @@
-package jdktomcat.showcase.skywalking.gateway.service.log;
+package com.jdktomcat.showcase.skywalking.gateway.service.log;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;

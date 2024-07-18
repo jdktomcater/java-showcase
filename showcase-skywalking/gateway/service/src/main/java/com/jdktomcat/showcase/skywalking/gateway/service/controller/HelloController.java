@@ -1,4 +1,4 @@
-package jdktomcat.showcase.skywalking.gateway.service.controller;
+package com.jdktomcat.showcase.skywalking.gateway.service.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
