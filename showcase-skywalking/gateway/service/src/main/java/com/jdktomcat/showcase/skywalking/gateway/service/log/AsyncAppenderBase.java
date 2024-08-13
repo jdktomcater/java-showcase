@@ -255,7 +255,8 @@ public class AsyncAppenderBase<E> extends UnsynchronizedAppenderBase<E> implemen
             // loop while the parent is started
             while (parent.isStarted()) {
                 try {
-                    aai.appendLoopOnAppenders(parent.blockingQueue.take());
+                    E e = parent.blockingQueue.take();
+                    aai.appendLoopOnAppenders(e);
                 } catch (InterruptedException e1) {
                     // exit if interrupted
                     break;

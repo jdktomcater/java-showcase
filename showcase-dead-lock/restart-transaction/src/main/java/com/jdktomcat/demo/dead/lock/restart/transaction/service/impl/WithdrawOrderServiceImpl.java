@@ -64,6 +64,11 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
     }
 
     @Override
+    public String actionThree() {
+        return actionOne();
+    }
+
+    @Override
     @Transactional
     public String actionTwo() {
         WithdrawOrder updateEntry = new WithdrawOrder();
