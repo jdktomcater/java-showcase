@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-snowflake-generate</module>
+        <module>showcase-snowflake-generate-redis</module>
         <module>showcase-snowflake-redis</module>
     </modules>
     <properties>
