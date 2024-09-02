@@ -31,7 +31,7 @@ public class RedisComponent {
     public static final long MAX_DATE_TIME_BASE = 5000000L;
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 获取自增序列
@@ -66,16 +66,17 @@ public class RedisComponent {
         return Long.parseLong(nowStr);
     }
 
-
     private static final String SNOWFLAKE_SET_KEY = "SNOWFLAKE_SET_KEY";
 
     /**
      * 添加集合
+     *
      * @param id 元素
      * @return 是否成功
      */
-    public boolean addSet(Long id){
+    public boolean addSet(Long id) {
         Long result = redisTemplate.opsForSet().add(SNOWFLAKE_SET_KEY, id);
+        log.info("add id:{} result:{}", id, result);
         return result != null && result > 0;
     }
 }
