@@ -1,6 +1,6 @@
 spring:
   application:
-    name: demo-snowflake-redis
+    name: showcase-snowflake-generate-redis
   data:
     redis:
       password: guess_guess_101
