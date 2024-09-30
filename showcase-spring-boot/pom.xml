@@ -16,6 +16,7 @@
     <modules>
         <module>showcase-spring-boot-rest</module>
         <module>showcase-spring-boot-remote</module>
+        <module>showcase-spring-boot-swagger</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

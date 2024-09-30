@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: showcase-spring-boot-swagger
+server:
+  port: 7001

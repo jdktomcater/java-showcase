@@ -1,5 +1,5 @@
-/home/timmy/workspace/learn/study/demo-snowflake/demo-snowflake-redis/src/main/java/com/jdktomcat/demo/snowflake/redis/service/SnowflakeService.java
-/home/timmy/workspace/learn/study/demo-snowflake/demo-snowflake-redis/src/main/java/com/jdktomcat/demo/snowflake/redis/config/ExecutorConfig.java
-/home/timmy/workspace/learn/study/demo-snowflake/demo-snowflake-redis/src/main/java/com/jdktomcat/demo/snowflake/redis/util/SnowflakeIdWorker.java
-/home/timmy/workspace/learn/study/demo-snowflake/demo-snowflake-redis/src/main/java/com/jdktomcat/demo/snowflake/redis/SnowflakeRedisApplication.java
-/home/timmy/workspace/learn/study/demo-snowflake/demo-snowflake-redis/src/main/java/com/jdktomcat/demo/snowflake/redis/component/RedisComponent.java
+D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\SnowflakeRedisApplication.java
+D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\service\SnowflakeService.java
+D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\util\SnowflakeIdWorker.java
+D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\component\RedisComponent.java
+D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\config\ExecutorConfig.java
