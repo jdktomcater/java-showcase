@@ -71,7 +71,7 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
     public String actionTwo() {
         WithdrawOrder updateEntry = new WithdrawOrder();
         updateEntry.setParentOrderStatus(1);
-        int update = withdrawOrderMapper.update(updateEntry, new QueryWrapper<WithdrawOrder>().in("order_id", TARGETS_TWO));
+        int update = withdrawOrderMapper.update(updateEntry, new QueryWrapper<WithdrawOrder>().in("order_id", (Object) TARGETS_TWO));
         log.info("action two update:{}", update);
         return "action two have done!";
     }

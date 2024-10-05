@@ -1,7 +1,7 @@
 # my global config
 global:
-  scrape_interval:     60s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 60s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 5s # Evaluate rules every 15 seconds. The default is every 1 minute.
   # scrape_timeout is set to the global default (10s).
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
@@ -15,10 +15,10 @@ scrape_configs:
     # 多久采集一次数据
     scrape_interval: 2s
     # 采集时的超时时间
-    scrape_timeout: 10s
+    scrape_timeout: 2s
     # 采集的路径
     metrics_path: '/actuator/prometheus'
     # 采集服务的地址，设置成Springboot应用所在服务器的具体地址
     # 8088:指定了management.server.port就是该值, 没有指定就是server.port
     static_configs:
-      - targets: ['127.0.0.1:8081']
+      - targets: ['127.0.0.1:8083']
