@@ -9,7 +9,9 @@ import java.util.function.ToDoubleFunction;
 
 public class DruidCollector {
 
-    private static final String LABEL_NAME = "pool";
+    private static final String LABEL_POOL_NAME = "pool";
+
+    private static final String LABEL_INSTANCE_NAME = "instance";
 
     private final List<DruidDataSource> dataSources;
 
@@ -61,6 +63,6 @@ public class DruidCollector {
     }
 
     private void createGauge(DruidDataSource weakRef, String metric, String help, ToDoubleFunction<DruidDataSource> measure) {
-        Gauge.builder(metric, weakRef, measure).description(help).tag(LABEL_NAME, weakRef.getName()).register(this.registry);
+        Gauge.builder(metric, weakRef, measure).description(help).tag(LABEL_POOL_NAME, weakRef.getName()).tag(LABEL_INSTANCE_NAME, "172.26.192.43").register(this.registry);
     }
 }
