@@ -1,8 +1,8 @@
-package com.jdktomcat.showcase.prometheus.service.impl;
+package com.jdktomcat.showcase.prometheus.base.service.impl;
 
 import com.alibaba.fastjson2.JSON;
-import com.jdktomcat.showcase.prometheus.entry.Order;
-import com.jdktomcat.showcase.prometheus.service.OrderService;
+import com.jdktomcat.showcase.prometheus.base.entry.Order;
+import com.jdktomcat.showcase.prometheus.base.service.OrderService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -45,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     // 创建订单
-
     @Override
     public Order create(BigDecimal amount) {
         log.info("createOrder orderAmount:{}", amount);

@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.prometheus;
+package com.jdktomcat.showcase.prometheus.base;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

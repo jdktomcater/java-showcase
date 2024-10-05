@@ -16,6 +16,7 @@
     <description>showcase-prometheus</description>
     <modules>
         <module>showcase-prometheus-druid</module>
+        <module>showcase-prometheus-base</module>
     </modules>
     <properties>
         <java.version>17</java.version>
@@ -24,7 +25,12 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
-            <scope>runtime</scope>
+            <version>1.13.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

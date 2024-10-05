@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.prometheus.controller;
+package com.jdktomcat.showcase.prometheus.base.controller;
 
-import com.jdktomcat.showcase.prometheus.entry.Order;
-import com.jdktomcat.showcase.prometheus.service.OrderService;
+import com.jdktomcat.showcase.prometheus.base.entry.Order;
+import com.jdktomcat.showcase.prometheus.base.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

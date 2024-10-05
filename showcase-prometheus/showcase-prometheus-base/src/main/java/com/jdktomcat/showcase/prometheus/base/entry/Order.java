@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.prometheus.entry;
+package com.jdktomcat.showcase.prometheus.base.entry;
 
 import lombok.Data;
 
