@@ -10,6 +10,7 @@ spring:
       initial-size: 10
       max-active: 20
       min-idle: 10
+      name: typayv2
 server:
   port: 8080
 management:
