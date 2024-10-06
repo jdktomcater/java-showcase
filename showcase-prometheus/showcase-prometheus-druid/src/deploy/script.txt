@@ -1,0 +1,1 @@
+prometheus --config.file=src/deploy/prometheus.yaml
