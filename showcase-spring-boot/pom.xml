@@ -6,7 +6,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.12</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.jdktomcater.showcase</groupId>
     <artifactId>showcase-spring-boot</artifactId>
@@ -15,6 +14,7 @@
     <description>showcase-spring-boot</description>
     <modules>
         <module>showcase-spring-boot-rest</module>
+        <module>showcase-spring-boot-admin</module>
         <module>showcase-spring-boot-remote</module>
         <module>showcase-spring-boot-swagger</module>
     </modules>
