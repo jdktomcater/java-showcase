@@ -8,13 +8,14 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.5</version>
     </parent>
-    <groupId>jdktomcat.showcase</groupId>
+    <groupId>jdktomcat.showcase.skywalking</groupId>
     <artifactId>showcase-skywalking</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>dubbo</module>
         <module>gateway</module>
+        <module>docker</module>
     </modules>
 
     <properties>
