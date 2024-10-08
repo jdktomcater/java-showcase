@@ -1,9 +1,10 @@
 package com.jdktomcat.showcase.redis.redisson.lock.component;
 
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
+import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisComponent {
 
-    @Autowired
+    @Resource
     private RedissonClient redissonClient;
 
     public boolean tryLock(String lockKey, int waitTime, int leaseTime) {
@@ -41,4 +42,9 @@ public class RedisComponent {
             log.error("redis Exception: {}", e.getMessage(), e);
         }
     }
+    public double firstScore(String lockKey) {
+        RScoredSortedSet<Object> vrScoredSortedSet = redissonClient.getScoredSortedSet(lockKey);
+        return vrScoredSortedSet.firstScore();
+    }
+
 }
