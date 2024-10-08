@@ -12,6 +12,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,20 +32,20 @@ public class RedisComponent {
     public boolean del(String... key) {
         if (key != null && key.length > 0) {
             if (key.length == 1) {
-                return redisTemplate.delete(key[0]);
+                return Boolean.TRUE.equals(redisTemplate.delete(key[0]));
             } else {
-                return redisTemplate.delete(CollectionUtils.arrayToList(key)) == key.length;
+                return redisTemplate.delete((Collection<String>) CollectionUtils.arrayToList(key)) == key.length;
             }
         }
         return false;
     }
 
     public boolean set(String key, String value) {
-        return redisTemplate.execute((RedisCallback<Boolean>) connection -> {
+        return Boolean.TRUE.equals(redisTemplate.execute((RedisCallback<Boolean>) connection -> {
             RedisSerializer<String> serializer = redisTemplate.getStringSerializer();
-            connection.set(serializer.serialize(key), serializer.serialize(value));
+            connection.set(Objects.requireNonNull(serializer.serialize(key)), Objects.requireNonNull(serializer.serialize(value)));
             return true;
-        });
+        }));
     }
 
     /**
