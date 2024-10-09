@@ -17,6 +17,7 @@
     <module>showcase-fastdfs</module>
     <module>showcase-json</module>
     <module>showcase-snowflake</module>
+    <module>showcase-disruptor</module>
   </modules>
 
   <properties>

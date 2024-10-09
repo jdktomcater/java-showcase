@@ -1,6 +1,6 @@
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\config\ExecutorConfig.java
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\SnowflakeGenerateRedisApplication.java
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\util\SnowflakeIdWorker.java
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\component\RedisComponent.java
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\config\RedisConfig.java
-D:\workspace\learn-project\java-showcase\showcase-snowflake\showcase-snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\util\DateUtil.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\config\ExecutorConfig.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\util\SnowflakeIdWorker.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\component\RedisComponent.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\SnowflakeGenerateRedisApplication.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\util\DateUtil.java
+D:\workspace\learn-project\java-showcase\showcase-common\showcase-snowflake\snowflake-generate-redis\src\main\java\com\jdktomcat\showcase\snowflake\redis\config\RedisConfig.java
