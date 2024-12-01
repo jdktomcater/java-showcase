@@ -74,7 +74,6 @@ public class RedisComponent {
      */
     public boolean addSet(Long id) {
         Long result = redisTemplate.opsForSet().add(SNOWFLAKE_SET_KEY, id);
-        log.info("add id:{} result:{}", id, result);
         return result != null && result > 0;
     }
 }
