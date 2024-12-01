@@ -42,7 +42,7 @@ public class RedisComponent {
         RedisAtomicLong counter = new RedisAtomicLong(seqKey, Objects.requireNonNull(redisTemplate.getConnectionFactory()));
         long inLong = counter.incrementAndGet();
         if (inLong <= 1) {
-            counter.expire(10L, TimeUnit.DAYS);
+            counter.expire(3L, TimeUnit.SECONDS);
         } else if (inLong == MAX_DATE_TIME_BASE) {
             //超过最大值重置
             counter.expire(1L, TimeUnit.MILLISECONDS);

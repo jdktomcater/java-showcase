@@ -2,5 +2,6 @@ com\jdktomcat\showcase\snowflake\redis\SnowflakeGenerateRedisApplication.class
 com\jdktomcat\showcase\snowflake\redis\component\RedisComponent.class
 com\jdktomcat\showcase\snowflake\redis\config\ExecutorConfig.class
 com\jdktomcat\showcase\snowflake\redis\config\RedisConfig.class
+com\jdktomcat\showcase\snowflake\redis\task\HandleTask.class
 com\jdktomcat\showcase\snowflake\redis\util\DateUtil.class
 com\jdktomcat\showcase\snowflake\redis\util\SnowflakeIdWorker.class

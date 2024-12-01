@@ -1,11 +1,15 @@
 package com.jdktomcat.showcase.snowflake.redis;
 
 import com.jdktomcat.showcase.snowflake.redis.component.RedisComponent;
+import com.jdktomcat.showcase.snowflake.redis.task.HandleTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @SpringBootApplication
@@ -21,17 +25,10 @@ public class SnowflakeGenerateRedisApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String tableName = "t_thirdwithdraworder";
-        int count = 0;
-        for (int i = 0; i < 100000; i++) {
-            long index = redisComponent.getIncrementSeq(tableName);
-            boolean success = redisComponent.addSet(index);
-            if (!success) {
-                count++;
-                log.error("序列：{} 出现重复id：{}", i, index);
-            }
+        ExecutorService executors = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
+        for (int i = 0; i < 10; i++) {
+            executors.submit(new HandleTask(redisComponent));
         }
-        log.warn("总共有：{} 条重复记录！", count);
     }
 }
 

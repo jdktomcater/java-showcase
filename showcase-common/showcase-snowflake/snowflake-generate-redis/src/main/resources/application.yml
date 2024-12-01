@@ -3,10 +3,10 @@ spring:
     name: showcase-snowflake-generate-redis
   data:
     redis:
-      password: guess_guess_101
+      password: DeGxqg19x0aext
       timeout: 2000
       cluster:
-        nodes: 192.168.56.1:7001,192.168.56.1:7002,192.168.56.1:7003,192.168.56.1:7004,192.168.56.1:7005,192.168.56.1:7006
+        nodes: 172.31.185.66:7001,172.31.185.66:7002,172.31.185.67:7001,172.31.185.67:7002,172.31.185.68:7001,172.31.185.68:7002
       jedis:
         pool:
           max-active: 8
