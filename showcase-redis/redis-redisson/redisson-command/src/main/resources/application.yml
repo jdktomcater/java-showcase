@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: redisson-command
-  data:
-    redis:
-      password: SvlI1hzWCMZfhe8viZ0Anx
-      timeout: 2000
-      cluster:
-        nodes: 172.31.185.40:7001,172.31.185.41:7001,172.31.185.42:7001,172.31.185.40:7002,172.31.185.41:7002,172.31.185.42:7002
