@@ -17,6 +17,7 @@
         <module>admin</module>
         <module>remote</module>
         <module>swagger</module>
+        <module>redis</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
