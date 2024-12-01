@@ -13,10 +13,10 @@
     <name>showcase-spring-boot</name>
     <description>showcase-spring-boot</description>
     <modules>
-        <module>showcase-spring-boot-rest</module>
-        <module>showcase-spring-boot-admin</module>
-        <module>showcase-spring-boot-remote</module>
-        <module>showcase-spring-boot-swagger</module>
+        <module>rest</module>
+        <module>admin</module>
+        <module>remote</module>
+        <module>swagger</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
