@@ -1,7 +1,11 @@
 package com.jdktomcat.showcase;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.filter.PropertyFilter;
+import com.alibaba.fastjson2.filter.ValueFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +32,17 @@ public class Main {
 
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name","timmy");
+        JSONObject sub = new JSONObject();
+        sub.put("age","25");
+        jsonObject.put("sub",sub);
+        ValueFilter valueFilter = (o, s, o1) -> {
+            System.out.println(s);
+            return o1;
+        };
+
+        System.out.println(JSON.toJSONString(jsonObject, valueFilter));
+        System.out.println(JSON.toJSONString(jsonObject));
     }
 }
