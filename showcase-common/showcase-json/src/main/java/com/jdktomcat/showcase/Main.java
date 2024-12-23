@@ -38,10 +38,11 @@ public class Main {
         sub.put("age","25");
         jsonObject.put("sub",sub);
         ValueFilter valueFilter = (o, s, o1) -> {
-            System.out.println(s);
+            if("age".equals(s)){
+                return "27";
+            }
             return o1;
         };
-
         System.out.println(JSON.toJSONString(jsonObject, valueFilter));
         System.out.println(JSON.toJSONString(jsonObject));
     }
