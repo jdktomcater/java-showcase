@@ -30,20 +30,37 @@ public class Main {
         }
     }
 
+    class Entry {
+        private Integer merchant_id;
+
+        public Integer getMerchant_id() {
+            return merchant_id;
+        }
+
+        public void setMerchant_id(Integer merchant_id) {
+            this.merchant_id = merchant_id;
+        }
+    }
 
     public static void main(String[] args) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("name","timmy");
-        JSONObject sub = new JSONObject();
-        sub.put("age","25");
-        jsonObject.put("sub",sub);
-        ValueFilter valueFilter = (o, s, o1) -> {
-            if("age".equals(s)){
-                return "27";
-            }
-            return o1;
-        };
-        System.out.println(JSON.toJSONString(jsonObject, valueFilter));
-        System.out.println(JSON.toJSONString(jsonObject));
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("name","timmy");
+//        JSONObject sub = new JSONObject();
+//        sub.put("age","25");
+//        jsonObject.put("sub",sub);
+//        ValueFilter valueFilter = (o, s, o1) -> {
+//            if("age".equals(s)){
+//                return "27";
+//            }
+//            return o1;
+//        };
+//        System.out.println(JSON.toJSONString(jsonObject, valueFilter));
+//        System.out.println(JSON.toJSONString(jsonObject));
+
+        String json = "{\"merchant_id\":\"200058\"}";
+        Entry entry = JSON.parseObject(json,Entry.class);
+        System.out.println(entry.getMerchant_id());
+
     }
+
 }

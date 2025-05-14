@@ -14,7 +14,7 @@ spring:
         max-wait: 800
         max-idle: 8
         min-idle: 2
-    host: 192.168.56.1
+    host: 127.0.0.1
 
 logging:
   level:
@@ -23,9 +23,10 @@ logging:
     path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
 
 rocketmq:
-  namesrvAddr: 172.31.184.104:9876
+  namesrvAddr: 172.31.184.45:9876
   consumer:
-    groupName: tradeNoConsumerGroup
+    groupName: yuhataGroup
     consumeThreadMin: 20
-    consumeThreadMax: 128
-    batchMaxSize: 10
+    consumeThreadMax: 64
+    batchMaxSize: 1
+  name-server: 172.31.184.45:9876

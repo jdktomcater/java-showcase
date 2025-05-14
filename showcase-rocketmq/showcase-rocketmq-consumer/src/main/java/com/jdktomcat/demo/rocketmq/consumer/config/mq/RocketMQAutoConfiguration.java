@@ -2,6 +2,7 @@ package com.jdktomcat.demo.rocketmq.consumer.config.mq;
 
 import com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant;
 import com.jdktomcat.demo.rocketmq.consumer.listener.BaseConsumerListener;
+import com.jdktomcat.demo.rocketmq.consumer.listener.DelayMessageConsumeListener;
 import com.jdktomcat.demo.rocketmq.consumer.listener.DepositMessageConsumerListener;
 import com.jdktomcat.demo.rocketmq.consumer.listener.WithdrawMessageConsumerListener;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +18,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.DEPOSIT_MESSAGE_TOPIC;
-import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.WITHDRAW_MESSAGE_TOPIC;
+import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.*;
 
 
 /**
@@ -26,6 +27,9 @@ import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.WIT
 @Slf4j
 @Configuration
 public class RocketMQAutoConfiguration {
+
+    @Value("${node}")
+    private int node;
 
     @Autowired
     private RocketMQProperties properties;
@@ -36,6 +40,9 @@ public class RocketMQAutoConfiguration {
 
     @Autowired
     private DepositMessageConsumerListener depositMessageConsumerListener;
+
+    @Autowired
+    private DelayMessageConsumeListener delayMessageConsumeListener;
 
     /**
      * 注册新的消費者
@@ -60,6 +67,17 @@ public class RocketMQAutoConfiguration {
     }
 
     /**
+     * 注册新的消費者
+     *
+     * @return
+     * @throws MQClientException
+     */
+    @Bean
+    public DefaultMQPushConsumer delayMessageConsumer() {
+        return getDefaultMQPushConsumer(DELAY_MESSAGE_TOPIC, delayMessageConsumeListener);
+    }
+
+    /**
      * 公共属性
      * @param suffix topic为后缀
      * @return
@@ -68,7 +86,7 @@ public class RocketMQAutoConfiguration {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(properties.getConsumerProperties().getGroupName().concat(suffix));
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         consumer.setNamesrvAddr(properties.getNamesrvAddr());
-        consumer.setInstanceName(UUID.randomUUID().toString());
+        consumer.setInstanceName("node-"+node);
         consumer.setConsumeThreadMin(properties.getConsumerProperties().getConsumeThreadMin());
         consumer.setConsumeThreadMax(properties.getConsumerProperties().getConsumeThreadMax());
         consumer.setConsumeMessageBatchMaxSize(properties.getConsumerProperties().getBatchMaxSize());
