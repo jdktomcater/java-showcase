@@ -11,6 +11,7 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +26,7 @@ import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.*;
  * Rocketmq消息中間件生產者與消費者配置
  */
 @Slf4j
+@ConditionalOnProperty(name = "node", havingValue = "2")
 @Configuration
 public class RocketMQAutoConfiguration {
 
@@ -73,6 +75,7 @@ public class RocketMQAutoConfiguration {
      * @throws MQClientException
      */
     @Bean
+
     public DefaultMQPushConsumer delayMessageConsumer() {
         return getDefaultMQPushConsumer(DELAY_MESSAGE_TOPIC, delayMessageConsumeListener);
     }
