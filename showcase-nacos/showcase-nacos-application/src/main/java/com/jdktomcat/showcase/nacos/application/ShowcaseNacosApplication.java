@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @SpringBootApplication
-public class DemoNacosApplication{
+public class ShowcaseNacosApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DemoNacosApplication.class, args);
+        SpringApplication.run(ShowcaseNacosApplication.class, args);
     }
 }
