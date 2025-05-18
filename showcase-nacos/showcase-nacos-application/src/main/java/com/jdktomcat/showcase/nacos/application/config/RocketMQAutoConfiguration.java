@@ -53,6 +53,7 @@ public class RocketMQAutoConfiguration {
     @ConditionalOnProperty(name = "active", prefix = "rocketmq.consumer", havingValue = "on")
     @Bean
     public DefaultMQPushConsumer pushWithdrawMessageConsumer() {
+        log.info("启动消费者pushWithdrawMessageConsumer");
         return getDefaultMQPushConsumer(WITHDRAW_MESSAGE_TOPIC, withdrawMessageConsumerListener);
     }
 
