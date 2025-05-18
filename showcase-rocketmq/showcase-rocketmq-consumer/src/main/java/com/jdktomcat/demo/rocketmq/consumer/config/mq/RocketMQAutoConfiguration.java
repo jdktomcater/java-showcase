@@ -26,7 +26,6 @@ import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.*;
  * Rocketmq消息中間件生產者與消費者配置
  */
 @Slf4j
-@ConditionalOnProperty(name = "node", havingValue = "2")
 @Configuration
 public class RocketMQAutoConfiguration {
 
@@ -52,6 +51,7 @@ public class RocketMQAutoConfiguration {
      * @return
      * @throws MQClientException
      */
+    @ConditionalOnProperty(name = "name",prefix = "spring.application", havingValue = "consumer-user")
     @Bean
     public DefaultMQPushConsumer pushWithdrawMessageConsumer() {
         return getDefaultMQPushConsumer(WITHDRAW_MESSAGE_TOPIC, withdrawMessageConsumerListener);
