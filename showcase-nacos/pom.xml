@@ -19,6 +19,8 @@
     <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
+    <rocketmq-spring-boot-starter-version>2.2.2</rocketmq-spring-boot-starter-version>
+    <spring-boot-starter-version>2.3.6.RELEASE</spring-boot-starter-version>
   </properties>
 
   <dependencyManagement>
