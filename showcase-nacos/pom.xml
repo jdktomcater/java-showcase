@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.jdktomcat.demo.nacos</groupId>
+  <groupId>com.jdktomcat.showcase.nacos</groupId>
   <artifactId>showcase-nacos</artifactId>
   <version>1.0-SNAPSHOT</version>
   <modules>
@@ -18,7 +18,7 @@
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-cloud-alibaba.version>2.1.3.RELEASE</spring-cloud-alibaba.version>
+    <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
   </properties>
 
   <dependencyManagement>

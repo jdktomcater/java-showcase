@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Hello world!
  */
-
 @Slf4j
 @SpringBootApplication
 public class DemoNacosApplication{
