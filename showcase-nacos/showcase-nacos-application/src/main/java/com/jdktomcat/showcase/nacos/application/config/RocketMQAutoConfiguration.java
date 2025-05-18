@@ -28,7 +28,7 @@ import static com.jdktomcat.showcase.nacos.application.constant.RocketMQConstant
 @Configuration
 public class RocketMQAutoConfiguration {
 
-    @Value("${node}")
+    @Value("${instance.node:0}")
     private int node;
 
     @Autowired
@@ -50,7 +50,7 @@ public class RocketMQAutoConfiguration {
      * @return
      * @throws MQClientException
      */
-    @ConditionalOnProperty(name = "name",prefix = "spring.application", havingValue = "consumer-user")
+    @ConditionalOnProperty(name = "active", prefix = "rocketmq.consumer", havingValue = "on")
     @Bean
     public DefaultMQPushConsumer pushWithdrawMessageConsumer() {
         return getDefaultMQPushConsumer(WITHDRAW_MESSAGE_TOPIC, withdrawMessageConsumerListener);
