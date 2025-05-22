@@ -1,0 +1,83 @@
+version: '3'
+services:
+  es-master:
+    image: elasticsearch:7.17.26
+    container_name: es-master
+    environment:
+      - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/master/config/master-es.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/master/data:/usr/share/elasticsearch/data:rw
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/master/log:/usr/share/elasticsearch/log:rw
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    extra_hosts:                        # 设置容器 hosts
+      - "es-master:10.0.0.1"
+      - "es-node1:10.0.0.2"
+      - "es-node2:10.0.0.3"
+  kibana:
+    image: kibana:7.16.3
+    container_name: kibana
+    restart: always
+    environment:
+      - TZ="Asia/Shanghai"
+    ports:
+      - "5601:5601"
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    depends_on:
+      - es-master
+  es-node1:
+    image: elasticsearch:7.17.26
+    container_name: es-node1
+    environment:
+      - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-1/config/node1-es.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-1/data:/usr/share/elasticsearch/data:rw
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-1/log:/usr/share/elasticsearch/log:rw
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    extra_hosts: # 设置容器 hosts
+      - "es-master:10.0.0.1"
+      - "es-node1:10.0.0.2"
+      - "es-node2:10.0.0.3"
+  es-node2:
+    image: elasticsearch:7.17.26
+    container_name: es-node2
+    environment:
+      - "ES_JAVA_OPTS=-Xms4096m -Xmx4096m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-2/config/node2-es.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-2/data:/usr/share/elasticsearch/data:rw
+      - /Users/timmy/workspace/idea/java-showcase/showcase-elasticsearch/elasticsearch/data/node-2/log:/usr/share/elasticsearch/log:rw
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    extra_hosts: # 设置容器 hosts
+      - "es-master:10.0.0.1"
+      - "es-node1:10.0.0.2"
+      - "es-node2:10.0.0.3"

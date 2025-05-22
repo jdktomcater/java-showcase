@@ -1,0 +1,7 @@
+# vim /data/kibana/config/kibana.yml
+
+server.name: kibana
+server.host: "0.0.0.0"
+#此处为es的master地址
+elasticsearch.hosts: "http://es-master:9200"
+xpack.monitoring.ui.container.elasticsearch.enabled: true
