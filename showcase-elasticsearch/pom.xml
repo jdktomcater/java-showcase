@@ -13,7 +13,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-elasticsearch-canel</module>
+        <module>showcase-elasticsearch-canal</module>
         <module>showcase-elasticsearch-base</module>
     </modules>
 
