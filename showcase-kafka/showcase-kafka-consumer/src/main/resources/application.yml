@@ -4,7 +4,7 @@ spring:
   application:
     name: kafka-consumer
   kafka:
-    bootstrap-servers: mylocalhost:9192,mylocalhost:9292,mylocalhost:9392
+    bootstrap-servers: localhost:9093,localhost:9094,localhost:9095
     producer:
       # 生产者序列化
      key-serializer: org.apache.kafka.common.serialization.StringSerializer
