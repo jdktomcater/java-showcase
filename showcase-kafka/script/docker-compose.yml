@@ -4,6 +4,8 @@ services:
     container_name: zookeeper
     ports:
       - "2182:2181"
+    expose:
+      - "2181"
     restart: always
     networks:
       container-net:
