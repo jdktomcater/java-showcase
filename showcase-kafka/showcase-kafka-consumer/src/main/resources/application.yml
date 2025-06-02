@@ -1,42 +1,26 @@
-server:
-  port: 8888
 spring:
   application:
-    name: kafka-consumer
+    name: showcase-kafka-consumer
+    # Kafka配置
   kafka:
-    bootstrap-servers: localhost:9093,localhost:9094,localhost:9095
-    producer:
-      # 生产者序列化
-     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-     value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      # ack策略
-      # 0：生产者发送消息就不管了，效率高，但是容易丢数据，且没有重试机制
-      # 1：消息发送到Leader并落盘后就返回，如果Leader挂了并且Follower还没有同步数据就会丢失数据
-      # -1：消息要所有副本都罗盘才返回，保证数据不丢失（但是有可能重复消费）
-     acks: -1
-      # 失败重试次数
-     retries: 3
-      # 批量提交的数据大小
-     batch-size: 16384
-      # 生产者暂存数据的缓冲区大小
-     buffer-memory: 33554432
+    # 集群配置
+    bootstrap-servers: 192.168.31.138:9092
+    # 消费者配置
     consumer:
-     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-     value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      # 是否自动提交偏移量，如果要手动确认消息，就要设置为false
-     enable-auto-commit: false
-      # 消费消息后间隔多长时间提交偏移量（ms）
-     auto-commit-interval: 100
-      # 默认的消费者组，如果不指定就会用这个
-     group-id: consumer-group
-      # kafka意外宕机时的消息消费策略
-      # earliest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
-      # latest:当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
-      # none:topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
-     auto-offset-reset: latest
-    listener:
-      # 手动确认消息
-     ack-mode: manual_immediate
-      # 消费者运行的线程数
-     concurrency: 2
-  
+      # 消费者组
+      group-id: group-kafka-test
+      # 自动提交
+      enable-auto-commit: false
+      # 当没有初始offset或offset超出范围时该如何设置offset
+      # latest表示只消费新产生的数据，earliest表示从头开始消费，none表示抛出异常
+      auto-offset-reset: latest
+      # 每次消费多少条消息
+      max-poll-records: 5
+
+      listener:
+        # 设置批量消费
+        batch: true
+        # 若topic不存在，项目启动报错（关闭）
+        missing-topics-fatal: false
+        # 设置并发消费的线程数，不能超过partitions的大小
+        concurrency: 3
