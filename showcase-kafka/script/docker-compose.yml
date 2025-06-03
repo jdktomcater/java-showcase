@@ -4,12 +4,7 @@ services:
     container_name: zookeeper
     ports:
       - "2182:2181"
-    expose:
-      - "2181"
     restart: always
-    networks:
-      container-net:
-        ipv4_address: 172.18.0.2
   kafka1:
     image: wurstmeister/kafka
     container_name: kafka1
@@ -19,16 +14,13 @@ services:
       KAFKA_BROKER_ID: 0
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_DEFAULT_REPLICATION_FACTOR: 2
-      KAFKA_ZOOKEEPER_CONNECT: 172.18.0.2:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.18.0.3:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
     volumes:
       - /Users/timmy/workspace/idea/java-showcase/showcase-kafka/logs/k1:/opt/kafka/logs
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
-    networks:
-      container-net:
-        ipv4_address: 172.18.0.3
   kafka2:
     image: wurstmeister/kafka
     container_name: kafka2
@@ -38,16 +30,13 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_DEFAULT_REPLICATION_FACTOR: 2
-      KAFKA_ZOOKEEPER_CONNECT: 172.18.0.2:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.18.0.4:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092
     volumes:
       - /Users/timmy/workspace/idea/java-showcase/showcase-kafka/logs/k2:/opt/kafka/logs
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
-    networks:
-      container-net:
-        ipv4_address: 172.18.0.4
   kafka3:
     image: wurstmeister/kafka
     container_name: kafka3
@@ -57,17 +46,10 @@ services:
       KAFKA_BROKER_ID: 2
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_DEFAULT_REPLICATION_FACTOR: 2
-      KAFKA_ZOOKEEPER_CONNECT: 172.18.0.2:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://172.18.0.5:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9092
     volumes:
       - /Users/timmy/workspace/idea/java-showcase/showcase-kafka/logs/k3:/opt/kafka/logs
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
-    networks:
-      container-net:
-        ipv4_address: 172.18.0.5
-
-networks:
-  container-net:
-    external: true
