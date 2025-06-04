@@ -7,7 +7,7 @@ spring:
     # Kafka配置
   kafka:
     # 集群配置
-    bootstrap-servers: :9092
+    bootstrap-servers: 172.20.10.3:9192,172.20.10.3:9292,172.20.10.3:9392
     # 生产者配置
     producer:
       # 重试次数
