@@ -1,11 +1,9 @@
 package com.jdktomcat.showcase.aviator;
 
 import com.googlecode.aviator.AviatorEvaluator;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
-@Slf4j
 public class ExpressionUtil {
 
     /**
