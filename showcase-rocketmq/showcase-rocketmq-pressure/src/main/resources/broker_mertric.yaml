@@ -1,0 +1,104 @@
+broker_metrics:
+  memory:
+    - broker_memory_usage_bytes
+    - broker_memory_usage_percent
+    - broker_heap_usage_bytes
+    - broker_heap_usage_percent
+
+  cpu:
+    - broker_cpu_usage_percent
+    - broker_cpu_load_average
+    - broker_thread_count
+
+  network:
+    - broker_connection_count
+    - broker_network_io_bytes
+    - broker_network_io_packets
+    - broker_network_error_count
+
+  storage:
+    - broker_disk_usage_bytes
+    - broker_disk_usage_percent
+    - broker_disk_io_bytes
+    - broker_disk_io_operations
+
+consumer_metrics:
+  groups:
+    - consumer_group_count
+    - consumer_group_active_count
+    - consumer_group_inactive_count
+
+  performance:
+    - consume_message_count_total
+    - consume_message_count_per_second
+    - consume_delay_ms
+    - consume_throughput_bytes_per_second
+
+  errors:
+    - consume_error_count
+    - consume_retry_count
+    - consume_timeout_count
+
+message_metrics:
+  production:
+    - message_produced_count_total
+    - message_produced_count_per_second
+    - message_production_delay_ms
+    - message_production_throughput_bytes_per_second
+
+  consumption:
+    - message_consumed_count_total
+    - message_consumed_count_per_second
+    - message_consumption_delay_ms
+    - message_consumption_throughput_bytes_per_second
+
+  queue:
+    - message_queue_size
+    - message_queue_depth
+    - message_queue_lag_ms
+
+performance_thresholds:
+  memory:
+    warning: 70%  # 内存使用率警告阈值
+    critical: 85% # 内存使用率严重阈值
+
+  cpu:
+    warning: 80%  # CPU使用率警告阈值
+    critical: 95% # CPU使用率严重阈值
+
+  network:
+    warning: 80%  # 网络带宽使用率警告阈值
+    critical: 90% # 网络带宽使用率严重阈值
+
+  connection:
+    warning: 1000 # 连接数警告阈值
+    critical: 2000 # 连接数严重阈值
+
+  delay:
+    warning: 1000 # 消费延迟警告阈值(毫秒)
+    critical: 5000 # 消费延迟严重阈值(毫秒)
+
+impact_assessment:
+  low_impact:
+    consumer_groups: "< 20"
+    memory_increase: "< 10%"
+    cpu_increase: "< 15%"
+    network_increase: "< 20%"
+
+  medium_impact:
+    consumer_groups: "20 - 50"
+    memory_increase: "10% - 30%"
+    cpu_increase: "15% - 40%"
+    network_increase: "20% - 50%"
+
+  high_impact:
+    consumer_groups: "50 - 100"
+    memory_increase: "30% - 60%"
+    cpu_increase: "40% - 70%"
+    network_increase: "50% - 80%"
+
+  critical_impact:
+    consumer_groups: "> 100"
+    memory_increase: "> 60%"
+    cpu_increase: "> 70%"
+    network_increase: "> 80%"

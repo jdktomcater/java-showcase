@@ -14,6 +14,7 @@
         <module>showcase-rocketmq-producer</module>
         <module>showcase-rocketmq-consumer</module>
         <module>showcase-rocketmq-transaction</module>
+        <module>showcase-rocketmq-pressure</module>
     </modules>
 
     <properties>

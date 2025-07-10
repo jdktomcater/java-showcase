@@ -1,0 +1,28 @@
+test_phases:
+  phase1_baseline:
+    name: "基准测试"
+    duration: "30分钟"
+    consumer_groups: 10
+    topics: 5
+    message_rate: 1000
+    
+  phase2_stress:
+    name: "压力测试"
+    duration: "30分钟"
+    consumer_groups: 50
+    topics: 20
+    message_rate: 5000
+    
+  phase3_limit:
+    name: "极限测试"
+    duration: "30分钟"
+    consumer_groups: 100
+    topics: 50
+    message_rate: 10000
+    
+  phase4_recovery:
+    name: "恢复测试"
+    duration: "15分钟"
+    consumer_groups: 10
+    topics: 5
+    message_rate: 1000
