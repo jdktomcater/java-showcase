@@ -53,19 +53,14 @@ public class ConsumerGroupTestTool {
         try {
             // 1. 创建消费组
             createConsumerGroups(consumerGroupCount);
-
             // 2. 启动性能监控
             startPerformanceMonitoring();
-
             // 3. 发送测试消息
             sendTestMessages(messageRate, durationSeconds);
-
             // 4. 等待测试完成
             Thread.sleep(durationSeconds * 1000L);
-
             // 5. 清理资源
             cleanup();
-
         } catch (Exception e) {
             log.error("测试执行失败", e);
         }
@@ -98,7 +93,6 @@ public class ConsumerGroupTestTool {
         consumer.setConsumeThreadMax(4);
         consumer.setConsumeMessageBatchMaxSize(10);
         consumer.setMessageModel(MessageModel.CLUSTERING);
-
         try {
             consumer.subscribe(testTopic, testTag);
             consumer.registerMessageListener(new TestMessageListener());
@@ -134,14 +128,10 @@ public class ConsumerGroupTestTool {
         long freeMemory = runtime.freeMemory();
         long usedMemory = totalMemory - freeMemory;
         double memoryUsagePercent = (double) usedMemory / totalMemory * 100;
-
         // 获取消费组数量
         int consumerGroupCount = consumers.size();
-
         // 记录指标
-        log.info("性能指标 - 消费组数量: {}, 内存使用: {:.2f}%, 活跃消费组: {}",
-                consumerGroupCount, memoryUsagePercent, getActiveConsumerCount());
-
+        log.info("性能指标 - 消费组数量: {}, 内存使用: {:.2f}%, 活跃消费组: {}", consumerGroupCount, memoryUsagePercent, getActiveConsumerCount());
         // 检查性能阈值
         checkPerformanceThresholds(consumerGroupCount, memoryUsagePercent);
     }

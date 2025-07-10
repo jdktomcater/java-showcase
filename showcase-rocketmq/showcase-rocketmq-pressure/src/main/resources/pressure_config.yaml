@@ -2,7 +2,7 @@
 
 # RocketMQ配置
 rocketmq:
-  namesrvAddr: "localhost:9876"
+  namesrvAddr: 172.30.2.85:9876;172.30.2.86:9876;172.30.2.87:9876;172.30.2.88:9876
   broker:
     host: "localhost"
     port: 10909
