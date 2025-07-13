@@ -23,10 +23,10 @@ logging:
     path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
 
 rocketmq:
-  namesrvAddr: 172.31.184.45:9876
+  namesrvAddr: 172.30.2.85:9876
   consumer:
     groupName: yuhataGroup
     consumeThreadMin: 20
     consumeThreadMax: 64
     batchMaxSize: 1
-  name-server: 172.31.184.45:9876
+  name-server: 172.30.2.85:9876

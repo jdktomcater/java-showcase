@@ -29,7 +29,7 @@ import static com.jdktomcat.demo.rocketmq.consumer.constant.RocketMQConstant.*;
 @Configuration
 public class RocketMQAutoConfiguration {
 
-    @Value("${node}")
+    @Value("${node:0}")
     private int node;
 
     @Autowired
