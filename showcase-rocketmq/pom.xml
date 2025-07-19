@@ -16,6 +16,7 @@
         <module>showcase-rocketmq-consumer-tag</module>
         <module>showcase-rocketmq-transaction</module>
         <module>showcase-rocketmq-pressure</module>
+        <module>showcase-rocketmq-common</module>
     </modules>
 
     <properties>
