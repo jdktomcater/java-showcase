@@ -1,32 +1,16 @@
 server:
   port: 0
-
 spring:
   application:
-    name: showcase-rocketmq-consumer
-  redis:
-    port: 6379
-    timeout: 2000 # 连接或读取超时时长（毫秒）
-    database: 1
-    jedis:
-      pool:
-        max-active: 8
-        max-wait: 800
-        max-idle: 8
-        min-idle: 2
-    host: 127.0.0.1
-
+    name: showcase-rocketmq-producer-tag
 logging:
   level:
     root: info
   file:
-    path: /home/timmy/workspace/hand-run/rocketmq/consumer/log
-
+    path: /home/timmy/workspace/hand-run/rocketmq/producer/tag/log
 rocketmq:
-  namesrvAddr: 172.30.2.85:9876
-  consumer:
-    groupName: yuhataGroup
-    consumeThreadMin: 20
-    consumeThreadMax: 64
-    batchMaxSize: 1
+  producer:
+    group: tradeNoProducerGroup
+    max-message-size: 131072
+    send-message-timeout: 10000
   name-server: 172.30.2.85:9876

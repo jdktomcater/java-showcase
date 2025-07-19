@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rocketmq.producer.tag.constant;
+package com.jdktomcat.showcase.rocketmq.common.constant;
 
 import lombok.Data;
 import lombok.Getter;

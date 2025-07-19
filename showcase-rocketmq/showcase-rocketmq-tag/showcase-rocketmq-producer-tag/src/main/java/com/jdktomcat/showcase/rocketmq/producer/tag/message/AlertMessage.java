@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.rocketmq.consumer.tag.message;
+package com.jdktomcat.showcase.rocketmq.producer.tag.message;
 
 import lombok.Data;
 

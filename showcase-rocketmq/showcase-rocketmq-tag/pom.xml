@@ -13,4 +13,12 @@
         <module>showcase-rocketmq-consumer-tag</module>
         <module>showcase-rocketmq-producer-tag</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>jdktomcat.showcase</groupId>
+            <artifactId>showcase-rocketmq-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
