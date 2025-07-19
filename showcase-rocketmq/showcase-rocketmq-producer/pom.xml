@@ -18,24 +18,4 @@
             <version>${rocketmq-spring-boot-starter-version}</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.1.1.RELEASE</version>
-                <configuration>
-                    <fork>true</fork>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <finalName>${project.artifactId}-${project.version}</finalName>
-    </build>
 </project>
