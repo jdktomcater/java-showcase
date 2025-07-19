@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
 
 
 /**
@@ -38,6 +39,7 @@ public class RocketMQAutoConfiguration {
     public TransactionMQProducer transactionMQProducer() throws MQClientException {
         TransactionMQProducer producer = new TransactionMQProducer(groupName);
         producer.setNamesrvAddr(nameServer);
+        producer.setInstanceName("tag-producer-" + UUID.randomUUID());
         producer.setMaxMessageSize(maxMessageSize);
         producer.setSendMsgTimeout(sendMsgTimeout);
         producer.setVipChannelEnabled(false);
