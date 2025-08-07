@@ -39,8 +39,6 @@ public class LocalCaffeineCache {
     private static Caffeine<Object, Object> caffeineBuilder() {
         return Caffeine.newBuilder()
                 .executor(EXECUTOR)
-//                .expireAfterWrite(EXPIRE_DURATION, TimeUnit.SECONDS)
-//                .expireAfterAccess(EXPIRE_DURATION, TimeUnit.SECONDS)
                 .maximumSize(200)
                 .refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS);
     }
