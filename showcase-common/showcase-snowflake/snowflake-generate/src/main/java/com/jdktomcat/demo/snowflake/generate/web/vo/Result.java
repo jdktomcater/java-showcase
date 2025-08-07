@@ -19,17 +19,9 @@ public class Result<T> {
 
     private T data;
 
-
-    //成功码
-
     public static final Integer SUCCESS_CODE = 200;
 
-    //成功消息
-
     public static final String SUCCESS_MSG = "SUCCESS";
-
-
-    //失败
 
     public static final Integer ERROR_CODE = 201;
 
@@ -42,7 +34,7 @@ public class Result<T> {
     }
 
     public static  Result<String> failed(String msg){
-        return new Result<>(ERROR_CODE, StringUtils.isEmpty(msg) ? ERROR_MSG : msg, "");
+        return new Result<>(ERROR_CODE, StringUtils.hasLength(msg) ? ERROR_MSG : msg, "");
 
     }
 
