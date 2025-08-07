@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
 @Slf4j
 public class LocalCaffeineCache {
@@ -20,7 +19,7 @@ public class LocalCaffeineCache {
 
     private static final int EXPIRE_DURATION = 15;
 
-    private static final int REFRESH_DURATION = 10;
+    private static final int REFRESH_DURATION = 15;
 
     private static final int PARALLELISM = Runtime.getRuntime().availableProcessors() * 4;
 
@@ -28,11 +27,15 @@ public class LocalCaffeineCache {
             (t, e) -> log.error("LocalCache fetch exception from：{}" ,t.getName(), e), true);
 
     /**
-     *
+     * 本地缓存信息
      */
-    private final LoadingCache<String, String> localSessionCache = initServiceCache();
+    public static final LoadingCache<String, String> localSessionCache = initServiceCache();
 
-
+    /**
+     * 本地缓存策略
+     *
+     * @return 缓存策略
+     */
     private static Caffeine<Object, Object> caffeineBuilder() {
         return Caffeine.newBuilder()
                 .executor(EXECUTOR)
@@ -42,18 +45,19 @@ public class LocalCaffeineCache {
                 .refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS);
     }
 
+    /**
+     * 本地缓存初始化
+     *
+     * @return 缓存
+     */
     private static LoadingCache<String, String> initServiceCache() {
-        BiFunction<String, String, Object> queryConfig = (key, redisCacheKey) -> {
-            return null;
-        };
         return caffeineBuilder().buildAsync((AsyncCacheLoader<String, String>) (key, executor) ->
                 CompletableFuture.supplyAsync(() -> {
-
-                    return null;
+                    logger.warn("本地缓存key:{}已经失效，需要异步加载！", key);
+                    return "value:"+System.currentTimeMillis();
                 }, executor)
         ).synchronous();
     }
-
 }
 
 
