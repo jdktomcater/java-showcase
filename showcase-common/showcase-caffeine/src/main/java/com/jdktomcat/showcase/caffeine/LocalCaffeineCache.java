@@ -15,9 +15,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LocalCaffeineCache {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalCaffeineCache.class);
+    private static Logger logger = LoggerFactory.getLogger(LocalCaffeineCache.class);
 
-    private static final int EXPIRE_DURATION = 15;
+//    private static final int EXPIRE_DURATION = 15;
+
+    private static final int REFRESH_DURATION = 15;
 
     private static final int PARALLELISM = Runtime.getRuntime().availableProcessors() * 4;
 
@@ -37,8 +39,10 @@ public class LocalCaffeineCache {
     private static Caffeine<Object, Object> caffeineBuilder() {
         return Caffeine.newBuilder()
                 .executor(EXECUTOR)
-                .expireAfterAccess(EXPIRE_DURATION, TimeUnit.SECONDS)
-                .maximumSize(200);
+//                .expireAfterWrite(EXPIRE_DURATION, TimeUnit.SECONDS)
+//                .expireAfterAccess(EXPIRE_DURATION, TimeUnit.SECONDS)
+                .maximumSize(200)
+                .refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS);
     }
 
     /**
