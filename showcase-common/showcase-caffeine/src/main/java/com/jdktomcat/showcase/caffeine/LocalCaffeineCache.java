@@ -15,9 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LocalCaffeineCache {
 
-    private static Logger logger = LoggerFactory.getLogger(LocalCaffeineCache.class);
-
-//    private static final int EXPIRE_DURATION = 15;
+    private static final Logger logger = LoggerFactory.getLogger(LocalCaffeineCache.class);
 
     private static final int REFRESH_DURATION = 15;
 
@@ -52,7 +50,7 @@ public class LocalCaffeineCache {
         return caffeineBuilder().buildAsync((AsyncCacheLoader<String, String>) (key, executor) ->
                 CompletableFuture.supplyAsync(() -> {
                     logger.warn("本地缓存key:{}已经失效，需要异步加载！", key);
-                    return "value:"+System.currentTimeMillis();
+                    return "value："+System.currentTimeMillis();
                 }, executor)
         ).synchronous();
     }

@@ -13,7 +13,6 @@ public class LocalCaffeineCacheTest extends TestCase {
     public void testLocalCache() throws InterruptedException {
         for (int i = 0; i < 1000; i++) {
             String value = LocalCaffeineCache.localSessionCache.get("key:" + i % 10);
-            System.out.println(value);
             TimeUnit.SECONDS.sleep(1);
         }
     }
