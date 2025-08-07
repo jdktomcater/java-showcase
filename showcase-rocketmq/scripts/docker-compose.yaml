@@ -1,0 +1,85 @@
+services:
+  rmq-name-srv-a:
+    image: apache/rocketmq:4.5.2
+    container_name: rmq-name-srv-a
+    ports:
+      - "9876:9876"
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-rocketmq/config/broker-a/broker-a.conf:/home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    command: sh mqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmq-name-srv-a
+
+  rmq-name-srv-b:
+    image: apache/rocketmq:4.5.2
+    container_name: rmq-name-srv-b
+    ports:
+      - "9877:9876"
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-rocketmq/config/broker-b/broker-b.conf:/home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    command: sh mqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmq-name-srv-b
+
+  rmq-broker-a:
+    image: apache/rocketmq:4.5.2
+    container_name: rmq-broker-a
+    ports:
+      - "10911:10911"
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-rocketmq/config/broker-a/broker-a.conf:/home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    environment:
+      TZ: Asia/Shanghai
+      NAMESRV_ADDR: "rmq-name-srv-a:9876"
+      JAVA_OPTS: " -Duser.home=/opt"
+      JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+    command: sh mqbroker -c /home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    links:
+      - rmq-name-srv-a:rmq-name-srv-a
+      - rmq-name-srv-b:rmq-name-srv-b
+    networks:
+      rmq:
+        aliases:
+          - rmq-broker-a
+
+  rmq-broker-b:
+    image: apache/rocketmq:4.5.2
+    container_name: rmq-broker-b
+    ports:
+      - "10912:10912"
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-rocketmq/config/broker-b/broker-b.conf:/home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    environment:
+      TZ: Asia/Shanghai
+      NAMESRV_ADDR: "rmq-name-srv-b:9877"
+      JAVA_OPTS: " -Duser.home=/opt"
+      JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+    command: sh mqbroker -c /home/rocketmq/rocketmq-4.5.2/conf/broker.conf
+    links:
+      - rmq-name-srv-a:rmq-name-srv-a
+      - rmq-name-srv-b:rmq-name-srv-b
+    networks:
+      rmq:
+        aliases:
+          - rmq-broker-b
+  rmq-console:
+    image: apacherocketmq/rocketmq-dashboard
+    container_name: rmq-console
+    ports:
+      - "8087:8080"
+    environment:
+      JAVA_OPTS: -Drocketmq.namesrv.addr=rmq-name-srv-a:9876;rmq-name-srv-b:9877 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.accessKey=rocketmq2 -Drocketmq.config.secretKey=12345678
+    volumes:
+      - /Users/timmy/workspace/idea/java-showcase/showcase-rocketmq/data:/tmp/rocketmq-console/data
+    networks:
+      rmq:
+        aliases:
+          - rmq-console
+networks:
+  rmq:
+    name: rmq
+    driver: bridge
