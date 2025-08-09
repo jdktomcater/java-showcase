@@ -32,7 +32,12 @@ public class LocalCaffeineCache {
      * @return 缓存策略
      */
     private static Caffeine<Object, Object> caffeineBuilder() {
-        return Caffeine.newBuilder().removalListener((o, o2, removalCause) -> logger.info("key:{}, value:{}", o, o2)).executor(EXECUTOR).maximumSize(200).refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS);
+        return Caffeine.newBuilder().removalListener((o, o2, removalCause) -> {
+            assert o2 != null;
+            Long previousValue = Long.parseLong(o2.toString());
+            Long currentValue = System.currentTimeMillis();
+            logger.info("key:{}, value:{} live:{}ms remove", o, o2, (currentValue - previousValue));
+        }).executor(EXECUTOR).maximumSize(200).refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS);
     }
 
     /**
