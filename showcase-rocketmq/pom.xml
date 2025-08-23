@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-rocketmq-producer</module>
+        <module>showcase-rocketmq-producer-filter</module>
         <module>showcase-rocketmq-consumer</module>
         <module>showcase-rocketmq-transaction</module>
         <module>showcase-rocketmq-pressure</module>
@@ -36,7 +37,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.20</version>
         </dependency>
     </dependencies>
     <build>
