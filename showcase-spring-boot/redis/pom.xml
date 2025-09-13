@@ -8,7 +8,6 @@
         <artifactId>showcase-spring-boot</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-
     <artifactId>redis</artifactId>
     <packaging>pom</packaging>
     <modules>
