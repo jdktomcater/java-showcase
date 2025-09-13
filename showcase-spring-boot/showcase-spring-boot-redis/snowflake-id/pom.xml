@@ -5,32 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
-        <artifactId>showcase-spring-boot</artifactId>
+        <artifactId>showcase-spring-boot-redis</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>redis</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>snowflake-id</module>
-    </modules>
+
+    <artifactId>snowflake-id</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-        <!--redisson-->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-    </dependencies>
 
 </project>
