@@ -5,22 +5,16 @@
         <groupId>jdktomcat.showcase</groupId>
         <artifactId>showcase-rocketmq-transaction</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-
     <artifactId>showcase-rocketmq-transaction-canal</artifactId>
     <packaging>jar</packaging>
-
     <name>showcase-rocketmq-transaction-canal</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatisplus.version>3.5.5</mybatisplus.version>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
