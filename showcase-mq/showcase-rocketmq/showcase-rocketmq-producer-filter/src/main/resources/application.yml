@@ -1,0 +1,56 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: rocketmq-producer-filter
+
+demo:
+  rocketmq:
+    topic: "telegram-topic"
+    dis:
+      topic: "distribution-topic"
+    delay:
+      topic: "delay-topic"
+    # 拦截器配置
+    interceptor:
+      # 消息验证拦截器
+      validation:
+        enabled: true
+        message-size:
+          max-size: 4194304  # 4MB
+          min-size: 1
+      # 消息加密拦截器
+      encryption:
+        enabled: false  # 默认关闭加密
+        key: "defaultEncryptionKey123"
+        algorithm: "AES"
+        message-types:
+          - "findDistributionMatchupJob"
+          - "withdraw"
+          - "financial"
+          - "user"
+        sensitive-keywords:
+          - "password"
+          - "token"
+          - "secret"
+          - "key"
+          - "credential"
+          - "auth"
+          - "private"
+      # 消息标签过滤拦截器
+      tag-filter:
+        enabled: true
+      # 消息统计拦截器
+      statistics:
+        enabled: true
+        output-interval: 100
+        detailed-enabled: true
+        retention-hours: 24
+
+logging:
+  level:
+    com.jdktomcat.showcase.rocketmq.producer.filter: DEBUG
+    org.apache.rocketmq: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

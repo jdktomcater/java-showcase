@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: showcase-kafka-consumer
+    # Kafka配置
+  kafka:
+    # 集群配置
+    bootstrap-servers: 172.20.10.3:9192,172.20.10.3:9292,172.20.10.3:9392
+    # 消费者配置
+    consumer:
+      # 消费者组
+      group-id: group-kafka-test
+      # 自动提交
+      enable-auto-commit: false
+      # 当没有初始offset或offset超出范围时该如何设置offset
+      # latest表示只消费新产生的数据，earliest表示从头开始消费，none表示抛出异常
+      auto-offset-reset: latest
+      # 每次消费多少条消息
+      max-poll-records: 5
+
+      listener:
+        # 设置批量消费
+        batch: true
+        # 若topic不存在，项目启动报错（关闭）
+        missing-topics-fatal: false
+        # 设置并发消费的线程数，不能超过partitions的大小
+        concurrency: 3

@@ -1,0 +1,285 @@
+# RocketMQ消费组影响测试配置文件
+
+# RocketMQ配置
+rocketmq:
+  namesrvAddr: 172.30.2.85:9876;172.30.2.86:9876;172.30.2.87:9876;172.30.2.88:9876
+  broker:
+    host: "localhost"
+    port: 10909
+  namesrv:
+    addr: "localhost:9876"
+
+# 测试配置
+test:
+  producer:
+    group: "test-producer-group"
+  topic: "test-topic"
+  tag: "test-tag"
+
+  # 基准测试配置
+  baseline:
+    consumer:
+      groups: 10
+    topics: 5
+    message:
+      rate: 1000  # 消息/秒
+      size: 1024  # 字节
+    duration: 1800  # 秒
+
+  # 压力测试配置
+  stress:
+    consumer:
+      groups: 50
+    topics: 20
+    message:
+      rate: 5000  # 消息/秒
+      size: 2048  # 字节
+    duration: 1800  # 秒
+
+  # 极限测试配置
+  limit:
+    consumer:
+      groups: 100
+    topics: 50
+    message:
+      rate: 10000  # 消息/秒
+      size: 4096  # 字节
+    duration: 1800  # 秒
+
+# 性能监控配置
+monitoring:
+  # 监控间隔(秒)
+  interval: 10
+
+  # 性能阈值
+  thresholds:
+    memory:
+      warning: 70    # 内存使用率警告阈值(%)
+      critical: 85   # 内存使用率严重阈值(%)
+    cpu:
+      warning: 80    # CPU使用率警告阈值(%)
+      critical: 95   # CPU使用率严重阈值(%)
+    connection:
+      warning: 1000  # 连接数警告阈值
+      critical: 2000 # 连接数严重阈值
+    consumer_group:
+      warning: 50    # 消费组数量警告阈值
+      critical: 100  # 消费组数量严重阈值
+    delay:
+      warning: 1000  # 消费延迟警告阈值(毫秒)
+      critical: 5000 # 消费延迟严重阈值(毫秒)
+
+# 日志配置
+logging:
+  level:
+    jdktomcat.showcase.rocketmq.pressure: INFO
+    org.apache.rocketmq: WARN
+  pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 测试环境配置
+environment:
+  # 测试环境名称
+  name: "production-simulation"
+
+  # 硬件配置
+  hardware:
+    cpu: "8核"
+    memory: "16GB"
+    disk: "500GB SSD"
+    network: "1Gbps"
+
+  # 软件版本
+  software:
+    rocketmq: "4.9.7"
+    java: "1.8"
+    spring: "2.7.0"
+
+# 报告配置
+reporting:
+  # 报告输出目录
+  output_dir: "./test-reports"
+  # 报告格式
+  format: "html"
+  # 是否包含详细日志
+  include_logs: true
+  # 是否包含性能图表
+  include_charts: true
+# 告警配置
+alerts:
+  # 告警通知方式
+  notification:
+    email:
+      enabled: false
+      smtp_host: "smtp.example.com"
+      smtp_port: 587
+      username: "alert@example.com"
+      password: "password"
+      recipients: ["admin@example.com"]
+
+    webhook:
+      enabled: true
+      url: "http://localhost:8080/api/alerts"
+      timeout: 5000
+
+  # 告警规则
+  rules:
+    - name: "broker_memory_high"
+      condition: "broker_memory_usage_percent > 80"
+      severity: "warning"
+      action: "scale_broker_memory"
+      message: "Broker内存使用率过高: {value}%"
+
+    - name: "broker_cpu_high"
+      condition: "broker_cpu_usage_percent > 90"
+      severity: "critical"
+      action: "scale_broker_cpu"
+      message: "Broker CPU使用率过高: {value}%"
+
+    - name: "consumer_groups_too_many"
+      condition: "consumer_group_count > 50"
+      severity: "warning"
+      action: "optimize_consumer_groups"
+      message: "消费组数量过多: {value}"
+
+    - name: "consume_delay_high"
+      condition: "consume_delay_ms > 5000"
+      severity: "critical"
+      action: "investigate_consumer_performance"
+      message: "消费延迟过高: {value}ms"
+
+# 优化建议配置
+optimization:
+  # 消费组优化
+  consumer_group:
+    # 最大消费组数量
+    max_count: 50
+    # 消费组合并策略
+    merge_strategy:
+      enabled: true
+      # 相似消费组合并阈值
+      similarity_threshold: 0.8
+    # 消费组清理策略
+    cleanup_strategy:
+      enabled: true
+      # 空闲消费组清理时间(小时)
+      idle_timeout: 24
+      # 清理检查间隔(小时)
+      check_interval: 6
+  # 资源优化
+  resource:
+    # 内存优化
+    memory:
+      # 堆内存最大使用率
+      max_heap_usage: 80
+      # 堆内存初始大小
+      initial_heap_size: "4g"
+      # 堆内存最大大小
+      max_heap_size: "8g"
+    # CPU优化
+    cpu:
+      # 最大CPU使用率
+      max_usage: 80
+      # 线程池大小
+      thread_pool_size: 16
+
+    # 网络优化
+    network:
+      # 最大连接数
+      max_connections: 1000
+      # 连接超时时间(毫秒)
+      connection_timeout: 30000
+      # 读写超时时间(毫秒)
+      read_write_timeout: 60000
+
+# 测试数据配置
+test_data:
+  # 消息内容生成
+  message:
+    # 消息内容类型
+    content_type: "random"
+    # 消息内容长度范围
+    length_range: [512, 4096]
+    # 消息内容字符集
+    charset: "UTF-8"
+
+  # 测试场景
+  scenarios:
+    - name: "normal_load"
+      description: "正常负载测试"
+      consumer_groups: 10
+      message_rate: 1000
+      duration: 1800
+
+    - name: "high_load"
+      description: "高负载测试"
+      consumer_groups: 50
+      message_rate: 5000
+      duration: 1800
+
+    - name: "extreme_load"
+      description: "极限负载测试"
+      consumer_groups: 100
+      message_rate: 10000
+      duration: 1800
+
+    - name: "recovery_test"
+      description: "恢复能力测试"
+      consumer_groups: 10
+      message_rate: 1000
+      duration: 900
+
+# 部署配置
+deployment:
+  # 测试环境部署
+  test_environment:
+    # 测试服务器配置
+    servers:
+      - name: "test-server-1"
+        host: "192.168.1.100"
+        port: 22
+        username: "testuser"
+        password: "testpass"
+        role: "broker"
+
+      - name: "test-server-2"
+        host: "192.168.1.101"
+        port: 22
+        username: "testuser"
+        password: "testpass"
+        role: "namesrv"
+
+    # 测试工具部署
+    tools:
+      - name: "rocketmq-dashboard"
+        version: "1.0.0"
+        port: 8080
+
+      - name: "prometheus"
+        version: "2.45.0"
+        port: 9090
+
+      - name: "grafana"
+        version: "9.5.0"
+        port: 3000
+
+# 安全配置
+security:
+  # 访问控制
+  access_control:
+    # 是否启用访问控制
+    enabled: true
+    # 允许的IP地址
+    allowed_ips: ["192.168.1.0/24", "10.0.0.0/8"]
+    # 认证方式
+    auth_method: "token"
+    # 认证令牌
+    auth_token: "test-token-12345"
+
+  # 数据保护
+  data_protection:
+    # 是否加密测试数据
+    encrypt_test_data: false
+    # 测试数据保留时间(天)
+    data_retention_days: 7
+    # 是否匿名化敏感数据
+    anonymize_sensitive_data: true

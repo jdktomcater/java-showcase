@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: showcase-kafka-producer
+    # Kafka配置
+  kafka:
+    # 集群配置
+    bootstrap-servers: 172.20.10.3:9192,172.20.10.3:9292,172.20.10.3:9392
+    # 生产者配置
+    producer:
+      # 重试次数
+      retries: 3
+      # ack（可选0、1、all/-1）
+      acks: 1
+      # 批量大小（字节）
+      batch-size: 1024
+      # 提交延时（ms）
+      linger: 1000
+      # 缓冲区大小（默认32M）
+      buffer-memory: 40960
+
+logging:
+  level:
+    root: info
+  file:
+    path: /home/timmy/workspace/hand-run/kafka/producer/log
+    name: kafka-producer.log
