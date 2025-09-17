@@ -1,0 +1,28 @@
+flowchart TD
+    A[Client 调用 POST /matchup/withdraw/create] --> B[WithdrawOrderController.createOrder]
+    B -->|MDC.put + log| C[WithdrawOrderServiceImp.createOrder]
+    C --> D{同分钟阈值超标? <br/>withdrawOrderServiceHelper.getCountForOrder}
+    D -- 是 --> E[withdrawThreshold<br/>构造WithdrawOrder: O_STATUS_CANCEL_AUTO, lock=-2, opType=1...]
+    E --> F[TyPayNotifyServiceHelper.asyncNotifyWithdrawSystemToAuto]
+    F --> G[Response.success 返回]
+    G --> H[Controller finally: MDC.remove]
+    H --> I[返回给 Client]
+    D -- 否 --> J[checkOrder 合法性/商户校验]
+    J --> K[checkRiskLimit 风控校验]
+    K --> L[checkMatchupRule 规则匹配]
+    L --> M[构建 WithdrawOrder<br/>status=CREATE, 生成平台单号, lock=-11, isChange=FIXED]
+    M --> N[计算有效期 requestSource orderArea]
+    N --> O{DB 入库<br/>withdrawOrderMapper.insert}
+    O -- 失败 --> P[Response.fail]
+    P --> H
+    O -- 成功 --> Q[计算拆单与优先策略<br/>U商禁拆/手工禁拆 FAST_OUT扫码禁拆 数币禁拆<br/>newUserPrior 优先 私有优先标记]
+    Q --> R[设置 splitSwitch & splitSubsidySwitch]
+    R --> S[写入撮合缓存池<br/>matchPoolServiceHelper.saveOrderInCacheAll]
+    S --> T[Response 返回]
+    T --> H
+    C -. 异常 .-> U[抛出异常]
+    U --> V[Controller catch]
+    V -->|BaseServiceException/ServiceException| W[Response.fail]
+    V -->|其他异常| X[Response.fail]
+    W --> H
+    X --> H

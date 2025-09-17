@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant C as Client
+    participant WC as WithdrawOrderController
+    participant WS as WithdrawOrderServiceImp
+    participant H as WithdrawOrderServiceHelper
+    participant M as WithdrawOrderMapper(DB)
+    participant MP as MatchPoolServiceHelper
+    participant R as Redis/Cache
+    participant N as TyPayNotifyServiceHelper
+
+    C->>WC: POST /matchup/withdraw/create (WithdrawOrderDto)
+    WC->>WC: MDC.put + log
+    WC->>WS: createOrder(order)
+
+    alt 阈值超标
+        WS->>H: getCountForOrder(order.merchantOrderId)
+        WS-->>WC: withdrawThreshold(order)
+        WS->>N: asyncNotifyWithdrawSystemToAuto(withdrawOrder, dto)
+        WS-->>WC: Response.success
+    else 正常创建
+        WS->>H: checkOrder(order)
+        WS->>H: checkRiskLimit(order)
+        WS->>H: checkMatchupRule(order) -> MatchupRuleDto
+        WS->>WS: 构建WithdrawOrder(O_STATUS_CREATE、lock=-11、isChange=FIXED、有效期等)
+        WS->>M: insert(objOrder)
+        alt 入库成功
+            WS->>WS: 计算拆单/优先策略(U商、扫码/数币禁拆、newUserPrior等)
+            WS->>MP: saveOrderInCacheAll(objOrder, matchupRuleDto, validTime, newUserPrior)
+            MP->>R: 写规则/混合池/最优先/监控等
+            MP-->>WS: Response
+            WS-->>WC: Response
+        else 入库失败
+            WS-->>WC: Response.fail
+        end
+    end
+
+    WC->>WC: finally MDC.remove
+    WC-->>C: Response
