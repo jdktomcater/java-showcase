@@ -1,0 +1,135 @@
+##### 判断该商户订单号是否为钱包订单 #####
+POST https://wallet.com/work/order/check
+Content-Type: application/json
+
+{
+  "merchantOrderId": "12334445"
+}
+
+##### 查询钱包工单类型列表 #####
+GET https://wallet.com/work/order/type/list
+
+Content-Type: application/json
+
+{
+  "code":0,
+  "msg":"成功",
+  "data":[
+    {"type":1,"name":"咨询"},
+    {"type":2,"name":"反馈"},
+    {"type":3,"name":"投诉"}
+  ]
+}
+
+
+##### 创建钱包工单接口 #####
+POST https://wallet.com/work/order/create
+Content-Type: application/json
+
+{
+  "merchantOrderId": "12334445",
+  "txWorkOrderId":"t65454333312",
+  "oType":1,
+  "qType":0,
+  "certificates":"http://www.baidu.com/1.png,http://www.baidu.com/2.png",
+  "desc": "hahhaha"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+  "data":"w123456"
+}
+
+##### 查询钱包历史工单列表 #####
+POST https://wallet.com/work/order/history
+Content-Type: application/json
+
+{
+  "txWorkOrderId": "t12334445"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+  "data": [
+    {"workOrderId": "w111111","createTime": "2025-02-13 19:00:00"},
+    {"workOrderId": "w222222","createTime": "2025-02-13 18:00:00"},
+    {"workOrderId": "w333333","createTime": "2025-02-13 17:00:00"},
+    {"workOrderId": "w444444","createTime": "2025-02-13 16:00:00"}
+  ]
+}
+
+##### 查询钱包工单详情 #####
+POST https://wallet.com/work/order/get
+Content-Type: application/json
+
+{
+  "workOrderId": "w12334445"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+  "data": {
+    "workOrderId": "w111111",
+    "merchantOrderId": "123456",
+    "createTime": "2025-02-13 19:00:00",
+    "lastResponseTime": "2025-02-13 20:00:00",
+    "orderStatus": "待回复",
+    "merchantName": "商户名称",
+    "questionType": "问题类型",
+    "status": "待回复",
+    "amount": 250.00,
+    "desc": "我有一个大大的问题",
+    "certificates": "http://www.baidu.com/1.png,http://www.baidu.com/2.png",
+    "messages": [
+      {"desc": "啥问题？","certificates": "http://www.baidu.com/3.png,http://www.baidu.com/4.png","createTime": "2025-02-13 16:00:00"},
+      {"desc": "我尿急","certificates": "http://www.baidu.com/5.png,http://www.baidu.com/6.png","createTime": "2025-02-13 17:00:00"},
+      {"desc": "找厕所","certificates": "http://www.baidu.com/7.png,http://www.baidu.com/8.png","createTime": "2025-02-13 18:00:00"}
+    ]
+  }
+}
+
+##### 查询钱包工单详情 #####
+POST https://wallet.com/work/order/response
+Content-Type: application/json
+
+{
+  "workOrderId": "w12334445",
+  "desc": "尿急",
+  "certificates": "http://www.baidu.com/1.png,http://www.baidu.com/2.png"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+}
+
+##### 关闭钱包工单 #####
+POST https://wallet.com/work/order/close
+Content-Type: application/json
+
+{
+  "workOrderId": "w12334445"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+  "data": true
+}
+
+##### 钱包消息通知 #####
+POST https://tx.com/work/order/update
+Content-Type: application/json
+
+{
+  "workOrderId": "w12334445"
+}
+
+{
+  "code": 0,
+  "msg":"成功",
+  "data": true
+}

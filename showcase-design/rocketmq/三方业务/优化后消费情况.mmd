@@ -1,0 +1,18 @@
+graph TD
+    A[RocketMQ Broker] --> B[Topic: third_channel_query_task_new]
+    B --> C[tradeNoConsumerGroup: *]
+
+    C --> G[Consumer Instance 1]
+    C --> H[Consumer Instance 2]
+    C --> I[Consumer Instance 3]
+    C --> J[Consumer Instance N]
+
+    G --> K[消息处理逻辑]
+    H --> K[消息处理逻辑]
+    I --> K[消息处理逻辑]
+    J --> K[消息处理逻辑]
+
+    K --> O[查单服务]
+    K --> P[查单服务]
+    K --> Q[查单服务]
+    K --> R[查单服务]

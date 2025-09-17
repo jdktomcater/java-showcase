@@ -1,0 +1,54 @@
+@startuml
+title 1.查询天下商户订单号在钱包系统是否存在
+autonumber
+天下-> 天下: 创建天下工单
+天下-> 钱包: 查询天下商户订单号在钱包系统是否存在
+钱包-> 天下: 结果
+天下-> 天下: 创建天下工单完成
+autonumber stop
+
+newpage 2.查询钱包工单类型
+autonumber
+天下-> 钱包: 查询钱包工单类型列表
+钱包-> 天下: 返回结果
+autonumber stop
+
+newpage 3.请求创建钱包工单
+autonumber
+天下-> 钱包: 请求创建钱包工单
+钱包-> 天下: 创建钱包工单结果
+天下-> 天下: 更新天下工单
+autonumber stop
+
+newpage 4.查询天下工单下对应钱包历史工单列表
+autonumber
+天下-> 钱包: 查询天下工单下对应钱包工单列表
+钱包-> 天下: 返回钱包历史工单列表
+autonumber stop
+
+newpage 5.查询钱包工单详情
+autonumber
+天下-> 钱包: 查询钱包工单详情
+钱包-> 天下: 返回钱包工单详情
+autonumber stop
+
+newpage 6.回复钱包工单消息
+autonumber
+天下-> 钱包: 回复钱包工单消息
+钱包-> 天下: 回复结果
+autonumber stop
+
+newpage 7.关闭钱包工单
+autonumber
+天下-> 钱包: 关闭钱包工单
+钱包-> 天下: 操作结果
+autonumber stop
+
+newpage 8.钱包消息通知
+autonumber
+钱包-> 天下: 钱包工单消息更新
+天下-> 天下: 更新天下工单信息
+天下-> 钱包: 更新结果
+autonumber stop
+
+@enduml

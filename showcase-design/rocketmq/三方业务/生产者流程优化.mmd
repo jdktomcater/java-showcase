@@ -1,0 +1,42 @@
+graph TD
+    A[业务触发] --> B{触发类型}
+
+    B -->|提款回调| C[FastWithdrawNotifyController]
+    B -->|定时任务| D[QueryThirdDepositOrderJob]
+    B -->|手动触发| E[OrderController]
+
+    C --> F[创建OrderQueryTaskVO]
+    D --> G[查询未完成订单]
+    E --> H[创建查询任务]
+
+    F --> I[设置订单信息]
+    G --> J[遍历订单列表]
+    H --> K[设置查询参数]
+
+    I --> L[设置查询次数count=1]
+    J --> M[检查订单状态]
+    K --> N[设置渠道信息]
+
+    L --> O[OrderFastQueryTask.submitQueryTask]
+    M --> P{订单是否需要查询}
+    N --> Q[创建查询任务]
+
+    P -->|是| R[创建查询消息]
+    P -->|否| S[跳过订单]
+    Q --> T[序列化消息]
+
+    R --> T
+    S --> U[处理下一个订单]
+    T --> V[发送到RocketMQ]
+
+    U --> J
+    V --> PP{nacos配置主题是否切换}
+    PP -->|是| WY[Topic: third_channel_query_task_new]
+    PP -->|否| WN[Topic: third_channel_query_task_new]
+    WY --> X[消息入队]
+    WN --> X[消息入队]
+    X --> Y[等待消费者处理]
+
+    Y --> Z[发送完成]
+    Z --> AA[记录发送日志]
+    AA --> BB[结束]

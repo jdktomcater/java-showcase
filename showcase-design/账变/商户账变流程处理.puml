@@ -1,0 +1,9 @@
+@startuml
+start
+repeat
+  :读取数据;
+  :生成图片;
+repeat while (更多数据?)
+stop
+@enduml
+

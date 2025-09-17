@@ -1,0 +1,20 @@
+@startuml
+autonumber
+box "业务服务" #LightGreen
+业务服务-> 本地缓存
+本地缓存-> 指纹机服务: http加密/解密请求
+end box
+box "指纹机微服务" #LightBlue
+participant 指纹机服务
+end box
+指纹机服务 -> 指纹机服务:对称加密解密
+box "数据存储" #Pink
+participant redis
+participant OceanBase
+end box
+指纹机服务 -> redis:保存\查询
+redis--> OceanBase:异步存储
+redis -> 指纹机服务:加解密结果
+指纹机服务-> 业务服务:加解密结果
+autonumber stop
+@enduml

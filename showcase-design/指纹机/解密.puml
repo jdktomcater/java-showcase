@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:业务服务解密请求：密文+密钥（项目:业务）;
+if (密钥校验) then (true)
+  :批量查询redis;
+else (false)
+  :异常;
+endif
+:返回结果;
+stop
+
+@enduml

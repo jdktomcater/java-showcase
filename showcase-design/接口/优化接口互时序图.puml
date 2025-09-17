@@ -1,0 +1,51 @@
+@startuml
+title 商户天下交互
+participant 商户
+box "运维" #20EF99
+participant CDN
+participant 防火墙
+participant F5
+participant Nginx
+end box
+box "服务" #99FF99
+participant Gateway
+participant 调度
+end box
+group 商户下单
+autonumber
+商户-> CDN: 下单
+CDN-> 防火墙:下单
+防火墙-> F5:下单
+F5->Nginx:下单
+Nginx->Gateway:下单
+Gateway->调度:下单
+调度->调度:业务处理
+调度-->Gateway:结果
+Gateway-->Nginx:结果
+Nginx-->F5:结果
+F5-->防火墙:结果
+防火墙-->商户:结果
+autonumber stop
+end
+
+group 回调
+调度->商户:结果回调
+end
+
+group 商户查单
+autonumber
+商户-> CDN: 查单
+CDN-> 防火墙:查单
+防火墙-> F5:查单
+F5->Nginx:查单
+Nginx->Gateway:查单
+Gateway->调度:查单
+调度->调度:业务处理
+调度-->Gateway:结果
+Gateway-->Nginx:结果
+Nginx-->F5:结果
+F5-->防火墙:结果
+防火墙-->商户:结果
+autonumber stop
+end
+@enduml

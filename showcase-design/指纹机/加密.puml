@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:业务服务加密请求：明文+密钥（项目:业务）;
+if (密钥校验) then (true)
+  :统一服务密钥加密;
+  :批量写入redis;
+  :批量写入MySQL(根据密钥来分库分表);
+else (false)
+  :异常;
+endif
+:返回结果;
+stop
+
+@enduml

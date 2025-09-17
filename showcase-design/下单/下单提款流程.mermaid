@@ -1,0 +1,72 @@
+graph TB
+    subgraph "客户端层"
+        A[客户端应用]
+    end
+
+    subgraph "API网关层"
+        B[TyPayJV2Api]
+        C[RiskControlVerifyFilter]
+        D[IpWhiteListFilter]
+        E[RateLimitedFilter]
+    end
+
+    subgraph "调度服务层"
+        F[TyPayJV2Dispatch]
+        G[WithdrawApiController]
+        H[ValidateService]
+        I[WithdrawService]
+        J[WithdrawRiskManagementService]
+    end
+
+    subgraph "撮合服务层"
+        K[MatchupPayHub]
+        L[WithdrawOrderController]
+        M[WithdrawOrderService]
+        N[WithdrawOrderMatchHelper]
+        O[MatchPoolServiceHelper]
+    end
+
+    subgraph "基础服务层"
+        P[TyPayJV2BaseService]
+        Q[TyPayJV2ORM]
+        R[TyPayJV2Cache]
+    end
+
+    subgraph "外部服务"
+        S[Redis缓存]
+        T[MySQL数据库]
+        U[RocketMQ消息队列]
+        V[风控服务]
+        W[三方支付渠道]
+    end
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    G --> I
+    G --> J
+    I --> K
+    K --> L
+    L --> M
+    M --> N
+    M --> O
+    F --> P
+    F --> Q
+    F --> R
+    K --> P
+    K --> Q
+    K --> R
+    C --> V
+    G --> S
+    I --> S
+    M --> S
+    G --> T
+    I --> T
+    M --> T
+    I --> U
+    M --> U
+    I --> W

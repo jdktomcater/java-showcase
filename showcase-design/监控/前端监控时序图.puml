@@ -1,0 +1,30 @@
+@startuml
+title 前端监控时序图
+participant 前端 #20EE00
+box "后端" #20EF99
+participant 管理后台
+participant 调度服务
+participant 告警服务
+end box
+
+participant 电报  #99FF99
+actor 开发
+
+autonumber
+前端-> 前端: 异常
+前端-> 前端: 捕获异常栈
+前端-> 前端: 组装数据
+前端-> 管理后台: 传输告警
+管理后台->前端: 结果
+autonumber stop
+
+autonumber
+管理后台--> 管理后台: 告警筛选
+管理后台-> 管理后台: 告警分析组装
+管理后台-> 调度服务: 告警信息传递
+调度服务-> 告警服务: 告警信息传递
+告警服务-> 电报: 告警信息传递
+电报-> 开发: 预警
+autonumber stop
+
+@enduml

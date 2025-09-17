@@ -1,0 +1,13 @@
+@startuml
+state 新增 #pink
+state 成功 #green
+state 失败 #red
+[*] -[#pink]-> 新增
+新增 : 会员提现下单冻结余额
+新增 -[#green]-> 成功
+新增 -[#red]-> 失败
+成功 : 扣除冻结余额，总额减少
+失败 : 冻结余额回滚到可用余额，总额不变
+成功 -[#green]-> [*]
+失败 -[#red]-> [*]
+@enduml

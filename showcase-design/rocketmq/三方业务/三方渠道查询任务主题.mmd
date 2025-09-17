@@ -1,0 +1,21 @@
+graph TD
+    A[RocketMQ Broker] --> B[Topic: third_channel_query_task]
+    B --> C[Consumer Group 1: WithdrawOrderXinfutongpayiCheckJob]
+    B --> D[Consumer Group 2: WithdrawOrderShanDePayByDomesticIPPayCheckJob]
+    B --> E[Consumer Group 3: WithdrawOrderYibaopayiCheckJob]
+    B --> F[Consumer Group N: WithdrawOrder...CheckJob]
+
+    C --> G[Consumer Instance 1]
+    D --> H[Consumer Instance 2]
+    E --> I[Consumer Instance 3]
+    F --> J[Consumer Instance N]
+
+    G --> K[消息处理逻辑]
+    H --> L[消息处理逻辑]
+    I --> M[消息处理逻辑]
+    J --> N[消息处理逻辑]
+
+    K --> O[查单服务]
+    L --> P[查单服务]
+    M --> Q[查单服务]
+    N --> R[查单服务]

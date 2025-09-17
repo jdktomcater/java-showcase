@@ -1,0 +1,5 @@
+sequenceDiagram
+    participant Business as 业务服务
+    participant FingerPrint as 指纹机服务
+    Business->>FingerPrint: 加/解密请求
+    FingerPrint->>Business: 密/明文结果

@@ -1,0 +1,47 @@
+sequenceDiagram
+    participant Client as 客户端
+    participant Gateway as API网关
+    participant RiskControl as 风控服务
+    participant Dispatch as 调度服务
+    participant Validate as 验证服务
+    participant Deposit as 充值服务
+    participant Matchup as 撮合服务
+    participant Redis as Redis缓存
+    participant DB as 数据库
+    participant MQ as 消息队列
+
+    Client->>Gateway: POST /deposit/create
+    Gateway->>RiskControl: 风控验证
+    RiskControl-->>Gateway: 验证结果
+
+    alt 风控通过
+        Gateway->>Dispatch: 路由请求
+        Dispatch->>Validate: 参数验证
+        Validate->>DB: 查询商户信息
+        DB-->>Validate: 商户数据
+        Validate-->>Dispatch: 验证结果
+
+        alt 验证通过
+            Dispatch->>Deposit: 创建订单
+            Deposit->>DB: 保存订单
+            DB-->>Deposit: 订单ID
+            Deposit->>MQ: 发送订单消息
+            Deposit->>Matchup: 调用撮合服务
+            Matchup->>Redis: 查询可用提款订单
+            Redis-->>Matchup: 提款订单列表
+            Matchup->>DB: 保存撮合结果
+            DB-->>Matchup: 保存成功
+            Matchup->>Redis: 设置过期时间
+            Matchup-->>Deposit: 撮合结果
+            Deposit-->>Dispatch: 订单创建结果
+            Dispatch-->>Gateway: 响应结果
+            Gateway-->>Client: 返回响应
+        else 验证失败
+            Validate-->>Dispatch: 验证错误
+            Dispatch-->>Gateway: 错误响应
+            Gateway-->>Client: 返回错误
+        end
+    else 风控拒绝
+        RiskControl-->>Gateway: 风控拒绝
+        Gateway-->>Client: 返回拒绝
+    end

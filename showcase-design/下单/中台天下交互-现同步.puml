@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+!pragma teoz true
+skinparam sequenceMessageAlign center
+
+autonumber
+note left of 中台: 如果下单处理时长超过5s\n，就会报超时异常。
+loop 100次
+    {start} 中台 -> Dispatch: 请求提款
+    Dispatch -> Dispatch: 提款业务处理1
+    Dispatch -> Dispatch: 提款业务处理2
+    Dispatch -> Dispatch: 提款业务处理3
+    Dispatch -> Dispatch: 提款业务处理4
+    Dispatch -> Dispatch: 提款业务处理5
+    {end} Dispatch -> 中台: 提款结果
+    {start} <-> {end} : 同步提款
+end
+
+@enduml

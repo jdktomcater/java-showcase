@@ -1,0 +1,54 @@
+sequenceDiagram
+    participant Client as 客户端
+    participant Gateway as API网关
+    participant RiskControl as 风控服务
+    participant Dispatch as 调度服务
+    participant Validate as 验证服务
+    participant Withdraw as 提款服务
+    participant RiskMgmt as 风控管理
+    participant Matchup as 撮合服务
+    participant Redis as Redis缓存
+    participant DB as 数据库
+    participant MQ as 消息队列
+    participant ThirdParty as 三方渠道
+
+    Client->>Gateway: POST /withdraw/create
+    Gateway->>RiskControl: 风控验证
+    RiskControl-->>Gateway: 验证结果
+
+    alt 风控通过
+        Gateway->>Dispatch: 路由请求
+        Dispatch->>RiskMgmt: 重复订单检查
+        RiskMgmt->>Redis: 检查订单重复
+        Redis-->>RiskMgmt: 检查结果
+        RiskMgmt-->>Dispatch: 检查通过
+
+        Dispatch->>Validate: 参数验证
+        Validate->>DB: 查询商户信息
+        DB-->>Validate: 商户数据
+        Validate-->>Dispatch: 验证结果
+
+        alt 验证通过
+            Dispatch->>Withdraw: 创建提款订单
+            Withdraw->>DB: 保存订单
+            DB-->>Withdraw: 订单ID
+            Withdraw->>MQ: 发送订单消息
+            Withdraw->>Matchup: 调用撮合服务
+            Matchup->>Redis: 查询可用充值订单
+            Redis-->>Matchup: 充值订单列表
+            Matchup->>DB: 保存撮合结果
+            DB-->>Matchup: 保存成功
+            Matchup->>Redis: 设置过期时间
+            Matchup-->>Withdraw: 撮合结果
+            Withdraw-->>Dispatch: 订单创建结果
+            Dispatch-->>Gateway: 响应结果
+            Gateway-->>Client: 返回响应
+        else 验证失败
+            Validate-->>Dispatch: 验证错误
+            Dispatch-->>Gateway: 错误响应
+            Gateway-->>Client: 返回错误
+        end
+    else 风控拒绝
+        RiskControl-->>Gateway: 风控拒绝
+        Gateway-->>Client: 返回拒绝
+    end

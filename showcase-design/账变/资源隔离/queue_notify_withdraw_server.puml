@@ -1,0 +1,44 @@
+@startmindmap
+'https://plantuml.com/mindmap-diagram
+
+caption 主题整理
+title 提款订单相关通知主题
+
+* <&flag>queue_notify_withdraw_server 提款订单相关主题
+
+** <&globe>WithdrawOrderNotifyJob 提款单通知
+*** Producer 生产者
+**** 三方提款订单提款失败消息处理逻辑中会重新生产消息提款单通知
+**** 充值订单取消
+
+*** Consumer 消费者
+
+** <&graph>MerchantWithdrawOrderJob 商户提款单通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&pulse>InternalWithdrawOrderPayBankJob 内部提款单支付银行通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&people>WithdrawOrderPayBankJob 提款单支付银行通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&star>ThirdWithdrawOrderNotifyJob 三方提款单通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&globe>ThirdwithdrawNotifyJob 三方回调通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&graph>ThirdwithdrawfailNotifyJob 三方提款订单失败回调通知
+*** Producer 生产者
+*** Consumer 消费者
+
+** <&pulse>WithdrawOrderCloseJob 提款订单关闭通知
+*** Producer 生产者
+*** Consumer 消费者
+
+@endmindmap

@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+!pragma teoz true
+
+autonumber
+note left of 中台: 如果下单处理时长超过5s\n，就会报超时异常。
+loop 100次
+    {start} 中台 -> Proxy: 提款请求n
+    Proxy -> Proxy: 缓存提款请求n
+    {end} Proxy -> 中台: 提款请求n收到确认ACK
+    {start} <-> {end} : 单次下单等待时间
+end
+
+autonumber 1
+loop 100次
+    ...排队...
+    Proxy -> Dispatch: 延迟提款请求n
+    Dispatch -> Dispatch: 提款业务处理1
+    Dispatch -> Dispatch: 提款业务处理2
+    Dispatch -> Dispatch: 提款业务处理3
+    Dispatch -> Dispatch: 提款业务处理4
+    Dispatch -> Dispatch: 提款业务处理5
+    Dispatch -> Proxy: 提款请求n结果
+    Proxy -> 中台: 异步响应提款结果
+end
+
+@enduml
