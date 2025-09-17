@@ -1,0 +1,41 @@
+sequenceDiagram
+    participant Redis
+    participant Listener as KeyExpiredListener
+    participant RUtil as RedisUtil
+    participant Job as OrderExpiredJob
+
+    Redis->>Listener: onMessage 接收过期事件
+    Listener->>Listener: expiredKey = 消息体字符串
+
+    alt 前缀 UN_MATCH_WITHDRAW_PREFIX
+        Listener->>RUtil: incr 去重键
+        RUtil-->>Listener: count
+        alt count 等于 1
+            Listener->>RUtil: expire 去重键 10 秒
+            Listener->>Listener: 分割 expiredKey 获取 node 与 orderId
+            Listener->>Job: doUnMatchExpiredWithdrawOrder 使用 node 与 orderId
+        end
+    else 前缀 MATCH_DEPOSIT_PREFIX
+        Listener->>RUtil: incr 去重键
+        RUtil-->>Listener: count
+        alt count 等于 1
+            Listener->>RUtil: expire 去重键 10 秒
+            Listener->>Listener: 分割 expiredKey 获取 node 与 orderId
+            Listener->>Job: doExpiredUnDepositConfirmOrder 使用 node 与 orderId
+        end
+    else 前缀 MATCH_WITHDRAW_PREFIX
+        Listener->>RUtil: incr 去重键
+        RUtil-->>Listener: count
+        alt count 等于 1
+            Listener->>RUtil: expire 去重键 10 秒
+            Listener->>Listener: 分割 expiredKey 获取 node 与 orderId
+            Listener->>Job: doExpiredUnWithdrawConfirmOrder 使用 node 与 orderId
+        end
+    else 前缀 UEWF_PREFIX
+        Listener->>RUtil: incr 去重键
+        RUtil-->>Listener: count
+        alt count 等于 1
+            Listener->>RUtil: expire 去重键 10 秒
+            Listener->>Job: doExpiredUnDepositOrder 使用 expiredKey
+        end
+    end

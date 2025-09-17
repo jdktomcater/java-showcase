@@ -1,0 +1,32 @@
+flowchart TD
+    A[Redis key 过期事件] --> B[KeyExpiredListener.onMessage]
+    B --> C[expiredKey = message body 字符串]
+    C --> D{前缀匹配}
+    D -- UN_MATCH_WITHDRAW_PREFIX --> E[去重 incr MATCH_INCR_KEY + expiredKey]
+    D -- MATCH_DEPOSIT_PREFIX --> I[去重 incr MATCH_INCR_KEY + expiredKey]
+    D -- MATCH_WITHDRAW_PREFIX --> M[去重 incr MATCH_INCR_KEY + expiredKey]
+    D -- UEWF_PREFIX --> Q[去重 incr MATCH_INCR_KEY + expiredKey]
+    D -- 其他 --> Z[忽略]
+
+    E --> F{count 等于 1}
+    F -- 否 --> Z
+    F -- 是 --> G[设置去重键过期 10 秒]
+    G --> H[按下划线分割 取 node 与 orderId]
+    H --> H1[调用 doUnMatchExpiredWithdrawOrder]
+
+    I --> J{count 等于 1}
+    J -- 否 --> Z
+    J -- 是 --> K[设置去重键过期 10 秒]
+    K --> L[按下划线分割 取 node 与 orderId]
+    L --> L1[调用 doExpiredUnDepositConfirmOrder]
+
+    M --> N{count 等于 1}
+    N -- 否 --> Z
+    N -- 是 --> O[设置去重键过期 10 秒]
+    O --> P[按下划线分割 取 node 与 orderId]
+    P --> P1[调用 doExpiredUnWithdrawConfirmOrder]
+
+    Q --> R{count 等于 1}
+    R -- 否 --> Z
+    R -- 是 --> S[设置去重键过期 10 秒]
+    S --> T[调用 doExpiredUnDepositOrder 使用完整 expiredKey]
