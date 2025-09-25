@@ -25,12 +25,12 @@ Admin --> UC_Adjust
 Risk --> UC_AdjustReject
 Hub --> UC_HubAdjust
 
-UC_Deposit ..> UC_Lock : <<include>>
-UC_Withdraw ..> UC_Lock : <<include>>
-UC_WithdrawJob ..> UC_Lock : <<include>>
-UC_Adjust ..> UC_Lock : <<include>>
-UC_AdjustReject ..> UC_Lock : <<include>>
-UC_HubAdjust ..> UC_Lock : <<include>>
+UC_Deposit ..> UC_Lock : 请求
+UC_Withdraw ..> UC_Lock : 请求
+UC_WithdrawJob ..> UC_Lock : 请求
+UC_Adjust ..> UC_Lock : 请求
+UC_AdjustReject ..> UC_Lock : 请求
+UC_HubAdjust ..> UC_Lock : 请求
 
 note right of UC_Lock
 - 键前缀: LOCK_MERCHANT_BALANCE_SUM + merchantId
