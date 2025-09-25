@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+
+actor "后台运营" as Admin
+actor "定时/异步任务" as Job
+actor "充值/订单服务" as PaySvc
+actor "清结算服务" as Liquidate
+actor "审核/风控" as Risk
+actor "钱包Hub平台" as Hub
+
+rectangle "商户余额变更服务" {
+  usecase UC_Lock as "获取/释放商户余额锁\nMERCHANT_BALANCE_LOCK"
+  usecase UC_Deposit as "充值成功账变"
+  usecase UC_Withdraw as "提现成功结算账变"
+  usecase UC_WithdrawJob as "提现任务账变处理"
+  usecase UC_Adjust as "后台人工调账/手动对账"
+  usecase UC_AdjustReject as "上分/调账审批拒绝"
+  usecase UC_HubAdjust as "钱包Hub调账"
+}
+
+PaySvc --> UC_Deposit
+Liquidate --> UC_Withdraw
+Job --> UC_WithdrawJob
+Admin --> UC_Adjust
+Risk --> UC_AdjustReject
+Hub --> UC_HubAdjust
+
+UC_Deposit ..> UC_Lock : <<include>>
+UC_Withdraw ..> UC_Lock : <<include>>
+UC_WithdrawJob ..> UC_Lock : <<include>>
+UC_Adjust ..> UC_Lock : <<include>>
+UC_AdjustReject ..> UC_Lock : <<include>>
+UC_HubAdjust ..> UC_Lock : <<include>>
+
+note right of UC_Lock
+- 键前缀: LOCK_MERCHANT_BALANCE_SUM + merchantId
+- 默认等待: 8s, 租期: 10s
+- try-with-resources 自动释放 或 finally 解锁
+end note
+@enduml
