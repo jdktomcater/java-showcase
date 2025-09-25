@@ -1,0 +1,21 @@
+@startuml
+start
+:RocketMQ 推送消息 -> consumeMessage;
+:记录 topic/tags/keys/msgId;
+:执行 consume(tag, topic, messageExt);
+if (消费是否成功?) then (是)
+  :返回 CONSUME_SUCCESS;
+else (否)
+  :进入 canRetry(messageExt);
+  if (reconsumeTimes < retryCount) then (是)
+    :记录重试日志(第 reconsumeTimes+1 次);
+    :返回 RECONSUME_LATER;
+  else (否，达到上限)
+    :记录达到最大重试日志;
+    :解析 body 获取 OrderID;
+    :异步发送 Telegram 告警;
+    :返回 CONSUME_SUCCESS(不再重试);
+  endif
+endif
+stop
+@enduml
