@@ -21,6 +21,7 @@
         <module>showcase-jasypt</module>
         <module>showcase-aviator</module>
         <module>showcase-caffeine</module>
+        <module>showcase-ipgeo</module>
     </modules>
 
     <properties>
