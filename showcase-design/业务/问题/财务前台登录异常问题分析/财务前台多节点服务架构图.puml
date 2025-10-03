@@ -35,6 +35,10 @@ DNS --> CDN_WAF
 CDN_WAF --> LB
 LB --> Nginx
 
+note left of Nginx
+  轮询策略导致每次请求本地缓存出现数据不一致现象
+end note
+
 Nginx --> S1:轮询
 Nginx --> S2:轮询
 Nginx --> S3:轮询

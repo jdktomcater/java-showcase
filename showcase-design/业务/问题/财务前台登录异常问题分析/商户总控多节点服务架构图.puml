@@ -35,6 +35,10 @@ DNS --> CDN_WAF
 CDN_WAF --> LB
 LB --> Nginx
 
+note left of Nginx
+  IP哈希策略导致每次请求本地缓存不会出现数据不一致现象
+end note
+
 Nginx --> S1:IP哈希
 Nginx --> S2:IP哈希
 Nginx --> S3:IP哈希
