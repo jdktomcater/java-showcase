@@ -1,0 +1,59 @@
+@startuml
+skinparam dpi 120
+actor Client
+cloud DNS
+cloud CDN_WAF as "CDN/WAF"
+rectangle LB as "Load Balancer (L4/L7)"
+rectangle Nginx as "Nginx"
+
+node "App Cluster" {
+  node "Instance #1" as S1
+  node "Instance #2" as S2
+  node "Instance #3" as S3
+  node "Instance #4" as S4
+  node "Instance #5" as S5
+  node "Instance #6" as S6
+
+  component "LocalCache1" as lc1
+  component "LocalCache2" as lc2
+  component "LocalCache3" as lc3
+  component "LocalCache4" as lc4
+  component "LocalCache5" as lc5
+  component "LocalCache6" as lc6
+
+  S1 -[#Red]-> lc1
+  S2 -[#Red]-> lc2
+  S3 -[#Red]-> lc3
+  S4 -[#Red]-> lc4
+  S5 -[#Red]-> lc5
+  S6 -[#Red]-> lc6
+}
+cloud REDIS as "Redis Cluster"
+
+Client --> DNS
+DNS --> CDN_WAF
+CDN_WAF --> LB
+LB --> Nginx
+
+Nginx --> S1:轮询
+Nginx --> S2:轮询
+Nginx --> S3:轮询
+Nginx --> S4:轮询
+Nginx --> S5:轮询
+Nginx --> S6:轮询
+
+S1 -[#Green]-> REDIS:同步缓存
+S2 -[#Green]-> REDIS:同步缓存
+S3 -[#Green]-> REDIS:同步缓存
+S4 -[#Green]-> REDIS:同步缓存
+S5 -[#Green]-> REDIS:同步缓存
+S6 -[#Green]-> REDIS:同步缓存
+
+lc1 -[#Red]-> REDIS:异步加载
+lc2 -[#Red]-> REDIS:异步加载
+lc3 -[#Red]-> REDIS:异步加载
+lc4 -[#Red]-> REDIS:异步加载
+lc5 -[#Red]-> REDIS:异步加载
+lc6 -[#Red]-> REDIS:异步加载
+
+@enduml
