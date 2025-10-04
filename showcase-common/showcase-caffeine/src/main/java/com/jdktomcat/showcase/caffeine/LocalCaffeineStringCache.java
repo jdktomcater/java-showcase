@@ -11,9 +11,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class LocalCaffeineCache {
+public class LocalCaffeineStringCache {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalCaffeineCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalCaffeineStringCache.class);
 
     private static final int REFRESH_DURATION = 15;
 
