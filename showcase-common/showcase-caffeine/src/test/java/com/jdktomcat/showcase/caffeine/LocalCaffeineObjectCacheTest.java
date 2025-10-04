@@ -32,6 +32,7 @@ public class LocalCaffeineObjectCacheTest extends TestCase {
                 "8888888888888888888888888888",
                 "9999999999999999999999999999"
         };
+
         for (int i = 0; i < 100; i++) {
             String key = sessionIds[(i % 10)];
             byte[] keyBytes = key.getBytes();
