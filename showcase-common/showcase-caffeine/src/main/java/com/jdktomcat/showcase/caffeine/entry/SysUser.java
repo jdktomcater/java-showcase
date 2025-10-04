@@ -28,9 +28,4 @@ public class SysUser implements Serializable {
      * 用户名称
      */
     private String userName;
-
-    /**
-     * 用户最后登陆时间
-     */
-    private Date lastLoginTime;
 }

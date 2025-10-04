@@ -1,9 +1,11 @@
 package com.jdktomcat.showcase.caffeine;
 
 import com.jdktomcat.showcase.caffeine.entry.ByteArrayKey;
+import com.jdktomcat.showcase.caffeine.entry.SysUser;
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +65,34 @@ public class LocalCaffeineObjectCacheTest extends TestCase {
             log.info("StringKey:{} ObjectKey:{}, value:{} backupValue:{}", key, byteArrayKey, value, valueBackup);
             TimeUnit.MILLISECONDS.sleep(10);
         }
+    }
+
+
+    public void testObjectLocalCache() throws InterruptedException {
+        String userName = "timmy";
+        Long userId = 3693L;
+        SimplePrincipalCollection[] simplePrincipalCollections = new SimplePrincipalCollection[2];
+        simplePrincipalCollections[0] =  new SimplePrincipalCollection();
+        SysUser sysUser1 = new SysUser();
+        sysUser1.setUserId(userId);
+        sysUser1.setUserName(userName);
+        simplePrincipalCollections[0].add(sysUser1,"user_realm");
+
+        byte[] keyBytes1 = SerializationUtils.serialize(simplePrincipalCollections[0]);
+        LocalCaffeineObjectCache.localSessionCache.put(new ByteArrayKey(keyBytes1),"value111111111111");
+
+        TimeUnit.MILLISECONDS.sleep(50);
+
+        simplePrincipalCollections[1] =  new SimplePrincipalCollection();
+        SysUser sysUser2 = new SysUser();
+        sysUser2.setUserId(userId);
+        sysUser2.setUserName(userName);
+        simplePrincipalCollections[1].add(sysUser2,"user_realm");
+        byte[] keyBytes2 = SerializationUtils.serialize(simplePrincipalCollections[1]);
+        Object value = LocalCaffeineObjectCache.localSessionCache.get(new ByteArrayKey(keyBytes2));
+        log.info("value:{}",value);
+        log.info("key1:{}",keyBytes1);
+        log.info("key2:{}",keyBytes2);
     }
 
     public void testAsyncCache() throws InterruptedException {

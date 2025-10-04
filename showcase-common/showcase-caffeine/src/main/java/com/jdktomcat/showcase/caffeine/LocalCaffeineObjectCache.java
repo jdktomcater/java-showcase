@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LocalCaffeineObjectCache {
 
-    private static final int REFRESH_DURATION = 3;
+    private static final int REFRESH_DURATION = 5;
 
     private static final int MAX_SIZE = 200;
 
