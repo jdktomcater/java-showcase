@@ -1,0 +1,30 @@
+package com.jdktomcat.showcase.spring.ai.bot.config;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * 机器人配置
+ */
+@Data
+@Configuration
+@ConfigurationProperties(prefix = "telegram.bot")
+public class BotConfig {
+
+    /**
+     * 密钥
+     */
+    private String token;
+
+    /**
+     * 名称
+     */
+    private String username;
+
+}
+
+
