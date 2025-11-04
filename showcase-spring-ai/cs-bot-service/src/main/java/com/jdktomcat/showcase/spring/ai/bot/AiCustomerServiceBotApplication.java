@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 
 @Slf4j
 @SpringBootApplication
-public class SpringAiCsBotApplication implements CommandLineRunner {
+public class AiCustomerServiceBotApplication implements CommandLineRunner {
 
     /**
      * 智能机器人服务组件
@@ -21,7 +21,7 @@ public class SpringAiCsBotApplication implements CommandLineRunner {
     private AiCustomerServiceBot aiCustomerServiceBot;
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringAiCsBotApplication.class, args);
+        SpringApplication.run(AiCustomerServiceBotApplication.class, args);
     }
 
     /**
