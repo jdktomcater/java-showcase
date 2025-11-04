@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
     <name>showcase-spring-ai</name>
     <modules>
-        <module>cs-bot-service</module>
+        <module>customer-service-bot-service</module>
     </modules>
 
 
