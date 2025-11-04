@@ -1,0 +1,7 @@
+server:
+  port: 8080
+
+deepseek:
+  api-key: "sk-51b1ab40f87348ff83400b9d073485c1"
+  base-url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  model: "deepseek-r1-0528"
