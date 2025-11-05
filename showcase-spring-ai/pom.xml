@@ -15,8 +15,6 @@
     <name>showcase-spring-ai</name>
     <modules>
         <module>customer-service-bot-service</module>
-        <module>deepseek-chat-service</module>
-        <module>smart-customer-service</module>
         <module>smart-customer-service-prototype</module>
     </modules>
     <properties>
