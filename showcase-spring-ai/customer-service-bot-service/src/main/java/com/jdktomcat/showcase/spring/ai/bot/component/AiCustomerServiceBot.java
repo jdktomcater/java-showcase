@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.spring.ai.bot;
+package com.jdktomcat.showcase.spring.ai.bot.component;
 
 import com.jdktomcat.showcase.spring.ai.bot.config.BotConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +13,14 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class AiCsBot extends TelegramLongPollingBot {
+public class AiCustomerServiceBot extends TelegramLongPollingBot {
+
+    /**
+     * 机器人配置
+     */
     private final BotConfig botConfig;
 
-    public AiCsBot(BotConfig botConfig) {
+    public AiCustomerServiceBot(BotConfig botConfig) {
         super(botConfig.getToken());
         this.botConfig  = botConfig;
     }

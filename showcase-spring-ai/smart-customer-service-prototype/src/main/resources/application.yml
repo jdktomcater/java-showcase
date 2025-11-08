@@ -1,0 +1,10 @@
+server:
+  port: 8080
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY: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}
+
+milvus:
+  host: localhost
+  port: 19530

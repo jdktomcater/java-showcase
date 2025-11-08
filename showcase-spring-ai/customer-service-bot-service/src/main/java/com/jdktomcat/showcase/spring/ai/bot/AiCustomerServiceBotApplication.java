@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.spring.ai.bot;
 
+import com.jdktomcat.showcase.spring.ai.bot.component.AiCustomerServiceBot;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,13 +12,16 @@ import org.telegram.telegrambots.meta.api.methods.updates.DeleteWebhook;
 
 @Slf4j
 @SpringBootApplication
-public class SpringAiCsBotApplication implements CommandLineRunner {
+public class AiCustomerServiceBotApplication implements CommandLineRunner {
 
+    /**
+     * 智能机器人服务组件
+     */
     @Autowired
-    private AiCsBot aiCsBot;
+    private AiCustomerServiceBot aiCustomerServiceBot;
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringAiCsBotApplication.class, args);
+        SpringApplication.run(AiCustomerServiceBotApplication.class, args);
     }
 
     /**
@@ -30,8 +34,8 @@ public class SpringAiCsBotApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         // Ensure long polling can receive updates by removing any existing webhook
-        aiCsBot.execute(new DeleteWebhook());
-        telegramBotsApi.registerBot(aiCsBot);
+        aiCustomerServiceBot.execute(new DeleteWebhook());
+        telegramBotsApi.registerBot(aiCustomerServiceBot);
         log.info("bot long polling registered successfully!");
     }
 }
