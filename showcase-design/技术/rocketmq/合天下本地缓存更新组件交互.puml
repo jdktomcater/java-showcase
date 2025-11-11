@@ -1,0 +1,24 @@
+@startuml
+title RocketMQ 本地缓存失效广播交互
+
+actor Admin as Admin
+participant "MatchupPayAdmi" as Producer
+queue "RocketMQ" as MQ
+participant "MatchupPayHub" as Consumer
+participant "LocalCacheComponent" as Cache
+
+Admin -> Producer: 配置/数据变更
+Producer -> Producer: 构建 Message\n{cacheName, keyString, action}
+Producer -> MQ: send(topic:tag, payload JSON)
+
+MQ --> Consumer: 广播消息（BROADCASTING）
+Consumer -> Consumer: 反序列化消息
+alt action == EVICT
+  Consumer -> Cache: evict(cacheName, keyString)
+else action == CLEAR
+  Consumer -> Cache: clear(cacheName)
+end
+Cache --> Consumer: 本地缓存已更新
+Consumer --> Admin: 可选：记录日志/告警
+
+@enduml
