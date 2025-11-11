@@ -2,7 +2,7 @@
 title RocketMQ 本地缓存失效广播交互
 
 actor 运营 as Admin
-participant "MatchupPayAdmi" as Producer
+participant "MatchupPayAdmin" as Producer
 queue "RocketMQ" as MQ
 participant "MatchupPayHub" as Consumer
 participant "LocalCacheComponent" as Cache
