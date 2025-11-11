@@ -1,0 +1,37 @@
+@startuml
+title 系统交互图 - RocketMQ 缓存失效广播
+
+actor 运营
+
+node "MatchupPayAdmin\n(Producer)" as AdminSvc {
+  component "Producer" as Producer
+}
+
+cloud "RocketMQ Broker" as MQ
+
+node "MatchupPayHub 集群\n(Consumer, BROADCASTING)" as HubCluster {
+  node "Hub-1" as Hub1 {
+    component "Listener" as L1
+    component "LocalCacheComponent\n(Caffeine caches)" as C1
+  }
+  node "Hub-2" as Hub2 {
+    component "Listener" as L2
+    component "LocalCacheComponent\n(Caffeine caches)" as C2
+  }
+}
+
+database "Redis" as Redis
+database "DB" as DB
+
+运营 --> Producer : 配置/数据变更
+Producer --> MQ : send(LocalCacheInvalidateMessage)
+MQ --> L1 : 广播消息
+MQ --> L2 : 广播消息
+L1 --> C1 : evict/clear(cacheName, key)
+L2 --> C2 : evict/clear(cacheName, key)
+C1 ..> Redis : miss 时加载
+C1 ..> DB : miss 时加载
+C2 ..> Redis
+C2 ..> DB
+
+@enduml
