@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class LocalCaffeineSyncCache {
 
-    private static final int REFRESH_DURATION = 5;
+    private static final Long REFRESH_DURATION = 5L;
 
     private static final int MAX_SIZE = 200;
 
@@ -43,7 +43,7 @@ public class LocalCaffeineSyncCache {
      * @return 缓存对象
      */
     public static LoadingCache<Integer, List<MatchupRule>> initAsyncCollectionCache() {
-        return Caffeine.newBuilder().executor(EXECUTOR).maximumSize(MAX_SIZE).refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS)
+        return Caffeine.newBuilder().executor(EXECUTOR).maximumSize(MAX_SIZE).expireAfterAccess(REFRESH_DURATION, TimeUnit.SECONDS)
                .removalListener((key, value, cause) -> log.info("type:{} value:{} asyncCollectionCache removalListener cause:{}", key, value, cause))
                .buildAsync((AsyncCacheLoader<Integer, List<MatchupRule>>) (type, executor) -> CompletableFuture.supplyAsync(() -> {
                   log.info("type:{} asyncCollection load data from db!", type);
