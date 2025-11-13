@@ -42,7 +42,7 @@ public class MatchupRuleTask implements Runnable {
             List<MatchupRule> syncList = LocalCaffeineSyncCache.getSyncList(i + 1);
             log.info("typeKey:{}, asyncList:{} syncList:{} ", i + 1, Arrays.toString(asyncList.toArray()), Arrays.toString(syncList.toArray()));
             try {
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 log.error(e.getMessage());
             }
