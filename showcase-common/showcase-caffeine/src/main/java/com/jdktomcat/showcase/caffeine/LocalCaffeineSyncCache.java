@@ -55,7 +55,7 @@ public class LocalCaffeineSyncCache {
      * @return 缓存对象
      */
     public static LoadingCache<Integer, List<MatchupRule>> initSyncCollectionCache() {
-        return Caffeine.newBuilder().executor(EXECUTOR).maximumSize(MAX_SIZE).refreshAfterWrite(REFRESH_DURATION, TimeUnit.SECONDS)
+        return Caffeine.newBuilder().executor(EXECUTOR).maximumSize(MAX_SIZE).expireAfterAccess(REFRESH_DURATION, TimeUnit.SECONDS)
                 .removalListener((key, value, cause) -> log.info("typeKey:{} value:{} syncCollectionCache removalListener cause:{}", key, value, cause))
                 .build((type) -> {
                     log.info("typeKey:{} syncCollection load data from db!",type);
