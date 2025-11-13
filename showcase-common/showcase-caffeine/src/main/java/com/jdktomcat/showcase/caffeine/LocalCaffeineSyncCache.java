@@ -74,7 +74,7 @@ public class LocalCaffeineSyncCache {
      * @return 异步加载信息对象列表
      */
     public static List<MatchupRule> getAsyncList(int type) {
-        return asyncCollectionCache.get(type % 10);
+        return asyncCollectionCache.get(type);
     }
 
     /**

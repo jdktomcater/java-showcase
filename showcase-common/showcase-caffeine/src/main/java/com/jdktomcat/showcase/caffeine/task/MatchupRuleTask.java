@@ -38,9 +38,9 @@ public class MatchupRuleTask implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < 100; i++) {
-            List<MatchupRule> asyncList = LocalCaffeineSyncCache.getAsyncList(i + 1);
-            List<MatchupRule> syncList = LocalCaffeineSyncCache.getSyncList(i + 1);
-            log.info("typeKey:{}, asyncList:{} syncList:{} ", i + 1, Arrays.toString(asyncList.toArray()), Arrays.toString(syncList.toArray()));
+            List<MatchupRule> asyncList = LocalCaffeineSyncCache.getAsyncList((i + 1) % 10);
+            List<MatchupRule> syncList = LocalCaffeineSyncCache.getSyncList((i + 1) % 10);
+            log.info("typeKey:{}, asyncList:{} syncList:{} ", (i + 1) % 10, Arrays.toString(asyncList.toArray()), Arrays.toString(syncList.toArray()));
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {

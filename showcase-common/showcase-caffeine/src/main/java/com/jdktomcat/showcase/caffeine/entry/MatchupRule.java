@@ -30,7 +30,7 @@ public class MatchupRule {
      */
     public static List<MatchupRule> getMatchupRules(int type) {
         List<MatchupRule> matchupRules = new ArrayList<>();
-        for (int i = 0; i < type % 10; i++) {
+        for (int i = 0; i < type; i++) {
             MatchupRule matchupRule = new MatchupRule();
             matchupRule.setId(i);
             matchupRule.setName("matchupRule-" + i + ":" + System.currentTimeMillis());
