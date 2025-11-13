@@ -2,7 +2,9 @@ package com.jdktomcat.showcase.caffeine.entry;
 
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,10 +32,11 @@ public class MatchupRule {
      */
     public static List<MatchupRule> getMatchupRules(int type) {
         List<MatchupRule> matchupRules = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
         for (int i = 0; i < type; i++) {
             MatchupRule matchupRule = new MatchupRule();
             matchupRule.setId(i);
-            matchupRule.setName("matchupRule-" + i + ":" + System.currentTimeMillis());
+            matchupRule.setName("matchupRule-" + i + ":" + sdf.format(new Date()));
             matchupRules.add(matchupRule);
         }
         return matchupRules;
