@@ -46,7 +46,7 @@ public class MatchupRuleTask implements Runnable {
             } catch (InterruptedException e) {
                 log.error(e.getMessage());
             }
-            latch.countDown();
         }
+        latch.countDown();
     }
 }
