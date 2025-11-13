@@ -3,13 +3,9 @@ package com.jdktomcat.showcase.caffeine;
 import com.github.benmanes.caffeine.cache.AsyncCacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.jdktomcat.showcase.caffeine.entry.ByteArrayKey;
-import com.jdktomcat.showcase.caffeine.entry.ByteArrayValue;
 import com.jdktomcat.showcase.caffeine.entry.MatchupRule;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SerializationUtils;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
