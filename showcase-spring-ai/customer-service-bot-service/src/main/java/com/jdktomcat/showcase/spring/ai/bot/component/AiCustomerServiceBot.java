@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.spring.ai.bot.component;
 
-import com.jdktomcat.showcase.spring.ai.bot.config.BotConfig;
+import com.jdktomcat.showcase.spring.ai.bot.config.TelegramBotConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -18,16 +18,16 @@ public class AiCustomerServiceBot extends TelegramLongPollingBot {
     /**
      * 机器人配置
      */
-    private final BotConfig botConfig;
+    private final TelegramBotConfig telegramBotConfig;
 
-    public AiCustomerServiceBot(BotConfig botConfig) {
-        super(botConfig.getToken());
-        this.botConfig  = botConfig;
+    public AiCustomerServiceBot(TelegramBotConfig telegramBotConfig) {
+        super(telegramBotConfig.getToken());
+        this.telegramBotConfig = telegramBotConfig;
     }
 
     @Override
     public String getBotUsername() {
-        return botConfig.getUsername();
+        return telegramBotConfig.getUsername();
     }
 
     @Override

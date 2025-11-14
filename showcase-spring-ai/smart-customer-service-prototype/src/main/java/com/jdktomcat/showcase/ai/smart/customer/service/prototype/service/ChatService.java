@@ -7,9 +7,10 @@ import java.util.*;
 
 @Service
 public class ChatService {
+
     private final OpenAiClient openAiClient;
+
     private final MilvusClientWrapper milvusClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ChatService(OpenAiClient openAiClient, MilvusClientWrapper milvusClient) {
         this.openAiClient = openAiClient;
