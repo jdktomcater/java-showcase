@@ -2,3 +2,11 @@ telegram:
   bot:
     token: 8447064016:AAEs1GaaBb6ByEVJa9OpfzvD695Z38z_XPQ
     username: tx_ai_cs_bot
+
+
+deepseek:
+  apiKey: sk-058d246a16b84998b144a4ce4dd7e46a
+  model: deepseek-chat
+
+order:
+  api: https://your-api-domain/orders/
