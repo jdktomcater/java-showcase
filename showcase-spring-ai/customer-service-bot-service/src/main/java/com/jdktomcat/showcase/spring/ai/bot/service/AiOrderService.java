@@ -26,15 +26,6 @@ public class AiOrderService {
         model = OpenAiChatModel.builder()
                 .apiKey(apiKey)
                 .modelName("deepseek-chat")
-                .responseFormat(ResponseFormat.JSON_SCHEMA("""
-                    {
-                      "type": "object",
-                      "properties": {
-                        "merchant_order_id": {"type": "string"}
-                      },
-                      "required": ["merchant_order_id"]
-                    }
-                    """))
                 .build();
     }
 
