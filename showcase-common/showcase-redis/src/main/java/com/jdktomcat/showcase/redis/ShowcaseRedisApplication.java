@@ -35,7 +35,9 @@ public class ShowcaseRedisApplication implements CommandLineRunner {
         String key = "d_list102234";
         String field = "8_4_5_0";
         for (int i = 0; i < 100; i++) {
+            long start = System.currentTimeMillis();
             redisComponent.hset(key, field, target, 24*3600);
+            log.info("cost:{}ms", System.currentTimeMillis() - start);
         }
     }
 
