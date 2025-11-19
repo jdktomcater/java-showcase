@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.limiter.redis.token.controller;
+package com.jdktomcat.showcase.redis.controller;
 
-import com.jdktomcat.showcase.limiter.redis.token.annotation.Limiter;
+import com.jdktomcat.showcase.redis.annotation.Limiter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

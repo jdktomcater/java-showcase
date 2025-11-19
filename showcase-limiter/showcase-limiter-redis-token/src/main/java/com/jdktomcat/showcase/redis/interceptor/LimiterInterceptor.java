@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.limiter.redis.token.interceptor;
+package com.jdktomcat.showcase.redis.interceptor;
 
-import com.jdktomcat.showcase.limiter.redis.token.annotation.Limiter;
-import com.jdktomcat.showcase.limiter.redis.token.component.RedisComponent;
+import com.jdktomcat.showcase.redis.annotation.Limiter;
+import com.jdktomcat.showcase.redis.component.RedisComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
