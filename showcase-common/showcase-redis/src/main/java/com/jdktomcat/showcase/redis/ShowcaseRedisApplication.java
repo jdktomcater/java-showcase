@@ -1,0 +1,63 @@
+package com.jdktomcat.showcase.redis;
+
+import com.alibaba.fastjson.JSONObject;
+import com.jdktomcat.showcase.redis.component.RedisComponent;
+import com.jdktomcat.showcase.redis.dto.MerchantPayChannelDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+@SpringBootApplication
+public class ShowcaseRedisApplication implements CommandLineRunner {
+
+    @Autowired
+    private RedisComponent redisComponent;
+
+
+    public static void main(String[] args) {
+        SpringApplication.run(ShowcaseRedisApplication.class, args);
+    }
+
+    @Override
+    public void run(String... args) {
+        List<MerchantPayChannelDto> dataList = new ArrayList<>();
+        for (int i = 0; i < 300; i++) {
+            dataList.add(generateMerchantPayChannelDto());
+        }
+        Object target = JSONObject.toJSON(dataList);
+        String key = "d_list102234";
+        String field = "8_4_5_0";
+        for (int i = 0; i < 100; i++) {
+            redisComponent.hset(key, field, target, 24*3600);
+        }
+    }
+
+    public static MerchantPayChannelDto generateMerchantPayChannelDto() {
+        MerchantPayChannelDto merchantPayChannelDto = new MerchantPayChannelDto();
+        merchantPayChannelDto.setMerchantId(1000);
+        merchantPayChannelDto.setPayType(20);
+        merchantPayChannelDto.setPayChannelName("测试支付渠道");
+        merchantPayChannelDto.setPayChannelID(1000);
+        merchantPayChannelDto.setMaxAmountPerTrans(new BigDecimal(100));
+        merchantPayChannelDto.setMinAmountPerTrans(new BigDecimal(100));
+        merchantPayChannelDto.setPcFixedAmount("2300");
+        merchantPayChannelDto.setWapFixedAmount("2300");
+        merchantPayChannelDto.setAppFixedAmount("2300");
+        merchantPayChannelDto.setIosFixedAmount("2300");
+        merchantPayChannelDto.setAndroidFixedAmount("2300");
+        merchantPayChannelDto.setProtocol("121232314");
+        merchantPayChannelDto.setCurrency("UST");
+
+        merchantPayChannelDto.setIsFastPay(1);
+
+        return merchantPayChannelDto;
+    }
+}
+
