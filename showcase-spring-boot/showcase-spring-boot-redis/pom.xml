@@ -9,10 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>showcase-spring-boot-redis</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>snowflake-id</module>
-    </modules>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

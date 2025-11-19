@@ -22,6 +22,7 @@
         <module>showcase-aviator</module>
         <module>showcase-caffeine</module>
         <module>showcase-ipgeo</module>
+        <module>showcase-redis</module>
     </modules>
 
     <properties>
