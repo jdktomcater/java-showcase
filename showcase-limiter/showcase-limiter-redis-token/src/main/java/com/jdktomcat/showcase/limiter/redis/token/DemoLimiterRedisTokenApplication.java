@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.limiter.redis.token;
+package com.jdktomcat.showcase.limiter.redis.token;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.limiter.redis.token.annotation;
+package com.jdktomcat.showcase.limiter.redis.token.annotation;
 
 
 import java.lang.annotation.*;

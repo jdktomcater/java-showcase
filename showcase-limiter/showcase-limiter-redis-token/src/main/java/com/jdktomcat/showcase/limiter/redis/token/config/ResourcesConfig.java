@@ -1,6 +1,6 @@
-package com.jdktomcat.demo.limiter.redis.token.config;
+package com.jdktomcat.showcase.limiter.redis.token.config;
 
-import com.jdktomcat.demo.limiter.redis.token.interceptor.LimiterInterceptor;
+import com.jdktomcat.showcase.limiter.redis.token.interceptor.LimiterInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

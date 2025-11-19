@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.limiter.redis.token.config;
+package com.jdktomcat.showcase.limiter.redis.token.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

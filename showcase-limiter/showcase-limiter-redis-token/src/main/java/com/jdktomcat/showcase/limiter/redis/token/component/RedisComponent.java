@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.limiter.redis.token.component;
+package com.jdktomcat.showcase.limiter.redis.token.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
