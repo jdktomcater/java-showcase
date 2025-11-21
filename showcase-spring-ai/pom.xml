@@ -16,6 +16,7 @@
     <modules>
         <module>customer-service-bot-service</module>
         <module>smart-customer-service-prototype</module>
+        <module>showcase-langchain4j</module>
     </modules>
     <properties>
         <java.version>17</java.version>
