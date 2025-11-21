@@ -33,10 +33,10 @@ public class ShowcaseRedisApplication implements CommandLineRunner {
         }
         Object target = JSONObject.toJSON(dataList);
         String key = "d_list102234";
-        String field = "8_4_5_0";
+        String field = "8_4_5_0_";
         for (int i = 0; i < 100; i++) {
             long start = System.currentTimeMillis();
-            redisComponent.hset(key, field, target, 24*3600);
+            redisComponent.hset(key, field + i, target, 24 * 3600);
             log.info("cost:{}ms", System.currentTimeMillis() - start);
         }
     }
@@ -55,10 +55,8 @@ public class ShowcaseRedisApplication implements CommandLineRunner {
         merchantPayChannelDto.setIosFixedAmount("2300");
         merchantPayChannelDto.setAndroidFixedAmount("2300");
         merchantPayChannelDto.setProtocol("121232314");
-        merchantPayChannelDto.setCurrency("UST");
-
+        merchantPayChannelDto.setCurrency("USDT");
         merchantPayChannelDto.setIsFastPay(1);
-
         return merchantPayChannelDto;
     }
 }
