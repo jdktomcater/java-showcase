@@ -14,6 +14,7 @@ public class RedisComponent {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+
     /**
      * 向一张hash表中放入数据,如果不存在将创建
      *
@@ -21,18 +22,15 @@ public class RedisComponent {
      * @param item  项
      * @param value 值
      * @param time  时间(秒) 注意:如果已存在的hash表有时间,这里将会替换原有的时间
-     * @return true 成功 false失败
      */
-    public boolean hset(String key, String item, Object value, long time) {
+    public void hset(String key, String item, Object value, long time) {
         try {
             redisTemplate.opsForHash().put(key, item, value);
             if (time > 0) {
                 expire(key, time);
             }
-            return true;
         } catch (Exception e) {
             log.error("redis Exception: {}", e.getMessage(), e);
-            return false;
         }
     }
 
@@ -41,17 +39,29 @@ public class RedisComponent {
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
      */
-    public boolean expire(String key, long time) {
+    public void expire(String key, long time) {
         try {
             if (time > 0) {
                 redisTemplate.expire(key, time, TimeUnit.SECONDS);
             }
-            return true;
         } catch (Exception e) {
             log.error("redis Exception: {}", e.getMessage(), e);
-            return false;
+        }
+    }
+
+    /**
+     * 普通缓存获取
+     *
+     * @param key 键
+     * @return 值
+     */
+    public Object get(String key) {
+        try {
+            return key == null ? null : redisTemplate.opsForValue().get(key);
+        } catch (Exception e) {
+            log.error("redis Exception: {}", e.getMessage(), e);
+            return null;
         }
     }
 

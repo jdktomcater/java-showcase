@@ -12,6 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootApplication
@@ -27,18 +29,29 @@ public class ShowcaseRedisApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<MerchantPayChannelDto> dataList = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
-            dataList.add(generateMerchantPayChannelDto());
-        }
-        Object target = JSONObject.toJSON(dataList);
-        String key = "d_list102234";
-        String field = "8_4_5_0_";
+//        List<MerchantPayChannelDto> dataList = new ArrayList<>();
+//        for (int i = 0; i < 300; i++) {
+//            dataList.add(generateMerchantPayChannelDto());
+//        }
+//        Object target = JSONObject.toJSON(dataList);
+//        String key = "d_list102234";
+//        String field = "8_4_5_0_";
+//        for (int i = 0; i < 100; i++) {
+//            long start = System.currentTimeMillis();
+//            redisComponent.hset(key, field + i, target, 24 * 3600);
+//            log.info("cost:{}ms", System.currentTimeMillis() - start);
+//        }
         for (int i = 0; i < 100; i++) {
-            long start = System.currentTimeMillis();
-            redisComponent.hset(key, field + i, target, 24 * 3600);
-            log.info("cost:{}ms", System.currentTimeMillis() - start);
+            try {
+                int minSplitAmt = (Integer) redisComponent.get("CONFIG_splitLastMinAmt");
+                log.info("{} minSplitAmt is {}", i, minSplitAmt);
+                TimeUnit.MILLISECONDS.sleep(30);
+            } catch (Exception e) {
+                log.error("redis Exception: {}", e.getMessage(), e);
+            }
         }
+
+
     }
 
     public static MerchantPayChannelDto generateMerchantPayChannelDto() {
