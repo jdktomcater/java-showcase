@@ -52,8 +52,8 @@ public class DbJasyptUtil {
     }
 
     public static void main(String[] args) {
-        String password= "typay#financial-front";
-        String value = "T3FH+A+DGm6uS1gnkTnx02Yoy2dVBj+hZEhTFHzoqxp5o6vwvhNEEeo5l4ajRm7A";
+        String password= "matchup#pay#hub";
+        String value = "2XCnKvkuOF/wblTtRBVW19Hh1JsGN14d8cnyFUd1fLI=";
         System.out.println(dencryptPwd(password, value));
     }
 }
