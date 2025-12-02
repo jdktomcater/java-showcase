@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.30.3.11:3366/matchup_pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: match_dev
+    password: DJHWGAPHsPP1CTfeL6

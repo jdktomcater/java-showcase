@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * Mybatis Plus Config
  */
 @Configuration
-@MapperScan("com.jdktomcat.demo.dead.lock.restart.transaction.mapper")
+@MapperScan("com.jdktomcat.showcase.dead.lock.restart.transaction.mapper")
 public class MybatisPlusConfig {
 
     @Bean
