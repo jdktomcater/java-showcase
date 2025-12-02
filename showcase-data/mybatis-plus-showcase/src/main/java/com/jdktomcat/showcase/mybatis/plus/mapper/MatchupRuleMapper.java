@@ -2,7 +2,9 @@
 package com.jdktomcat.showcase.mybatis.plus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.jdktomcat.showcase.mybatis.plus.entry.MatchupRule;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -18,5 +20,5 @@ public interface MatchupRuleMapper extends BaseMapper<MatchupRule> {
      * @param matchupRule 撮合规则
      * @return 更新结果
      */
-    int updateById(MatchupRule matchupRule);
+    int updateById(@Param(Constants.ENTITY) MatchupRule matchupRule);
 }
