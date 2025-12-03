@@ -63,7 +63,7 @@ public class MatchupRule implements Serializable {
     /**
      * 主键
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long ruleKey;
 
     /**

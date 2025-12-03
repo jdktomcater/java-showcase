@@ -4,3 +4,10 @@ spring:
     url: jdbc:mysql://172.30.3.11:3366/matchup_pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: match_dev
     password: DJHWGAPHsPP1CTfeL6
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+  worker-id: 1
+  data-center-id: 1
