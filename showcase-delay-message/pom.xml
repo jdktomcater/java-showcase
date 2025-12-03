@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <groupId>jdktomcat.demo</groupId>
+    <groupId>com.jdktomcat.showcase</groupId>
     <artifactId>showcase-delay-message</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
@@ -11,9 +11,9 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-delay-message-producer</module>
-        <module>showcase-delay-message-redis-consumer</module>
-        <module>showcase-delay-message-mq-consumer</module>
+        <module>mq-producer</module>
+        <module>redis-consumer</module>
+        <module>mq-consumer</module>
     </modules>
 
     <properties>
