@@ -1,16 +1,16 @@
 package com.jdktomcat.showcase.mybatis.plus;
 
-import com.jdktomcat.showcase.mybatis.plus.entry.DepositOrderLog;
-import com.jdktomcat.showcase.mybatis.plus.entry.MatchupRule;
 import com.jdktomcat.showcase.mybatis.plus.mapper.DepositOrderLogMapper;
-import com.jdktomcat.showcase.mybatis.plus.mapper.MatchupRuleMapper;
+import com.jdktomcat.showcase.mybatis.plus.task.InsertTask;
 import jakarta.annotation.Resource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Date;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 启动类
@@ -35,15 +35,9 @@ public class MybatisPlusApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        DepositOrderLog depositOrderLog = new DepositOrderLog();
-        depositOrderLog.setPlatformOrderId("Test000000000001");
-        depositOrderLog.setOrderId("Test000000000002");
-        depositOrderLog.setActionTime(new Date());
-        depositOrderLog.setResume("Test000000000003");
-        depositOrderLog.setScore(0L);
-        depositOrderLog.setMatchResult(0);
-        depositOrderLog.setPoolType(1);
-        int insert = depositOrderLogMapper.insert(depositOrderLog);
-        System.out.println(insert);
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(20, 40, 20, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100), new ThreadPoolExecutor.CallerRunsPolicy());
+        for (int i = 0; i < 10000; i++) {
+            threadPoolExecutor.submit(new InsertTask(depositOrderLogMapper));
+        }
     }
 }
