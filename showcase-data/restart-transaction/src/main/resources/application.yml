@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.22.63.21:3306/typayv2?useSSL=false&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: 1234

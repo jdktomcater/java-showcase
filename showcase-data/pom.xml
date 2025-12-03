@@ -12,7 +12,6 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>restart-transaction</module>
         <module>druid-data-source</module>
         <module>mybatis-plus-showcase</module>
     </modules>
