@@ -1,0 +1,29 @@
+@startuml
+actor Client
+
+box "天下调度" #LightBlue
+participant TxController
+participant TxService
+participant ThirdFeign
+end box
+
+box "天下三方" #LightPink
+participant ThirdController
+participant ThirdService
+end box
+
+participant EBPay #LightGreen
+
+Client -> TxController: POST /deposit/createQRCode
+TxController -> TxService: createQRCode()
+TxService -> ThirdFeign:qrcode()
+ThirdFeign -> ThirdController: /inner/thirdpay/getWalletAddress
+ThirdController -> ThirdService: getWalletAddress()
+ThirdService -> EBPay: wallet-api/getMemberWalletAddress
+EBPay -> ThirdService: 结果
+ThirdService -> ThirdController: 结果
+ThirdController -> ThirdFeign: 结果
+ThirdFeign -> TxService: 结果
+TxService -> TxController: 结果
+TxController --> Client: 响应
+@enduml
