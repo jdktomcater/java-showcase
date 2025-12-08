@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.delay.message.redis.consumer;
+package com.jdktomcat.demo.delay.message.mq.consumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Hello world!
  */
 @SpringBootApplication
-public class DemoDelayMessageRedisConsumerApplication {
+public class DelayMessageMQConsumerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DemoDelayMessageRedisConsumerApplication.class, args);
+        SpringApplication.run(DelayMessageMQConsumerApplication.class, args);
     }
 }

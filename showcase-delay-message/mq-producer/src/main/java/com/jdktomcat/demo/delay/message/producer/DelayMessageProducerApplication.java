@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootApplication
-public class DemoDelayMessageProducerApplication implements CommandLineRunner {
+public class DelayMessageProducerApplication implements CommandLineRunner {
 
     @Autowired
     private MessageProducerComponent messageProducerComponent;
@@ -23,7 +23,7 @@ public class DemoDelayMessageProducerApplication implements CommandLineRunner {
 
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoDelayMessageProducerApplication.class, args);
+        SpringApplication.run(DelayMessageProducerApplication.class, args);
     }
 
     @Override
