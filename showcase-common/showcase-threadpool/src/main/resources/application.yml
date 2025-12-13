@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: thread-pool
+server:
+  port: 8080
+management:
+  server:
+    port: 20214
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus,info,logfile,health'
+    jolokia:
+      enabled: false
+    jmx:
+      enabled: false

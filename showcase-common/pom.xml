@@ -23,6 +23,7 @@
         <module>showcase-caffeine</module>
         <module>showcase-ipgeo</module>
         <module>showcase-redis</module>
+        <module>showcase-threadpool</module>
     </modules>
 
     <properties>
