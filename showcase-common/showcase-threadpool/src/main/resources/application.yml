@@ -3,14 +3,11 @@ spring:
     name: thread-pool
 server:
   port: 8080
+  shutdown: graceful
 management:
   server:
     port: 20214
   endpoints:
     web:
       exposure:
-        include: 'prometheus,info,logfile,health'
-    jolokia:
-      enabled: false
-    jmx:
-      enabled: false
+        include: 'info,health,pause'
