@@ -1,0 +1,42 @@
+server:
+  port: 7001
+  tomcat:
+    accept-count: 10000
+    max-connections: 50000
+    max-threads: 10000
+    min-spare-threads: 1000
+
+spring:
+  application:
+    name: router-service
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  client:
+    default:
+      #这里时间一定要调长，否则feign客户端会报ReadTimeOut  服务端报Error parsing HTTP request header
+      connectTimeout: 60000
+      readTimeout: 60000
+      loggerLevel: basic
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1000 ##BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 500 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://172.30.2.84:8762/eureka

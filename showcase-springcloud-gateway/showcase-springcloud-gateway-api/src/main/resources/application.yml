@@ -1,0 +1,35 @@
+server:
+  port: 7000
+spring:
+  application:
+    name: showcase-springcloud-gateway-api
+  cloud:
+    inetutils:
+      use-only-site-local-interfaces: true
+    gateway:
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 20s
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: route-service
+          uri: lb://matchup-pay-service
+          predicates:
+            - Path=/withdraw/fast/**
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 300000
+
+# eureka client
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://172.30.2.84:8762/eureka
