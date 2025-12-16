@@ -12,13 +12,10 @@ import org.springframework.context.annotation.Bean;
 /**
  * 启动类
  */
-@EnableCircuitBreaker
 @EnableDiscoveryClient
 @Slf4j
 @SpringBootApplication
 public class ApiApplication {
-
-
 
     public static void main(String[] args) {
         System.setProperty("reactor.ipc.netty.workerCount","256");
