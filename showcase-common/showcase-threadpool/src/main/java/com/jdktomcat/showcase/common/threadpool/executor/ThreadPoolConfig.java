@@ -1,6 +1,5 @@
 package com.jdktomcat.showcase.common.threadpool.executor;
 
-import com.typay.plugin.threadpool.sdk.reject.CallerRunsPolicyWithReport;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.dynamictp.core.support.DynamicTp;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @Slf4j
@@ -23,8 +23,8 @@ public class ThreadPoolConfig {
         executor.setQueueCapacity(100);
         executor.setKeepAliveSeconds(2);
         executor.setThreadNamePrefix("thread-pool-thread-");
-//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setRejectedExecutionHandler(new CallerRunsPolicyWithReport());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        executor.setRejectedExecutionHandler(new CallerRunsPolicyWithReport());
         executor.initialize();
         return executor;
     }
