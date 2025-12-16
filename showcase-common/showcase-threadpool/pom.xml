@@ -26,12 +26,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <!-- 线程池监控 -->
-        <dependency>
-            <groupId>architecture</groupId>
-            <artifactId>plugin-threadpool-sdk</artifactId>
-            <version>1.0.1-RELEASE</version>
-        </dependency>
         <dependency>
             <groupId>org.dromara.dynamictp</groupId>
             <artifactId>dynamic-tp-spring-cloud-starter-nacos</artifactId>
