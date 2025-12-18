@@ -1,0 +1,129 @@
+sequenceDiagram
+    autonumber
+    actor Client
+    participant Redis
+    participant MQProducer
+    participant MQBroker
+    participant MQConsumer
+    participant Redis Listener
+
+    Client->>Redis: 零钱锁单请求1
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息1
+    MQProducer-->>MQBroker: 发送消息1
+    MQProducer->>Client:锁单结果1
+
+    Note over Client,MQProducer: 等待1s
+
+    Client->>Redis: 充值1
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果1
+
+    Client->>Redis: 零钱锁单请求2
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息2
+    MQProducer-->>MQBroker: 发送消息2
+    MQProducer->>Client:锁单结果2
+
+    Note over Client,MQProducer: 等待1s
+
+    Client->>Redis: 充值2
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果2
+
+    Client->>Redis: 零钱锁单请求3
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息3
+    MQProducer-->>MQBroker: 发送消息3
+    MQProducer->>Client:锁单结果3
+
+    Note over Client,MQProducer: 等待1s
+
+    Client->>Redis: 充值3
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果3
+
+    Client->>Redis: 零钱锁单请求4
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息4
+    MQProducer-->>MQBroker: 发送消息4
+    MQProducer->>Client:锁单结果4
+
+    Note over Client,MQProducer: 等待1s
+
+    Client->>Redis: 充值4
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果4
+
+    Client->>Redis: 零钱锁单请求5
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息5
+    MQProducer-->>MQBroker: 发送消息5
+    MQProducer->>Client:锁单结果5
+
+    Note over Client,MQProducer: 等待1s
+
+    MQBroker-->>MQConsumer: 消费消息1
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+
+    Client->>Redis: 充值5
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果5
+
+    Client->>Redis: 零钱锁单请求6
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息6
+    MQProducer-->>MQBroker: 发送消息6
+    MQProducer->>Client:锁单结果6
+
+    Note over Client,MQProducer: 等待1s
+    MQBroker-->>MQConsumer: 消费消息2
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+
+    Client->>Redis: 充值6
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果6
+
+    Client->>Redis: 零钱锁单请求7
+    Redis->>Redis: INCR UEWF_{merchantId}_{userId}
+    Redis->>Redis: EXPIRE UEWF_{merchantId}_{userId} 5s
+    Redis->>MQProducer: 延迟消息7
+    MQProducer-->>MQBroker: 发送消息7
+    MQProducer->>Client:锁单结果7
+
+    Note over Client,MQProducer: 等待1s
+    MQBroker-->>MQConsumer: 消费消息3
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+
+    Client->>Redis: 充值7
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果7
+
+    Note over Client,MQProducer: 等待5s
+    MQBroker-->>MQConsumer: 消费消息4
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+    MQBroker-->>MQConsumer: 消费消息5
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+    MQBroker-->>MQConsumer: 消费消息6
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+    MQBroker-->>MQConsumer: 消费消息7
+    MQConsumer->>Redis: 业务处理
+    Redis->>Redis: REMOVE UEWF_{merchantId}_{userId}
+
+    Redis-->>Redis Listener: 过期监听
+
+    Client->>Redis: 充值8
+    Redis->>Redis: GET UEWF_{merchantId}_{userId}
+    Redis->>Client: 充值结果8

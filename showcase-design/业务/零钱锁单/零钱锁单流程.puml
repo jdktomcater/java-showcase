@@ -1,0 +1,74 @@
+@startuml
+title /matchup/deposit/queryAmtList 时序图
+
+actor Client
+participant Controller as "DepositOrderController"
+participant Service as "DepositOrderServiceImp"
+participant Redis
+participant Helper as "Change913OrderHelper"
+participant Rule as "Rule/Cache(checkMatchupRule)"
+participant Buffer as "BufferOrderService(ZSet)"
+participant MQ as "MessageComponent"
+
+Client -> Controller: POST /matchup/deposit/queryAmtList\nAmtQueryDto
+Controller -> Service: queryAmtList(amtQuery)
+
+Service -> Redis: INCR D_{merchantId_userId}
+Redis --> Service: iLock
+alt iLock == 1 (首查)
+  Service -> Redis: EXPIRE D_{merchantId_userId} 5s
+else iLock != 1 (频繁查询)
+  Service -> Redis: HMGET UAMT_{merchantId_userId}
+  Redis --> Service: lastAmountSet
+  Service --> Controller: AmtQueryResultDto(payAmtList=lastAmountSet)
+  Controller --> Client: Response.success(result)
+  return
+end
+
+opt 补默认值
+  Service -> Service: if minAmount==null set 0
+  Service -> Service: if maxAmount==null set Long.MAX
+end
+
+Service -> Helper: unlock913Order(mUserId,false,null)
+Service -> Helper: queryRedisAmtList(amtQuery)
+
+Helper -> Rule: checkMatchupRule(...)
+Rule --> Helper: ruleKey/step/merchant
+
+opt 央行维护期校验
+  Helper -> Redis: GET CENTRAL_BANK_MAINTENANCE\nGET MAINTENANCE_MATCHUP_BANKTYPE_CONFIG
+  Redis --> Helper: maintenance flags/config
+  alt maintenance开启 且 payType受限 且 bankCode为空
+    Helper --> Service: 空结果(AmtQueryResultDto)
+    Service --> Controller: 空结果
+    Controller --> Client: Response.success(result)
+    return
+  end
+end
+
+Helper -> Helper: 计算步长范围 & ruleAmtKey
+
+Helper -> Buffer: zRangeByScore/selectOneRedisZSet(ruleAmtKey,范围,payType)
+Buffer --> Helper: tuplesRedis
+
+Helper -> Helper: maxCount=getMaxAtmCount()
+alt tuplesRedis 非空
+  Helper -> Helper: find913Amt(过滤/优选)
+  loop 遍历候选直到 maxCount
+    Helper -> Redis: 锁单/记录用户金额集合(UAMT/UEWF等)
+    Redis --> Helper: OK
+  end
+  Helper -> MQ: sendDelayMessage(延迟解锁)
+  MQ --> Helper: OK
+  Helper --> Service: AmtQueryResultDto(payAmtList)
+else tuplesRedis 为空
+  opt 开启固定金额兜底
+    Helper -> Helper: queryAmtListFromFixed(...)
+  end
+  Helper --> Service: AmtQueryResultDto(payAmtList/空)
+end
+
+Service --> Controller: AmtQueryResultDto
+Controller --> Client: Response.success(jsonString)
+@enduml
