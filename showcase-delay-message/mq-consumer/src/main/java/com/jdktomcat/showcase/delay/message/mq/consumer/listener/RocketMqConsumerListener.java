@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.delay.message.mq.consumer.listener;
+package com.jdktomcat.showcase.delay.message.mq.consumer.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
