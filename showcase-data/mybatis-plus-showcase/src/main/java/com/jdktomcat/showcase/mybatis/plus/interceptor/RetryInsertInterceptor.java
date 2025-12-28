@@ -25,7 +25,7 @@ public class RetryInsertInterceptor implements Interceptor {
         Object result = null;
         try {
             result = invocation.proceed();
-            log.info("RetryInsertInterceptor result:{}", result);
+            log.info("RetryInsertInterceptor sqlCommandType:{} result:{}", sqlCommandType, result);
         } catch (Exception e) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", e);
         }
