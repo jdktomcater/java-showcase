@@ -11,3 +11,6 @@ mybatis-plus:
       id-type: ASSIGN_ID
   worker-id: 1
   data-center-id: 1
+retry:
+  config:
+    "com.jdktomcat.showcase.mybatis.plus.mapper.ChannelAccountRecordMapper.insert": 1

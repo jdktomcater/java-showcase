@@ -1,5 +1,7 @@
 package com.jdktomcat.showcase.mybatis.plus.interceptor;
 
+import com.jdktomcat.showcase.mybatis.plus.config.RetryConfig;
+import com.jdktomcat.showcase.mybatis.plus.entry.ChannelAccountRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -8,35 +10,69 @@ import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 
+@Slf4j
 @Component
 @Intercepts(value = {@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),})
-@Slf4j
 public class RetryInsertInterceptor implements Interceptor {
+
+    /**
+     * 重试配置
+     */
+    @Autowired
+    private RetryConfig retryConfig;
 
     @Override
     public Object intercept(Invocation invocation) throws InvocationTargetException, IllegalAccessException {
-        //Executor.class  sql 获取方法
         Object[] args = invocation.getArgs();
         MappedStatement ms = (MappedStatement) args[0];
-
-        //sql语句类型 select、delete、insert、update
         String sqlCommandType = ms.getSqlCommandType().toString();
-        // Executor only exposes "update" for INSERT/UPDATE/DELETE; restrict this interceptor to INSERT only.
+        // 只处理插入SQL语句动作
         if (ms.getSqlCommandType() != SqlCommandType.INSERT) {
             return invocation.proceed();
         }
-        Object result = null;
+        Object result;
         try {
             result = invocation.proceed();
             log.info("RetryInsertInterceptor sqlCommandType:{} result:{}", sqlCommandType, result);
         } catch (InvocationTargetException exception) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", exception);
-            throw exception;
+            if(isRetry(invocation)){
+                ChannelAccountRecord channelAccountRecord = (ChannelAccountRecord) args[1];
+                channelAccountRecord.setOrderIndex(null);
+                result = invocation.proceed();
+                log.info("RetryInsertInterceptor retry sqlCommandType:{} result:{}", sqlCommandType, result);
+            }else{
+                throw exception;
+            }
         }
         return result;
+    }
+
+    /**
+     * 判断是否需要重试
+     *
+     * @param invocation 调用链
+     * @return true 需要重试 false 不需要重试
+     */
+    private boolean isRetry(Invocation invocation) {
+        try{
+            Object[] args = invocation.getArgs();
+            MappedStatement ms = (MappedStatement) args[0];
+            String sqlId = ms.getId();
+            if(!retryConfig.getConfig().containsKey(sqlId)){
+                return false;
+            }
+            Integer handleType =  retryConfig.getConfig().get(sqlId);
+            Object entry = args[1];
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 }
