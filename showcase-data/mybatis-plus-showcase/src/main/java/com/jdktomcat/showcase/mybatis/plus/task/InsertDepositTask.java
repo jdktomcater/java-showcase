@@ -5,11 +5,11 @@ import com.jdktomcat.showcase.mybatis.plus.mapper.DepositOrderLogMapper;
 
 import java.util.Date;
 
-public class InsertTask implements Runnable{
+public class InsertDepositTask implements Runnable{
 
     private DepositOrderLogMapper depositOrderLogMapper;
 
-    public InsertTask(DepositOrderLogMapper depositOrderLogMapper) {
+    public InsertDepositTask(DepositOrderLogMapper depositOrderLogMapper) {
         this.depositOrderLogMapper = depositOrderLogMapper;
     }
 
