@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.mybatis.plus.interceptor;
 
 import com.jdktomcat.showcase.mybatis.plus.config.RetryConfig;
 import com.jdktomcat.showcase.mybatis.plus.entry.ChannelAccountRecord;
+import com.jdktomcat.showcase.mybatis.plus.enums.RetryHandlerEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -42,8 +43,6 @@ public class RetryInsertInterceptor implements Interceptor {
         } catch (InvocationTargetException exception) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", exception);
             if(isRetry(invocation)){
-                ChannelAccountRecord channelAccountRecord = (ChannelAccountRecord) args[1];
-                channelAccountRecord.setOrderIndex(null);
                 result = invocation.proceed();
                 log.info("RetryInsertInterceptor retry sqlCommandType:{} result:{}", sqlCommandType, result);
             }else{
@@ -68,7 +67,11 @@ public class RetryInsertInterceptor implements Interceptor {
                 return false;
             }
             Integer handleType =  retryConfig.getConfig().get(sqlId);
-            Object entry = args[1];
+            RetryHandlerEnum retryHandlerEnum = RetryHandlerEnum.getInstance(handleType);
+            if(retryHandlerEnum==null){
+                return false;
+            }
+            retryHandlerEnum.getIdRetryHandleStrategy().handle(invocation);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage());
