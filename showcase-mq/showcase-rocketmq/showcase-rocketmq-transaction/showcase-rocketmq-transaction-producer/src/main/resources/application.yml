@@ -27,7 +27,6 @@ spring:
         max-idle: 200
         min-idle: 100
 
-
 rocketmq:
   name-server: 172.31.184.43:9876
   producer:
