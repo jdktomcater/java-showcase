@@ -6,9 +6,7 @@ import com.jdktomcat.showcase.mybatis.plus.component.RedisTableGenerateComponent
 import com.jdktomcat.showcase.mybatis.plus.strategy.IdRetryHandleStrategy;
 import com.jdktomcat.showcase.mybatis.plus.util.SpringContextUtil;
 import io.netty.util.internal.StringUtil;
-import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Invocation;
-import org.springframework.boot.SpringApplication;
 
 import java.lang.reflect.Field;
 
@@ -49,7 +47,5 @@ public class RedisTableRetryHandleStrategy implements IdRetryHandleStrategy {
                 return;
             }
         }
-
-
     }
 }
