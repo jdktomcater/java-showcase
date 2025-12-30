@@ -1,4 +1,4 @@
-package com.jdktomcat.demo.delay.message.redis.consumer;
+package com.jdktomcat.showcase.delay.message.redis.consumer;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

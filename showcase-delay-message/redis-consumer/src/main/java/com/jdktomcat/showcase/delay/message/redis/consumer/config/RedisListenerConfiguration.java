@@ -1,6 +1,6 @@
-package com.jdktomcat.demo.delay.message.redis.consumer.config;
+package com.jdktomcat.showcase.delay.message.redis.consumer.config;
 
-import com.jdktomcat.demo.delay.message.redis.consumer.listener.RedisKeyExpiredListener;
+import com.jdktomcat.showcase.delay.message.redis.consumer.listener.RedisKeyExpiredListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
