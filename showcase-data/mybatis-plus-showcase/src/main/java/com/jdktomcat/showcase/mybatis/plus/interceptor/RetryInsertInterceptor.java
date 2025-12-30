@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Slf4j
 @Component
@@ -42,7 +43,7 @@ public class RetryInsertInterceptor implements Interceptor {
             log.info("RetryInsertInterceptor sqlCommandType:{} result:{}", sqlCommandType, result);
         } catch (InvocationTargetException exception) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", exception);
-            if(isRetry(invocation)){
+            if(isRetry(invocation, exception)){
                 result = invocation.proceed();
                 log.info("RetryInsertInterceptor retry sqlCommandType:{} result:{}", sqlCommandType, result);
             }else{
@@ -58,14 +59,34 @@ public class RetryInsertInterceptor implements Interceptor {
      * @param invocation 调用链
      * @return true 需要重试 false 不需要重试
      */
-    private boolean isRetry(Invocation invocation) {
+    private boolean isRetry(Invocation invocation,InvocationTargetException exception) {
         try{
             Object[] args = invocation.getArgs();
             MappedStatement ms = (MappedStatement) args[0];
             String sqlId = ms.getId();
+            // 判断异常类型
+            Throwable throwable = exception.getCause();
+            // 异常类型
+            if(!(throwable instanceof SQLIntegrityConstraintViolationException sqlException)){
+                return false;
+            }
+            // sql状态码校验
+            if(!sqlException.getSQLState().equalsIgnoreCase("2300")){
+                return false;
+            }
+            // SQL错误码校验
+            if(sqlException.getErrorCode()!=1062){
+                return false;
+            }
+            // 错误详情
+            if(!(sqlException.getMessage()!=null && sqlException.getMessage().contains("PRIMARY"))){
+                return false;
+            }
+            // 是否配置
             if(!retryConfig.getConfig().containsKey(sqlId)){
                 return false;
             }
+            // 配置类型
             Integer handleType =  retryConfig.getConfig().get(sqlId);
             RetryHandlerEnum retryHandlerEnum = RetryHandlerEnum.getInstance(handleType);
             if(retryHandlerEnum==null){
