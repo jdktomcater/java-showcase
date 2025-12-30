@@ -5,7 +5,7 @@ spring:
   application:
     name: showcase-delay-mq-consumer
   redis:
-    host: 192.168.56.1
+    host: 127.0.0.1
     port: 6379
     database: 0
     # 过期事件订阅，接收7号数据库中所有key的过期事件
