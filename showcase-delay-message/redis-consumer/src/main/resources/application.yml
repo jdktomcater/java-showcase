@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: demo-limiter-mq-consumer
+    name: showcase-delay-mq-consumer
   redis:
     host: 192.168.56.1
     port: 6379
@@ -20,5 +20,5 @@ logging:
   level:
     com:
       jdktomcat:
-        demo:
+        showcase:
           delay: info
