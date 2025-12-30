@@ -8,7 +8,7 @@ logging:
   level:
     com:
       jdktomcat:
-        demo:
+        showcase:
           delay: info
 
 rocketmq:
