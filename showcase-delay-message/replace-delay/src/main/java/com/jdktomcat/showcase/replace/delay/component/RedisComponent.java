@@ -14,7 +14,7 @@ import static com.jdktomcat.showcase.replace.delay.constant.ReplaceDelayConstant
  * @author ZF-Timmy
  * @version V1.0
  * @description 类描述：redis组件
- * @date 2023/11/8
+ * @date 2025/12/30
  */
 @Slf4j
 @Component
@@ -53,4 +53,24 @@ public class RedisComponent {
             return false;
         }
     }
+
+    /**
+     * 根据key精确匹配删除
+     *
+     * @param key 删除目标键
+     */
+    public boolean del(String key) {
+        return stringRedisTemplate.delete(key);
+    }
+
+    /**
+     * 检查key是否存在
+     *
+     * @param key 键
+     * @return true:存在 false：不存在
+     */
+    public boolean exist(String key){
+        return stringRedisTemplate.hasKey(key);
+    }
+
 }

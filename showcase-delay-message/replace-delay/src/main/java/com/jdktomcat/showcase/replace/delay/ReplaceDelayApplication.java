@@ -11,7 +11,6 @@ public class ReplaceDelayApplication implements CommandLineRunner {
         SpringApplication.run(ReplaceDelayApplication.class, args);
     }
 
-
     /**
      * Callback used to run the bean.
      *

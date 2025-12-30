@@ -40,11 +40,26 @@ public class BusinessService {
         messageProducerComponent.send(mUserId + KEY_VALUE_SPLIT + value, 60 * 2);
     }
 
+    /**
+     * 解锁
+     *
+     * @param merchantId 商户标识
+     * @param userId     用户标识
+     */
     public void unlock(String merchantId, String userId) {
-
+        boolean result = redisComponent.del(UEWF_PREFIX + merchantId + "_" + userId);
+        log.info("unlock result:{}", result);
     }
 
-    public void order() {
 
+    /**
+     * 下单逻辑
+     *
+     * @param merchantId 商户标识
+     * @param userId 用户标识
+     * @return 下单成功
+     */
+    public boolean order(String merchantId, String userId) {
+        return redisComponent.exist(UEWF_PREFIX + merchantId + "_" + userId);
     }
 }
