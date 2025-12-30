@@ -1,0 +1,34 @@
+package com.jdktomcat.showcase.replace.delay.config;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+
+/**
+ * MQ相关配置
+ */
+@Data
+@Component
+public class RocketMQProperties {
+
+    /**
+     * MQ服务器路径配置
+     */
+    @Value("${rocketmq.namesrvAddr}")
+    private String namesrvAddr;
+
+    /**
+     * 消费者配置
+     */
+    @Resource
+    private ConsumerProperties consumerProperties;
+
+    /**
+     * 生产者配置
+     */
+    @Resource
+    private ProducerProperties producerProperties;
+}

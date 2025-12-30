@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RocketMQMessageListener(topic = "${demo.rocketmq.topic}", consumerGroup = "timmy_consumer", tlsEnable = "${demo.rocketmq.tlsEnable}")
 public class RocketMqConsumerListener implements RocketMQListener<String> {
+
     @Override
     public void onMessage(String message) {
         log.info("MQ consume delay message:{}", message);
+
     }
 }

@@ -6,8 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.jdktomcat.showcase.replace.delay.constant.ReplaceDelayConstant.KEY_VALUE_SPLIT;
-import static com.jdktomcat.showcase.replace.delay.constant.ReplaceDelayConstant.UEWF_PREFIX;
+import static com.jdktomcat.showcase.replace.delay.constant.ReplaceDelayConstant.*;
 
 @Slf4j
 @Service
@@ -36,8 +35,8 @@ public class BusinessService {
         long value = redisComponent.incr(mUserId);
         boolean result = redisComponent.expire(mUserId, 60 * 2);
         log.info("lock value:{} expire 2mins:{}", value, result);
-        // 延迟消息
-        messageProducerComponent.send(mUserId + KEY_VALUE_SPLIT + value, 60 * 2);
+        // 发送延迟消息
+        messageProducerComponent.sendDelayMessage(DELAY_TAG_UEWF, mUserId, mUserId + KEY_VALUE_SPLIT + value, 60 * 2);
     }
 
     /**

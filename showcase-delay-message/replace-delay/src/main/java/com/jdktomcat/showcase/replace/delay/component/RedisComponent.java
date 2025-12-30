@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.replace.delay.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -71,6 +72,21 @@ public class RedisComponent {
      */
     public boolean exist(String key){
         return stringRedisTemplate.hasKey(key);
+    }
+
+    /**
+     * 键离过期时间毫秒
+     *
+     * @param key 键
+     * @return 毫秒
+     */
+    public long pttl(String key) {
+        try {
+            return stringRedisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
+        } catch (Exception ex) {
+            log.error("redis pttl command Exception: {}", ex.getMessage(), ex);
+            return 0L;
+        }
     }
 
 }

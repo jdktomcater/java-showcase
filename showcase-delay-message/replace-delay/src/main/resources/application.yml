@@ -13,24 +13,22 @@ spring:
         max-wait: 800
         max-idle: 8
         min-idle: 2
+
 rocketmq:
-  name-server: 172.31.184.43:9876
+  namesrvAddr: 172.31.184.43:9876
   producer:
-    group: timmy-group
-    instance: delayProducer
-    max-message-size: 131072
-    send-message-timeout: 10000
+    groupName: orderProducerGroup
+    instanceName: orderProducer
+    maxMessageSize: 131072
+    sendMsgTimeout: 10000
+    retryTimesWhenSendFailed: 5
+  consumer:
+    groupName: orderConsumerGroup
+    instanceName: orderConsumer
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    batchMaxSize: 1
 
-# properties used in the application
-demo:
-  rocketmq:
-    topic: timmy-topic
-    tag: delay
-    tlsEnable: false
-
-logging:
-  level:
-    com:
-      jdktomcat:
-        showcase:
-          delay: info
+order.state.delay.mq.enable: false
+order.state.delay.redis.enable: true
+order.state.delay.redis.ttl.time.difference: 500

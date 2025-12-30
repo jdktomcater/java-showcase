@@ -30,4 +30,29 @@ public class ReplaceDelayConstant {
      */
     public static String  DEFAULT_LIST = "default_banktrans";
 
+    /**
+     * 合天下相关延迟消息主题
+     */
+    public static final String DELAY_MESSAGE_TOPIC = "DELAY_MESSAGE_TOPIC_MATCHUP";
+
+    /**
+     * tag连接符
+     */
+    public static final String TAG_SPLIT = "||";
+
+
+    /**
+     * 数组分割符
+     */
+    public static final String ARRAY_SEPARATOR = ";";
+
+    /**
+     * 延迟循环tag标记
+     */
+    public static final String DELAY_CYCLE_PREFIX = "cycle_";
+
+    /**
+     * 自增key
+     */
+    public static final String MATCH_INCR_KEY = "INCR_";
 }
