@@ -56,17 +56,21 @@ public class MybatisPlusApplication implements CommandLineRunner {
             channelAccountRecord.setPayChannelID(10L);
             channelAccountRecord.setOrderID("12345678");
             channelAccountRecord.setCreateTime(new Date());
-            int insert = channelAccountRecordMapper.insert(channelAccountRecord);
-            log.info("insert channelAccountRecord:{}", insert);
+            try {
+                int insert = channelAccountRecordMapper.insert(channelAccountRecord);
+                log.info("insert channelAccountRecord:{}", insert);
+            } catch (Exception e) {
+                log.error("insert channelAccountRecord:{}", e.getMessage(), e);
+            }
         }
-        Long orderIndex = redisTableGenerateComponent.tableIdGenerate("t_depositorder");
-        for (int i = 0; i < 10; i++) {
-            DepositOrder depositOrder = new DepositOrder();
-            depositOrder.setOrderIndex(orderIndex);
-            depositOrder.setOrderId("test000" + i);
-            depositOrder.setPayAmount(new BigDecimal(100 * (i + 1)));
-            int result = depositOrderMapper.insert(depositOrder);
-            log.info("insert depositOrder:{}", result);
-        }
+//        Long orderIndex = redisTableGenerateComponent.tableIdGenerate("t_depositorder");
+//        for (int i = 0; i < 10; i++) {
+//            DepositOrder depositOrder = new DepositOrder();
+//            depositOrder.setOrderIndex(orderIndex);
+//            depositOrder.setOrderId("test000" + i);
+//            depositOrder.setPayAmount(new BigDecimal(100 * (i + 1)));
+//            int result = depositOrderMapper.insert(depositOrder);
+//            log.info("insert depositOrder:{}", result);
+//        }
     }
 }
