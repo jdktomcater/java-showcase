@@ -75,7 +75,7 @@ public class DelayMessageListener extends BaseConsumerListener {
             long pttl = redisComponent.pttl(params[0]);
             log.info("原先redis业务key：{}对应pttl：{}", params[0], pttl);
             if(pttl > delayConfig.getTtlDifferenceTime()){
-                log.warn("标签：{} 延迟对应的标识：{}对应的延迟业务发生了更新变化，延迟时间：{}，设置时间间隔：{}，后续业务不做处理！", tag, params[0], pttl, nacosInfoConfig.getTtlDifferenceTime());
+                log.warn("标签：{} 延迟对应的标识：{}对应的延迟业务发生了更新变化，延迟时间：{}，设置时间间隔：{}，后续业务不做处理！", tag, params[0], pttl, delayConfig.getTtlDifferenceTime());
             }
             long total = messageWrapper.getTotalTimeout() * 1000L;
             long cost = System.currentTimeMillis() - messageWrapper.getCreateTime();
@@ -85,7 +85,8 @@ public class DelayMessageListener extends BaseConsumerListener {
                 redisComponent.expire(MATCH_INCR_KEY + params[0], 10);
                 switch (tag) {
                     case DELAY_TAG_UEWF: {
-
+                        boolean del = redisComponent.del(params[0]);
+                        log.info("DelayMessageListener consume del:{} result:{}", params[0], del);
                         break;
                     }
                     default:
@@ -107,7 +108,7 @@ public class DelayMessageListener extends BaseConsumerListener {
      */
     @Override
     public String tags() {
-        String[] tags = {RocketMQConstant.DELAY_CYCLE_PREFIX + DELAY_TAG_MATCH_DEPOSIT, RocketMQConstant.DELAY_CYCLE_PREFIX + DELAY_TAG_UN_MATCH_WITHDRAW, RocketMQConstant.DELAY_CYCLE_PREFIX + DELAY_TAG_MATCH_WITHDRAW, RocketMQConstant.DELAY_CYCLE_PREFIX + DELAY_TAG_UEWF, DELAY_TAG_MATCH_DEPOSIT, DELAY_TAG_UN_MATCH_WITHDRAW, DELAY_TAG_MATCH_WITHDRAW, DELAY_TAG_UEWF};
+        String[] tags = {DELAY_CYCLE_PREFIX + DELAY_TAG_UEWF, DELAY_TAG_UEWF};
         return String.join(TAG_SPLIT, tags);
     }
 
