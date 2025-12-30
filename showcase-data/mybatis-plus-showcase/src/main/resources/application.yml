@@ -26,5 +26,5 @@ mybatis-plus:
   data-center-id: 1
 retry:
   config:
-#    "com.jdktomcat.showcase.mybatis.plus.mapper.ChannelAccountRecordMapper.insert": 1
+    "com.jdktomcat.showcase.mybatis.plus.mapper.ChannelAccountRecordMapper.insert": 1
     "com.jdktomcat.showcase.mybatis.plus.mapper.DepositOrderMapper.insert": 2
