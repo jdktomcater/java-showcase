@@ -10,10 +10,16 @@
     <name>replace-delay</name>
 
     <dependencies>
+        <!--rocketmq 依赖，保持一致-->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-spring-boot-starter</artifactId>
-            <version>${rocketmq-spring-boot-starter-version}</version>
+            <artifactId>rocketmq-common</artifactId>
+            <version>4.9.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>4.9.8</version>
         </dependency>
         <!--redisson-->
         <dependency>
