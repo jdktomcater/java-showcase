@@ -26,6 +26,6 @@ rocketmq:
     consumeThreadMax: 64
     batchMaxSize: 1
 
-order.state.delay.mq.enable: false
+order.state.delay.mq.enable: true
 order.state.delay.redis.enable: true
 order.state.delay.redis.ttl.time.difference: 500
