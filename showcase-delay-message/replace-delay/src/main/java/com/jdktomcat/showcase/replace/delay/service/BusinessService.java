@@ -33,10 +33,10 @@ public class BusinessService {
     public void lock(String merchantId, String userId) {
         String mUserId = UEWF_PREFIX + merchantId + "_" + userId;
         long value = redisComponent.incr(mUserId);
-        boolean result = redisComponent.expire(mUserId, 60 * 2);
+        boolean result = redisComponent.expire(mUserId, 45);
         log.info("lock value:{} expire 2mins:{}", value, result);
         // 发送延迟消息
-        messageProducerComponent.sendDelayMessage(DELAY_TAG_UEWF, mUserId, mUserId + KEY_VALUE_SPLIT + value, 60 * 2);
+        messageProducerComponent.sendDelayMessage(DELAY_TAG_UEWF, mUserId, mUserId + KEY_VALUE_SPLIT + value, 45);
     }
 
     /**
