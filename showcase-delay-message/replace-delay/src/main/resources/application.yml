@@ -11,6 +11,9 @@ spring:
       # 过期事件订阅，接收7号数据库中所有key的过期事件
       listen-pattern: __keyevent@0__:expired
 
+logging:
+  config: classpath:logback.xml
+
 rocketmq:
   namesrvAddr: 172.30.2.14:9876
   producer:

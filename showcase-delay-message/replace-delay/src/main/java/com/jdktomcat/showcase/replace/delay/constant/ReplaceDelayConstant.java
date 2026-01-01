@@ -23,7 +23,7 @@ public class ReplaceDelayConstant {
     /**
      * 分割符
      */
-    public static final String KEY_VALUE_SPLIT = "|||";
+    public static final String KEY_VALUE_SPLIT = "@#@";
 
     /**
      * 默认列表
@@ -40,11 +40,6 @@ public class ReplaceDelayConstant {
      */
     public static final String TAG_SPLIT = "||";
 
-
-    /**
-     * 数组分割符
-     */
-    public static final String ARRAY_SEPARATOR = ";";
 
     /**
      * 延迟循环tag标记
