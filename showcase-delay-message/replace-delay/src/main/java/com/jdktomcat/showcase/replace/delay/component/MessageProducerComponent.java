@@ -72,15 +72,17 @@ public class MessageProducerComponent {
         log.info("发送延时消息,tag:{} key:{} message:{}", tag, key, JSONObject.toJSONString(messageWrapper));
         if (messageWrapper.getExpireTimeout() > 0) {
             DelayLevelEnum delayLevelEnum = DelayLevelEnum.findNearbyLevel(messageWrapper.getExpireTimeout());
-            if (!tag.startsWith(DELAY_CYCLE_PREFIX)) {
-                tag = DELAY_CYCLE_PREFIX + tag;
-            }
             messageWrapper.setExpireTimeout(messageWrapper.getExpireTimeout() - delayLevelEnum.getSeconds());
-            sendDelayMessage(tag, key, JSONObject.toJSONString(messageWrapper).getBytes(StandardCharsets.UTF_8), delayLevelEnum.getLevel());
-        } else {
-            tag = tag.substring(tag.indexOf(DELAY_CYCLE_PREFIX) + DELAY_CYCLE_PREFIX.length());
-            sendAsyncMessage(DELAY_MESSAGE_TOPIC, tag, key, JSONObject.toJSONString(messageWrapper).getBytes(StandardCharsets.UTF_8));
+            if (messageWrapper.getExpireTimeout() > 0) {
+                if (!tag.startsWith(DELAY_CYCLE_PREFIX)) {
+                    tag = DELAY_CYCLE_PREFIX + tag;
+                }
+                sendDelayMessage(tag, key, JSONObject.toJSONString(messageWrapper).getBytes(StandardCharsets.UTF_8), delayLevelEnum.getLevel());
+                return;
+            }
         }
+        tag = tag.substring(tag.indexOf(DELAY_CYCLE_PREFIX) + DELAY_CYCLE_PREFIX.length());
+        sendAsyncMessage(DELAY_MESSAGE_TOPIC, tag, key, JSONObject.toJSONString(messageWrapper).getBytes(StandardCharsets.UTF_8));
     }
 
     /**

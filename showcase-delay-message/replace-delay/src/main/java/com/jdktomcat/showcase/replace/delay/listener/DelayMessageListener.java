@@ -47,7 +47,8 @@ public class DelayMessageListener extends BaseConsumerListener {
         }
         try {
             log.info("延迟消息消费原始內容:{}", toString(messageExt));
-            DelayMessageWrapper messageWrapper = JSONObject.parseObject(new String(messageExt.getBody(), StandardCharsets.UTF_8).trim(), DelayMessageWrapper.class);
+            DelayMessageWrapper messageWrapper =
+                    JSONObject.parseObject(new String(messageExt.getBody(), StandardCharsets.UTF_8).trim(), DelayMessageWrapper.class);
             if (messageWrapper == null || StringUtils.isEmpty(messageWrapper.getData())) {
                 log.warn("延迟消息体格式异常,不做业务处理,请检查！");
                 return;
