@@ -76,6 +76,7 @@ public class DelayMessageListener extends BaseConsumerListener {
             log.info("原先redis业务key：{}对应pttl：{}", params[0], pttl);
             if(pttl > delayConfig.getTtlDifferenceTime()){
                 log.warn("标签：{} 延迟对应的标识：{}对应的延迟业务发生了更新变化，延迟时间：{}，设置时间间隔：{}，后续业务不做处理！", tag, params[0], pttl, delayConfig.getTtlDifferenceTime());
+                return;
             }
             long total = messageWrapper.getTotalTimeout() * 1000L;
             long cost = System.currentTimeMillis() - messageWrapper.getCreateTime();
