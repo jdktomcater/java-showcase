@@ -18,7 +18,7 @@ import org.springframework.data.redis.listener.Topic;
 @Configuration
 public class RedisListenerConfiguration {
 
-    @Value("${spring.redis.listen-pattern}")
+    @Value("${spring.data.redis.listen-pattern}")
     public String pattern;
 
     @Bean

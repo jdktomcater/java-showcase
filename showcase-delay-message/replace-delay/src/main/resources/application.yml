@@ -1,21 +1,18 @@
 spring:
   application:
     name: showcase-replace-delay
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    database: 0
-    # 过期事件订阅，接收7号数据库中所有key的过期事件
-    listen-pattern: __keyevent@0__:expired
-    jedis:
-      pool:
-        max-active: 8
-        max-wait: 800
-        max-idle: 8
-        min-idle: 2
+  main:
+    allow-circular-references: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      # 过期事件订阅，接收7号数据库中所有key的过期事件
+      listen-pattern: __keyevent@0__:expired
 
 rocketmq:
-  namesrvAddr: 172.31.184.43:9876
+  namesrvAddr: 172.30.2.14:9876
   producer:
     groupName: orderProducerGroup
     instanceName: orderProducer

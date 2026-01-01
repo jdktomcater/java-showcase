@@ -33,7 +33,7 @@ public class ReplaceDelayConstant {
     /**
      * 合天下相关延迟消息主题
      */
-    public static final String DELAY_MESSAGE_TOPIC = "DELAY_MESSAGE_TOPIC_MATCHUP";
+    public static final String DELAY_MESSAGE_TOPIC = "DELAY_TOPIC";
 
     /**
      * tag连接符

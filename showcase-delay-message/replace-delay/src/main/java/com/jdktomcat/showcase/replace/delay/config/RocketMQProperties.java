@@ -1,10 +1,10 @@
 package com.jdktomcat.showcase.replace.delay.config;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 
 
 /**
@@ -23,12 +23,12 @@ public class RocketMQProperties {
     /**
      * 消费者配置
      */
-    @Resource
+    @Autowired
     private ConsumerProperties consumerProperties;
 
     /**
      * 生产者配置
      */
-    @Resource
+    @Autowired
     private ProducerProperties producerProperties;
 }
