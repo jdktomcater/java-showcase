@@ -73,8 +73,11 @@ public class MessageProducerComponent {
         if (messageWrapper.getExpireTimeout() > 0) {
             DelayLevelEnum delayLevelEnum = DelayLevelEnum.findNearbyLevel(messageWrapper.getExpireTimeout());
             messageWrapper.setExpireTimeout(messageWrapper.getExpireTimeout() - delayLevelEnum.getSeconds());
-            if (!tag.startsWith(DELAY_CYCLE_PREFIX)) {
+            if (messageWrapper.getExpireTimeout() > 0 && !tag.startsWith(DELAY_CYCLE_PREFIX)) {
                 tag = DELAY_CYCLE_PREFIX + tag;
+            }
+            if (messageWrapper.getExpireTimeout() <= 0 && tag.startsWith(DELAY_CYCLE_PREFIX)) {
+                tag = tag.substring(tag.indexOf(DELAY_CYCLE_PREFIX) + DELAY_CYCLE_PREFIX.length());
             }
             sendDelayMessage(tag, key, JSONObject.toJSONString(messageWrapper).getBytes(StandardCharsets.UTF_8), delayLevelEnum.getLevel());
             return;
