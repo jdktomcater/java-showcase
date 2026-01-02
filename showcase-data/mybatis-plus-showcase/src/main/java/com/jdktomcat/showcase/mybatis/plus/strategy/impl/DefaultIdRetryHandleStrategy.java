@@ -2,7 +2,6 @@ package com.jdktomcat.showcase.mybatis.plus.strategy.impl;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.jdktomcat.showcase.mybatis.plus.strategy.IdRetryHandleStrategy;
-import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Invocation;
 
 import java.lang.reflect.Field;

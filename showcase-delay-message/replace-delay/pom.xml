@@ -9,27 +9,20 @@
     <artifactId>replace-delay</artifactId>
     <name>replace-delay</name>
 
+    <properties>
+        <rocketmq-version>4.9.8</rocketmq-version>
+    </properties>
     <dependencies>
         <!--rocketmq 依赖，保持一致-->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-common</artifactId>
-            <version>4.9.8</version>
+            <version>${rocketmq-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>4.9.8</version>
-        </dependency>
-        <!--redisson-->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${rocketmq-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

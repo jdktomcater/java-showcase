@@ -50,19 +50,19 @@ public class MybatisPlusApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        for (int i = 0; i < 10; i++) {
-            ChannelAccountRecord channelAccountRecord = new ChannelAccountRecord();
-            channelAccountRecord.setOrderIndex(2005199540986187777L);
-            channelAccountRecord.setPayChannelID(10L);
-            channelAccountRecord.setOrderID("12345678");
-            channelAccountRecord.setCreateTime(new Date());
-            try {
-                int insert = channelAccountRecordMapper.insert(channelAccountRecord);
-                log.info("insert channelAccountRecord:{}", insert);
-            } catch (Exception e) {
-                log.error("insert channelAccountRecord:{}", e.getMessage(), e);
-            }
+//        for (int i = 0; i < 10; i++) {
+        ChannelAccountRecord channelAccountRecord = new ChannelAccountRecord();
+        channelAccountRecord.setOrderIndex(2005199540986187777L);
+        channelAccountRecord.setPayChannelID(10L);
+        channelAccountRecord.setOrderID("12345678");
+        channelAccountRecord.setCreateTime(new Date());
+        try {
+            int insert = channelAccountRecordMapper.insert(channelAccountRecord);
+            log.info("insert channelAccountRecord:{}", insert);
+        } catch (Exception e) {
+            log.error("insert channelAccountRecord:{}", e.getMessage(), e);
         }
+//        }
 //        Long orderIndex = redisTableGenerateComponent.tableIdGenerate("t_depositorder");
 //        for (int i = 0; i < 10; i++) {
 //            DepositOrder depositOrder = new DepositOrder();

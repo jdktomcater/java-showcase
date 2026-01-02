@@ -1,7 +1,6 @@
 package com.jdktomcat.showcase.mybatis.plus.interceptor;
 
 import com.jdktomcat.showcase.mybatis.plus.config.RetryConfig;
-import com.jdktomcat.showcase.mybatis.plus.entry.ChannelAccountRecord;
 import com.jdktomcat.showcase.mybatis.plus.enums.RetryHandlerEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
@@ -70,7 +69,7 @@ public class RetryInsertInterceptor implements Interceptor {
                 return false;
             }
             // sql状态码校验
-            if(!sqlException.getSQLState().equalsIgnoreCase("2300")){
+            if(!sqlException.getSQLState().equalsIgnoreCase("23000")){
                 return false;
             }
             // SQL错误码校验

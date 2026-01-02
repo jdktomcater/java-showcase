@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 import static com.jdktomcat.showcase.replace.delay.constant.ReplaceDelayConstant.*;
 
 @Slf4j
@@ -30,7 +32,9 @@ public class BusinessService {
      * @param merchantId 商户标识
      * @param userId     用户标识
      */
-    public void lock(String merchantId, String userId) {
+    public void lock(String merchantId, String userId, BigDecimal amount) {
+        String maUserId = UAMT_PREFIX + merchantId + "_" + userId;
+
         String mUserId = UEWF_PREFIX + merchantId + "_" + userId;
         long value = redisComponent.incr(mUserId);
         boolean result = redisComponent.expire(mUserId, 45);
