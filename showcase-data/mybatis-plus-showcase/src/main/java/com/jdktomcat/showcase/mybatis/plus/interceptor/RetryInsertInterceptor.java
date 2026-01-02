@@ -41,8 +41,8 @@ public class RetryInsertInterceptor implements Interceptor {
             result = invocation.proceed();
         } catch (InvocationTargetException exception) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", exception);
-            if(isRetry(invocation, exception)){
-                try{
+            if (isRetry(invocation, exception)) {
+                try {
                     result = invocation.proceed();
                 } catch (InvocationTargetException inner) {
                     // TODO 发送告警或者打印错误日志
@@ -50,7 +50,7 @@ public class RetryInsertInterceptor implements Interceptor {
                     throw inner;
                 }
                 log.info("RetryInsertInterceptor retry sqlCommandType:{} result:{}", sqlCommandType, result);
-            }else{
+            } else {
                 throw exception;
             }
         }
@@ -63,37 +63,37 @@ public class RetryInsertInterceptor implements Interceptor {
      * @param invocation 调用链
      * @return true 需要重试 false 不需要重试
      */
-    private boolean isRetry(Invocation invocation,InvocationTargetException exception) {
-        try{
+    private boolean isRetry(Invocation invocation, InvocationTargetException exception) {
+        try {
             Object[] args = invocation.getArgs();
             MappedStatement ms = (MappedStatement) args[0];
             String sqlId = ms.getId();
             // 判断异常类型
             Throwable throwable = exception.getCause();
             // 异常类型
-            if(!(throwable instanceof SQLIntegrityConstraintViolationException sqlException)){
+            if (!(throwable instanceof SQLIntegrityConstraintViolationException sqlException)) {
                 return false;
             }
             // sql状态码校验
-            if(!sqlException.getSQLState().equalsIgnoreCase("23000")){
+            if (!sqlException.getSQLState().equalsIgnoreCase("23000")) {
                 return false;
             }
             // SQL错误码校验
-            if(sqlException.getErrorCode()!=1062){
+            if (sqlException.getErrorCode() != 1062) {
                 return false;
             }
             // 错误详情
-            if(!(sqlException.getMessage()!=null && sqlException.getMessage().contains("PRIMARY"))){
+            if (!(sqlException.getMessage() != null && sqlException.getMessage().contains("PRIMARY"))) {
                 return false;
             }
             // 是否配置
-            if(!retryConfig.getConfig().containsKey(sqlId)){
+            if (!(retryConfig != null && retryConfig.getConfig() != null && retryConfig.getConfig().containsKey(sqlId))) {
                 return false;
             }
             // 配置类型
-            Integer handleType =  retryConfig.getConfig().get(sqlId);
+            Integer handleType = retryConfig.getConfig().get(sqlId);
             RetryHandlerEnum retryHandlerEnum = RetryHandlerEnum.getInstance(handleType);
-            if(retryHandlerEnum==null){
+            if (retryHandlerEnum == null) {
                 return false;
             }
             retryHandlerEnum.getIdRetryHandleStrategy().handle(invocation);
