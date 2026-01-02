@@ -42,7 +42,13 @@ public class RetryInsertInterceptor implements Interceptor {
         } catch (InvocationTargetException exception) {
             log.error("MySqlInterceptor 拦截器拦截过程中出现异常！", exception);
             if(isRetry(invocation, exception)){
-                result = invocation.proceed();
+                try{
+                    result = invocation.proceed();
+                } catch (InvocationTargetException inner) {
+                    // TODO 发送告警或者打印错误日志
+                    log.error("重试后再次发生主键冲突，请关注！", inner);
+                    throw inner;
+                }
                 log.info("RetryInsertInterceptor retry sqlCommandType:{} result:{}", sqlCommandType, result);
             }else{
                 throw exception;
