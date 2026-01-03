@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ElkLogRepository extends ElasticsearchRepository<ElkLog, String> {
-    Iterable<ElkLog> findByNameContaining(String keyword);
 }

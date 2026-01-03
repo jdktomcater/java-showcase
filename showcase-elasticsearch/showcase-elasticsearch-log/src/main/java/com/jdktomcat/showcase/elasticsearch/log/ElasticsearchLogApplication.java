@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Slf4j
 @SpringBootApplication
@@ -23,12 +26,14 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
      * Callback used to run the bean.
      *
      * @param args incoming main method arguments
-     * @throws Exception on error
      */
     @Override
-    public void run(String... args) throws Exception {
-        Iterable<ElkLog> iterable = elkLogRepository.findByNameContaining("name");
-        iterable.forEach(elkLog -> {
+    public void run(String... args) {
+        long count = elkLogRepository.count();
+        log.info("总数：{}", count);
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<ElkLog> page = elkLogRepository.findAll(pageable);
+        page.get().forEach(elkLog -> {
             log.info(String.valueOf(elkLog));
         });
     }

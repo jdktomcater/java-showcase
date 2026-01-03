@@ -6,14 +6,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 @Data
-@Document(indexName = "fat-txzf-2026.01.03")
+@Document(indexName = "fat-txzf*")
 public class ElkLog {
     @Id
     private String id;
-
-    private String index;
-
-    private String type;
 
     private String app;
 
