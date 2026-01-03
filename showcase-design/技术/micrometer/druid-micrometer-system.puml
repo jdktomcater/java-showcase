@@ -1,0 +1,28 @@
+@startuml
+title Druid 连接池监控数据链路（Actuator + Micrometer + Prometheus + Grafana）
+
+rectangle "业务服务（Spring Boot）" as app {
+  component "Druid DataSource\n连接池统计(active/pooling/wait等)" as druid
+  component "Micrometer MeterRegistry\n采集/注册指标" as mic
+  interface "Actuator Endpoint\n/actuator/prometheus" as act
+
+  druid --> mic : 提供连接池统计
+  mic --> act : 暴露为 Prometheus 指标
+}
+
+node "Prometheus" as prom
+database "Prometheus TSDB\n时序存储" as tsdb
+node "Grafana\nDashboard" as graf
+
+act --> prom : HTTP scrape\n(srape_interval)
+prom --> tsdb : 存储时序数据
+graf --> prom : PromQL 查询
+
+cloud "Recording/Alerting Rules（可选）" as rules
+node "Alertmanager（可选）" as am
+cloud "通知：telegram（可选）" as notify
+
+prom --> rules : 规则计算/告警条件
+rules --> am : 触发告警
+am --> notify : 发送通知
+@enduml
