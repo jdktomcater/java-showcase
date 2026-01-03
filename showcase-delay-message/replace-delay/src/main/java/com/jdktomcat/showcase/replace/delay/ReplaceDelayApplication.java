@@ -6,6 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.math.BigDecimal;
+
 @SpringBootApplication
 public class ReplaceDelayApplication implements CommandLineRunner {
 
@@ -28,6 +30,6 @@ public class ReplaceDelayApplication implements CommandLineRunner {
     public void run(String... args) {
         String merchantId = "merchantId";
         String userId = "userId";
-        businessService.lock(merchantId,userId);
+        businessService.lock(merchantId,userId, new BigDecimal(100));
     }
 }

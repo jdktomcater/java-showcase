@@ -1,0 +1,7 @@
+spring:
+    application:
+        name: showcase-elasticsearch-log
+    elasticsearch:
+        uris: http://172.30.2.24:9200
+        username: txzf
+        password: iPI0AUsWiEFYUjUHr2zcjIAhRi.
