@@ -15,6 +15,7 @@
     <modules>
         <module>showcase-elasticsearch-canal</module>
         <module>showcase-elasticsearch-base</module>
+        <module>showcase-elasticsearch-log</module>
     </modules>
 
     <properties>
