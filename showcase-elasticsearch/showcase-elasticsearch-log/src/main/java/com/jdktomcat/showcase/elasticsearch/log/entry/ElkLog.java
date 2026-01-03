@@ -20,5 +20,4 @@ public class ElkLog {
     private String message;
 
     private String tags;
-
 }
