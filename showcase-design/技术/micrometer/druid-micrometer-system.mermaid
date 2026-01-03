@@ -1,0 +1,15 @@
+flowchart LR
+    subgraph APP[业务服务（Spring Boot）]
+    DRUID[Druid DataSource<br/>连接池统计（active/pooling/wait等）]
+    MIC[Micrometer MeterRegistry<br/>采集/注册指标]
+    ACT[/Actuator Endpoint<br/>/actuator/prometheus/]
+    DRUID --> MIC --> ACT
+    end
+
+    PROM[Prometheus<br/>按 scrape_interval 拉取] --> TSDB[(Prometheus TSDB<br/>时序存储)]
+    ACT -->|HTTP Scrape| PROM
+    GRAF[Grafana<br/>Dashboard 面板] -->|PromQL 查询| PROM
+
+    PROM --> RULES[Recording/Alerting Rules（可选）]
+    RULES --> AM[Alertmanager（可选）]
+    AM --> NOTIF[通知渠道：telegram告警（可选）]
