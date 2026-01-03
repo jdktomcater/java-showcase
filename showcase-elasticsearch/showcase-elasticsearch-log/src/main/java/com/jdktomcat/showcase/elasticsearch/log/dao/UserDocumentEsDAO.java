@@ -1,7 +1,7 @@
-package com.jdktomcat.showcase.elasticsearch.base.dao;
+package com.jdktomcat.showcase.elasticsearch.log.dao;
 
 import com.alibaba.fastjson2.JSON;
-import com.jdktomcat.showcase.elasticsearch.base.entry.UserDocument;
+import com.jdktomcat.showcase.elasticsearch.log.entry.UserDocument;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;

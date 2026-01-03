@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.elasticsearch.base.entry;
+package com.jdktomcat.showcase.elasticsearch.log.entry;
 
 import lombok.Data;
 

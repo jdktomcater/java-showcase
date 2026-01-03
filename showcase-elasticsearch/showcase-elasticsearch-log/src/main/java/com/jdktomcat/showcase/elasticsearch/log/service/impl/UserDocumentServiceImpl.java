@@ -1,8 +1,8 @@
-package com.jdktomcat.showcase.elasticsearch.base.service.impl;
+package com.jdktomcat.showcase.elasticsearch.log.service.impl;
 
-import com.jdktomcat.showcase.elasticsearch.base.dao.UserDocumentEsDAO;
-import com.jdktomcat.showcase.elasticsearch.base.entry.UserDocument;
-import com.jdktomcat.showcase.elasticsearch.base.service.IUserDocumentService;
+import com.jdktomcat.showcase.elasticsearch.log.dao.UserDocumentEsDAO;
+import com.jdktomcat.showcase.elasticsearch.log.entry.UserDocument;
+import com.jdktomcat.showcase.elasticsearch.log.service.IUserDocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

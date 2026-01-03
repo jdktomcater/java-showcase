@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.elasticsearch.base.config;
+package com.jdktomcat.showcase.elasticsearch.log.config;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;

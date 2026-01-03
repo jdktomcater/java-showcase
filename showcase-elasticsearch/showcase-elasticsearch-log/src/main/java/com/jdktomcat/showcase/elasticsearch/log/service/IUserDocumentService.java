@@ -1,6 +1,7 @@
-package com.jdktomcat.showcase.elasticsearch.base.service;
+package com.jdktomcat.showcase.elasticsearch.log.service;
 
-import com.jdktomcat.showcase.elasticsearch.base.entry.UserDocument;
+
+import com.jdktomcat.showcase.elasticsearch.log.entry.UserDocument;
 
 import java.io.IOException;
 import java.util.List;
