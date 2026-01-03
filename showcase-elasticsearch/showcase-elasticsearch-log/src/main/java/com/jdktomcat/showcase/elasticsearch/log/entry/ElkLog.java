@@ -11,6 +11,8 @@ public class ElkLog {
     @Id
     private String id;
 
+    private String log_time;
+
     private String app;
 
     private String app_name;
