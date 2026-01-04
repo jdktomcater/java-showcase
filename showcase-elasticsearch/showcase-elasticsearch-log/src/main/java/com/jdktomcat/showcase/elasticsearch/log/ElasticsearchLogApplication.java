@@ -1,6 +1,5 @@
 package com.jdktomcat.showcase.elasticsearch.log;
 
-import com.jdktomcat.showcase.elasticsearch.log.dao.ElkLogRepository;
 import com.jdktomcat.showcase.elasticsearch.log.entry.ElkLog;
 import com.jdktomcat.showcase.elasticsearch.log.service.EsFullScanService;
 import lombok.extern.slf4j.Slf4j;
