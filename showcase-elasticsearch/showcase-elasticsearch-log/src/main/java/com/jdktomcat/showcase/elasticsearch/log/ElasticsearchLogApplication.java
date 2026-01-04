@@ -1,15 +1,13 @@
 package com.jdktomcat.showcase.elasticsearch.log;
 
-import com.jdktomcat.showcase.elasticsearch.log.entry.ElkLog;
 import com.jdktomcat.showcase.elasticsearch.log.service.EsFullScanService;
+import com.jdktomcat.showcase.elasticsearch.log.util.RegexUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Map;
-import java.util.TreeMap;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Slf4j
 @SpringBootApplication
@@ -17,6 +15,9 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
 
     @Autowired
     private EsFullScanService esFullScanService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     public static void main(String[] args) {
         SpringApplication.run(ElasticsearchLogApplication.class, args);
@@ -29,23 +30,44 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) {
-        TreeMap<Integer, ElkLog> treeMap = new TreeMap<>();
         int batchSize = 100;
-        String indexName = "fat-txzf-2026.01.02";
-        esFullScanService.scrollAll(indexName, batchSize, elkLog -> {
-            if (treeMap.size() < 100) {
-                treeMap.put(elkLog.getMessage().length(), elkLog);
-                return;
+        String[] indexNames = {
+                "fat-txzf-2026.01.01",
+                "fat-txzf-2026.01.02",
+                "fat-txzf-2026.01.03"
+        };
+        String[] appNames = {
+                "TyPayJV2Dispatch"
+//                "TyPayJV2JobProvider",
+//                "TyPayJV2ThirdchannelDispatch",
+//                "TyPayJV2Api",
+//                "TyPayJV2FinancialFront",
+//                "typayjv2mqorderfinishconsumer",
+//                "TyPayJV2ThirdchannelUser",
+//                "plugin-kms-service",
+//                "TyPayJV2ThirdchannelThird",
+//                "typayjv2mqalarmconsumer",
+//                "TyPayJV2GeneralFront",
+//                "TyPayJV2MQConsumer",
+//                "TyPayJV2BankServer",
+//                "TyPayJV2BusinessFront",
+//                "TyPayJV2MerchantServer",
+//                "automachinejv2logadmin",
+//                "TyPayJV2MatchupPayService"
+        };
+        for (String appName : appNames) {
+            String countKey = "es:scan:elklog:count:" + appName + ":";
+            String capacityKey = "es:scan:elklog:capacity:" + appName;
+            for (String indexName : indexNames) {
+                esFullScanService.scrollAll(indexName, appName, batchSize, elkLog -> {
+                    String message = elkLog.getMessage();
+                    String logAnchor = RegexUtil.getLogAnchor(message);
+                    // 统计次数
+                    stringRedisTemplate.opsForValue().increment(countKey + logAnchor);
+                    // 统计容量
+                    stringRedisTemplate.opsForZSet().incrementScore(capacityKey, logAnchor, message.length());
+                });
             }
-            Map.Entry<Integer, ElkLog> last = treeMap.pollFirstEntry();
-            if (last.getKey() < elkLog.getMessage().length()) {
-                treeMap.put(elkLog.getMessage().length(), elkLog);
-            } else {
-                treeMap.put(last.getKey(), last.getValue());
-            }
-        });
-        treeMap.forEach((length, elklog) -> {
-            log.info("length:{}, log:{}", length, elklog);
-        });
+        }
     }
 }

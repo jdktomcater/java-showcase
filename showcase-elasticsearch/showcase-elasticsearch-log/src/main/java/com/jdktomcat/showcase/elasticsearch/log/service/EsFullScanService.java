@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.function.Consumer;
 
@@ -33,17 +34,27 @@ public class EsFullScanService {
     }
 
     /**
-     * 全量查询
+     * 全量查询（可按 app_name 过滤）
      *
      * @param indexName 索引名称
+     * @param appName   应用名称（为空则不过滤）
      * @param batchSize 批量大小
      * @param handler   处理器
      */
-    public void scrollAll(String indexName, int batchSize, Consumer<ElkLog> handler) {
+    public void scrollAll(String indexName, String appName, int batchSize, Consumer<ElkLog> handler) {
         IndexCoordinates index = IndexCoordinates.of(indexName);
+
+        var qb = QueryBuilders.boolQuery();
+        if (StringUtils.hasText(appName)) {
+            // 注意：如果 app_name 在 ES mapping 中是 text 类型，请改成 "app_name.keyword"
+            qb.filter(QueryBuilders.termQuery("app_name", appName));
+        } else {
+            qb.must(QueryBuilders.matchAllQuery());
+        }
+
         Query query = new NativeSearchQueryBuilder()
                 // scroll 最推荐
-                .withQuery(QueryBuilders.matchAllQuery()).withSorts(SortBuilders.fieldSort("_doc").order(SortOrder.ASC))
+                .withQuery(qb).withSorts(SortBuilders.fieldSort("_doc").order(SortOrder.ASC))
                 .withPageable(PageRequest.of(0, batchSize))
                 // 强烈建议：只取需要字段（按需修改/也可以删掉这一行取全量 _source）
                 .withSourceFilter(new FetchSourceFilter(new String[]{"log_time","app_name", "message"}, new String[]{}))
@@ -54,7 +65,10 @@ public class EsFullScanService {
             log.info("scan total:{}", it.getTotalHits());
             long count = 0L;
             while (it.hasNext()) {
-                log.info("scan count:{}", count++);
+                if (count != 0 && count % 10_000 == 0) {
+                    log.info("scan count:{}", count);
+                }
+                count++;
                 SearchHit<ElkLog> hit = it.next();
                 handler.accept(hit.getContent());
             }
