@@ -47,7 +47,7 @@ public class EsFullScanService {
         var qb = QueryBuilders.boolQuery();
         if (StringUtils.hasText(appName)) {
             // 注意：如果 app_name 在 ES mapping 中是 text 类型，请改成 "app_name.keyword"
-            qb.filter(QueryBuilders.termQuery("app_name", appName));
+            qb.filter(QueryBuilders.termQuery("app_name.keyword", appName));
         } else {
             qb.must(QueryBuilders.matchAllQuery());
         }
