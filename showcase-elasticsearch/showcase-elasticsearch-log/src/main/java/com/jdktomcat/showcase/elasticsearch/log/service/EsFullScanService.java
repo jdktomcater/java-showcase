@@ -43,7 +43,6 @@ public class EsFullScanService {
      */
     public void scrollAll(String indexName, String appName, int batchSize, Consumer<ElkLog> handler) {
         IndexCoordinates index = IndexCoordinates.of(indexName);
-
         var qb = QueryBuilders.boolQuery();
         if (StringUtils.hasText(appName)) {
             // 注意：如果 app_name 在 ES mapping 中是 text 类型，请改成 "app_name.keyword"
@@ -51,7 +50,6 @@ public class EsFullScanService {
         } else {
             qb.must(QueryBuilders.matchAllQuery());
         }
-
         Query query = new NativeSearchQueryBuilder()
                 // scroll 最推荐
                 .withQuery(qb).withSorts(SortBuilders.fieldSort("_doc").order(SortOrder.ASC))
@@ -60,7 +58,6 @@ public class EsFullScanService {
                 .withSourceFilter(new FetchSourceFilter(new String[]{"log_time","app_name", "message"}, new String[]{}))
                 .build();
         // Spring Boot 2.7.x / Spring Data Elasticsearch 4.4.x 推荐使用 searchForStream：内部使用 scroll，并在 close() 时自动清理 scroll 上下文
-
         try (SearchHitsIterator<ElkLog> it = ops.searchForStream(query, ElkLog.class, index)) {
             log.info("scan total:{}", it.getTotalHits());
             long count = 0L;

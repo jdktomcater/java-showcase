@@ -32,9 +32,7 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
     public void run(String... args) {
         int batchSize = 100;
         String[] indexNames = {
-                "fat-txzf-2026.01.01",
-                "fat-txzf-2026.01.02",
-                "fat-txzf-2026.01.03"
+                "fat-txzf-2026.01.01"
         };
         String[] appNames = {
                 "TyPayJV2Dispatch"
