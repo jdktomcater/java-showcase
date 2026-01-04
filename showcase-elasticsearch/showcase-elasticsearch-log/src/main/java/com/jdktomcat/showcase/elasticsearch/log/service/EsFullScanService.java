@@ -1,0 +1,59 @@
+package com.jdktomcat.showcase.elasticsearch.log.service;
+
+import com.jdktomcat.showcase.elasticsearch.log.entry.ElkLog;
+import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHitsIterator;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.stereotype.Service;
+
+import java.util.function.Consumer;
+
+@Slf4j
+@Service
+public class EsFullScanService {
+
+    private final ElasticsearchOperations ops;
+
+    /**
+     * 构造注入
+     *
+     * @param ops ES相关配置
+     */
+    public EsFullScanService(ElasticsearchOperations ops) {
+        this.ops = ops;
+    }
+
+    /**
+     * 全量查询
+     *
+     * @param indexName 索引名称
+     * @param batchSize 批量大小
+     * @param handler   处理器
+     */
+    public void scrollAll(String indexName, int batchSize, Consumer<ElkLog> handler) {
+        IndexCoordinates index = IndexCoordinates.of(indexName);
+        Query query = new NativeSearchQueryBuilder()
+                // scroll 最推荐
+                .withQuery(QueryBuilders.matchAllQuery()).withSorts(SortBuilders.fieldSort("_doc").order(SortOrder.ASC))
+                .withPageable(PageRequest.of(0, batchSize))
+                // 强烈建议：只取需要字段（按需修改/也可以删掉这一行取全量 _source）
+                .withSourceFilter(new FetchSourceFilter(new String[]{"log_time","app_name", "message"}, new String[]{}))
+                .build();
+        // Spring Boot 2.7.x / Spring Data Elasticsearch 4.4.x 推荐使用 searchForStream：内部使用 scroll，并在 close() 时自动清理 scroll 上下文
+        try (SearchHitsIterator<ElkLog> it = ops.searchForStream(query, ElkLog.class, index)) {
+            while (it.hasNext()) {
+                SearchHit<ElkLog> hit = it.next();
+                handler.accept(hit.getContent());
+            }
+        }
+    }
+}

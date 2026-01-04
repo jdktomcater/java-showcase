@@ -10,16 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class ElkLog {
     @Id
     private String id;
-
     private String log_time;
-
-    private String app;
-
     private String app_name;
-
-    private String hostname;
-
     private String message;
-
-    private String tags;
 }
