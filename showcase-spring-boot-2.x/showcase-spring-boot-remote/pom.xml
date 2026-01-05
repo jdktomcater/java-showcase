@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
-        <artifactId>showcase-spring-boot</artifactId>
+        <artifactId>showcase-spring-boot-2.x</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 

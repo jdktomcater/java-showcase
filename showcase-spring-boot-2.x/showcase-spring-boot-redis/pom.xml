@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
-        <artifactId>showcase-spring-boot</artifactId>
+        <artifactId>showcase-spring-boot-2.x</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>showcase-spring-boot-admin</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>showcase-spring-boot-redis</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,10 +18,15 @@
     </properties>
 
     <dependencies>
+        <!--redisson-->
         <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-server</artifactId>
-            <version>2.7.14</version>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
 

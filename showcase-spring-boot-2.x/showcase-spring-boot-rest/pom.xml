@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
-        <artifactId>showcase-spring-boot</artifactId>
+        <artifactId>showcase-spring-boot-2.x</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>showcase-spring-boot-redis</artifactId>
-    <packaging>jar</packaging>
+
+    <artifactId>showcase-spring-boot-rest</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,16 +18,24 @@
     </properties>
 
     <dependencies>
-        <!--redisson-->
         <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.9.1</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.1.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.50</version>
         </dependency>
     </dependencies>
-
 </project>
