@@ -32,36 +32,36 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
     public void run(String... args) {
         int batchSize = 100;
         String[] indexNames = {
-                "fat-txzf-2026.01.01"
+                "fat-txzf-2026.01.03"
         };
         String[] appNames = {
-                "TyPayJV2Dispatch"
+//                "TyPayJV2Dispatch"
 //                "TyPayJV2JobProvider",
-//                "TyPayJV2ThirdchannelDispatch",
+                "TyPayJV2ThirdchannelDispatch",
 //                "TyPayJV2Api",
 //                "TyPayJV2FinancialFront",
 //                "typayjv2mqorderfinishconsumer",
-//                "TyPayJV2ThirdchannelUser",
+                "TyPayJV2ThirdchannelUser",
 //                "plugin-kms-service",
-//                "TyPayJV2ThirdchannelThird",
+                "TyPayJV2ThirdchannelThird",
 //                "typayjv2mqalarmconsumer",
 //                "TyPayJV2GeneralFront",
-//                "TyPayJV2MQConsumer",
-//                "TyPayJV2BankServer",
-//                "TyPayJV2BusinessFront",
-//                "TyPayJV2MerchantServer",
-//                "automachinejv2logadmin",
-//                "TyPayJV2MatchupPayService"
+                "TyPayJV2MQConsumer",
+                "TyPayJV2BankServer",
+                "TyPayJV2BusinessFront",
+                "TyPayJV2MerchantServer",
+                "automachinejv2logadmin",
+                "TyPayJV2MatchupPayService"
         };
         for (String appName : appNames) {
-            String countKey = "es:scan:elklog:count:" + appName + ":";
             String capacityKey = "es:scan:elklog:capacity:" + appName;
             for (String indexName : indexNames) {
                 esFullScanService.scrollAll(indexName, appName, batchSize, elkLog -> {
                     String message = elkLog.getMessage();
                     String logAnchor = RegexUtil.getLogAnchor(message);
-                    // 统计次数
-                    stringRedisTemplate.opsForValue().increment(countKey + logAnchor);
+                    if(logAnchor == null){
+                        return;
+                    }
                     // 统计容量
                     stringRedisTemplate.opsForZSet().incrementScore(capacityKey, logAnchor, message.length());
                 });
