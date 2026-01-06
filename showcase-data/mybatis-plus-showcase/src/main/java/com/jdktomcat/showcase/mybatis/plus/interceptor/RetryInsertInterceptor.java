@@ -11,6 +11,7 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Signature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +19,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "retry.interceptor", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Intercepts(value = {@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),})
 public class RetryInsertInterceptor implements Interceptor {
 
