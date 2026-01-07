@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/order?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/order?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
     password: 1234
 
@@ -30,3 +30,16 @@ retry:
   config:
     "com.jdktomcat.showcase.mybatis.plus.mapper.ChannelAccountRecordMapper.insert": 1
     "com.jdktomcat.showcase.mybatis.plus.mapper.DepositOrderMapper.insert": 2
+
+benchmark:
+  enabled: false
+  threads: 4
+  warmupOps: 10000
+  ops: 100000
+  # 显式设置主键（true） vs 置空依赖 mybatis-plus ASSIGN_ID（false）
+  setIdExplicitly: false
+  baseOrderIndex: 2000000000000000000
+  # 用于验证重试路径：按比例使用 fixedOrderIndex 制造主键冲突
+  conflictRate: 0.0
+  fixedOrderIndex: 1
+  maxSamples: 200000
