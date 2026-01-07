@@ -72,7 +72,7 @@ public class MybatisPluginBenchmarkRunner implements CommandLineRunner {
 
         if (result.samples != null && result.samples.length > 0) {
             Arrays.sort(result.samples);
-            log.info("latencyMs p50={} p95={} p99={} (samples={})",
+            log.info("latencyMs p50={}ms p95={}ms p99={}ms (samples={})",
                     formatMs(percentile(result.samples, 0.50)),
                     formatMs(percentile(result.samples, 0.95)),
                     formatMs(percentile(result.samples, 0.99)),
@@ -123,7 +123,6 @@ public class MybatisPluginBenchmarkRunner implements CommandLineRunner {
                                 // 置空，依赖 mybatis-plus ASSIGN_ID
                                 entity.setOrderIndex(null);
                             }
-
                             entity.setPayChannelID(10L);
                             entity.setOrderID("bench-" + opIndex);
                             entity.setCreateTime(new Date());
