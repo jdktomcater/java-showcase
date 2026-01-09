@@ -2,7 +2,6 @@ package com.jdktomcat.showcase.replace.delay.component;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,6 +37,33 @@ public class RedisComponent {
         return value == null ? 0L : value;
     }
 
+    /**
+     * 哈希设置
+     *
+     * @param key   键
+     * @param field 属性
+     * @param value 值
+     */
+    public boolean hset(String key, String field, String value) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return stringRedisTemplate.opsForHash().putIfAbsent(key, field, value);
+    }
+
+    /**
+     * 检查是否存在
+     *
+     * @param key   键
+     * @param field 属性
+     * @return true：存在 false：不存在
+     */
+    public boolean hexists(String key, String field) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return stringRedisTemplate.opsForHash().hasKey(key, field);
+    }
 
     /**
      * 指定缓存失效时间
