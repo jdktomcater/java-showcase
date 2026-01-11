@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.redis.interceptor;
 
 import com.jdktomcat.showcase.redis.annotation.Limiter;
 import com.jdktomcat.showcase.redis.component.RedisComponent;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class LimiterInterceptor extends HandlerInterceptorAdapter {
     /**
      * 特征值前缀
      */
-    private static final String EIGENVALUE_PRE = "typay:general:eigenvalue:";
+    private static final String EIGENVALUE_PRE = "eigenvalue:";
 
     /**
      * 限流拦截实现(滑动窗口)
@@ -42,9 +43,8 @@ public class LimiterInterceptor extends HandlerInterceptorAdapter {
      * @return true:放行 false:拦截
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) throws Exception {
+        if (handler instanceof HandlerMethod handlerMethod) {
             Method method = handlerMethod.getMethod();
             Limiter annotation = method.getAnnotation(Limiter.class);
             if (annotation != null) {
