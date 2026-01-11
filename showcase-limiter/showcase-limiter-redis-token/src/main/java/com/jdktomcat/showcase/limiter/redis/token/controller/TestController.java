@@ -22,6 +22,6 @@ public class TestController {
     @Limiter(token = 10, lease = 2)
     @GetMapping("/limiter")
     public String say(String name) {
-        return "hello" + name;
+        return "hello " + name;
     }
 }
