@@ -2,8 +2,11 @@
 package com.jdktomcat.showcase.system.design.pay.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
+@Table(name = "payment_order", uniqueConstraints = @UniqueConstraint(columnNames = "requestId"))
 public class PaymentOrder {
 
     @Id
@@ -13,16 +16,14 @@ public class PaymentOrder {
     private String requestId;
     private Long userId;
     private Long amount;
-    private String status;
 
-    public PaymentOrder() {}
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
-    public PaymentOrder(String requestId, Long userId, Long amount, String status) {
-        this.requestId = requestId;
-        this.userId = userId;
-        this.amount = amount;
-        this.status = status;
+    @Version
+    private Long version;
+
+    public enum Status {
+        INIT, PROCESSING, SUCCESS, FAIL
     }
-
-    // getters and setters omitted for brevity
 }

@@ -10,21 +10,42 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class PaymentService {
 
-    private final RedissonClient redissonClient;
+    private final PaymentOrderRepository orderRepo;
+    private final AccountService accountService;
+    private final ChannelService channelService;
+    private final ApplicationEventPublisher publisher;
 
-    public PaymentService(RedissonClient redissonClient) {
-        this.redissonClient = redissonClient;
-    }
-
+    @Transactional
     public void pay(String requestId, Long userId, Long amount) {
-        String key = "pay:idem:" + requestId;
-        RBucket<String> bucket = redissonClient.getBucket(key);
 
-        if (!bucket.trySet("PROCESSING", 5, TimeUnit.MINUTES)) {
-            return;
+        // 幂等：存在直接返回
+        orderRepo.findByRequestId(requestId).ifPresent(o -> {
+            throw new RuntimeException("duplicate request");
+        });
+
+        PaymentOrder order = new PaymentOrder();
+        order.setRequestId(requestId);
+        order.setUserId(userId);
+        order.setAmount(amount);
+        order.setStatus(PaymentOrder.Status.INIT);
+        orderRepo.save(order);
+
+        // 冻结余额
+        accountService.freeze(userId, amount);
+
+        order.setStatus(PaymentOrder.Status.PROCESSING);
+
+        // 调用下游（模拟）
+        boolean success = channelService.pay();
+
+        if (success) {
+            accountService.commit(userId, amount);
+            order.setStatus(PaymentOrder.Status.SUCCESS);
+            publisher.publishEvent(new PaymentResultEvent(order.getId(), true));
+        } else {
+            accountService.rollback(userId, amount);
+            order.setStatus(PaymentOrder.Status.FAIL);
         }
-
-        // simulate payment
-        bucket.set("SUCCESS", 1, TimeUnit.DAYS);
     }
 }
+
