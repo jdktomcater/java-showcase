@@ -32,25 +32,25 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
     public void run(String... args) {
         int batchSize = 100;
         String[] indexNames = {
-                "fat-txzf-2026.01.03"
+                "fat-txzf-2026.01.11"
         };
         String[] appNames = {
 //                "TyPayJV2Dispatch"
 //                "TyPayJV2JobProvider",
-                "TyPayJV2ThirdchannelDispatch",
+//                "TyPayJV2ThirdchannelDispatch",
 //                "TyPayJV2Api",
 //                "TyPayJV2FinancialFront",
 //                "typayjv2mqorderfinishconsumer",
-                "TyPayJV2ThirdchannelUser",
+//                "TyPayJV2ThirdchannelUser",
 //                "plugin-kms-service",
-                "TyPayJV2ThirdchannelThird",
+//                "TyPayJV2ThirdchannelThird",
 //                "typayjv2mqalarmconsumer",
 //                "TyPayJV2GeneralFront",
-                "TyPayJV2MQConsumer",
-                "TyPayJV2BankServer",
-                "TyPayJV2BusinessFront",
-                "TyPayJV2MerchantServer",
-                "automachinejv2logadmin",
+//                "TyPayJV2MQConsumer",
+//                "TyPayJV2BankServer",
+//                "TyPayJV2BusinessFront",
+//                "TyPayJV2MerchantServer",
+//                "automachinejv2logadmin",
                 "TyPayJV2MatchupPayService"
         };
         for (String appName : appNames) {
