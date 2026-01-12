@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:paydb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: pay-system
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+
+
+redisson:
+  singleServerConfig:
+    address: redis://localhost:6379
