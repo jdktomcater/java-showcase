@@ -4,11 +4,13 @@ import com.jdktomcat.showcase.system.design.pay.domain.Account;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 public class AccountService {
 
     @Transactional
-    public void freeze(Long userId, Long amount) {
+    public void freeze(Long userId, BigDecimal amount) {
         Account acc = find(userId);
         if (acc.getAvailableBalance() < amount) {
             throw new RuntimeException("insufficient balance");

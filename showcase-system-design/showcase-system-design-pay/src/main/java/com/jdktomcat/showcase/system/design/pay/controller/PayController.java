@@ -1,6 +1,8 @@
 
 package com.jdktomcat.showcase.system.design.pay.controller;
 
+import com.jdktomcat.showcase.system.design.pay.request.DeductRequest;
+import com.jdktomcat.showcase.system.design.pay.response.Response;
 import com.jdktomcat.showcase.system.design.pay.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +16,15 @@ public class PayController {
         this.paymentService = paymentService;
     }
 
+    /**
+     * user deduct end point
+     *
+     * @param deductRequest deduct request
+     * @return response
+     */
     @PostMapping("/deduct")
-    public String deduct(@RequestParam String requestId,
-                         @RequestParam Long userId,
-                         @RequestParam Long amount) {
-        paymentService.pay(requestId, userId, amount);
-        return "OK";
+    public Response<String> deduct(@RequestBody DeductRequest deductRequest) {
+        // param validate
+        return Response.success(paymentService.pay(deductRequest.getRequestId(), deductRequest.getUserId(), deductRequest.getAmount()));
     }
 }

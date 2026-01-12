@@ -4,6 +4,8 @@ package com.jdktomcat.showcase.system.design.pay.domain;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @Table(name = "payment_order", uniqueConstraints = @UniqueConstraint(columnNames = "requestId"))
@@ -15,7 +17,7 @@ public class PaymentOrder {
 
     private String requestId;
     private Long userId;
-    private Long amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private Status status;

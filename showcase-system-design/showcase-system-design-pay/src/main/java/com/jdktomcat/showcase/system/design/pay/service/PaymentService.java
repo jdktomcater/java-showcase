@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 
 @Service
 public class PaymentService {
@@ -17,7 +19,7 @@ public class PaymentService {
     private final ApplicationEventPublisher publisher;
 
     @Transactional
-    public void pay(String requestId, Long userId, Long amount) {
+    public String pay(String requestId, Long userId, BigDecimal amount) {
 
         // 幂等：存在直接返回
         orderRepo.findByRequestId(requestId).ifPresent(o -> {

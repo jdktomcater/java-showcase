@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @Table(name = "account")
@@ -13,9 +15,9 @@ public class Account {
     @Id
     private Long userId;
 
-    private Long totalBalance;
+    private BigDecimal total;
 
-    private Long availableBalance;
+    private BigDecimal available;
 
-    private Long frozenBalance;
+    private BigDecimal frozen;
 }
