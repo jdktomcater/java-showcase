@@ -15,8 +15,15 @@ public class PaymentService {
 
     private final PaymentOrderRepository orderRepo;
     private final AccountService accountService;
-    private final ChannelService channelService;
-    private final ApplicationEventPublisher publisher;
+//    private final ChannelService channelService;
+//    private final ApplicationEventPublisher publisher;
+
+    public PaymentService(PaymentOrderRepository orderRepo, AccountService accountService, ChannelService channelService, ApplicationEventPublisher publisher) {
+        this.orderRepo = orderRepo;
+        this.accountService = accountService;
+//        this.channelService = channelService;
+//        this.publisher = publisher;
+    }
 
     @Transactional
     public String pay(String requestId, Long userId, BigDecimal amount) {
@@ -38,17 +45,18 @@ public class PaymentService {
 
         order.setStatus(PaymentOrder.Status.PROCESSING);
 
-        // 调用下游（模拟）
-        boolean success = channelService.pay();
-
-        if (success) {
-            accountService.commit(userId, amount);
-            order.setStatus(PaymentOrder.Status.SUCCESS);
-            publisher.publishEvent(new PaymentResultEvent(order.getId(), true));
-        } else {
-            accountService.rollback(userId, amount);
-            order.setStatus(PaymentOrder.Status.FAIL);
-        }
+//        // 调用下游（模拟）
+//        boolean success = channelService.pay();
+//
+//        if (success) {
+//            accountService.commit(userId, amount);
+//            order.setStatus(PaymentOrder.Status.SUCCESS);
+//            publisher.publishEvent(new PaymentResultEvent(order.getId(), true));
+//        } else {
+//            accountService.rollback(userId, amount);
+//            order.setStatus(PaymentOrder.Status.FAIL);
+//        }
+        return "ok";
     }
 }
 
