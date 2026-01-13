@@ -16,7 +16,9 @@ public class PaymentOrder {
     private Long id;
 
     private String requestId;
+
     private Long userId;
+
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
