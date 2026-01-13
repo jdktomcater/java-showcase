@@ -39,6 +39,7 @@ public class PaymentService {
         order.setAmount(amount);
         // status:init
         order.setStatus(PaymentOrder.Status.INIT);
+        // save order
         orderRepo.save(order);
         // freeze account
         accountService.freeze(userId, amount);

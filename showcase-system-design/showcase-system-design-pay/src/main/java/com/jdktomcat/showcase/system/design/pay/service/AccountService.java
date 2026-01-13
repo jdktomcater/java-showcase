@@ -40,6 +40,8 @@ public class AccountService {
         }
         account.setAvailable(account.getAvailable().subtract(amount));
         account.setFrozen(account.getFrozen().add(amount));
+        // save ledger log
+        
     }
 
     @Transactional
