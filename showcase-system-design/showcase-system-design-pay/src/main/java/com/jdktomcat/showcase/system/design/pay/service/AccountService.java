@@ -1,21 +1,45 @@
 package com.jdktomcat.showcase.system.design.pay.service;
 
+import com.jdktomcat.showcase.system.design.pay.domain.Account;
+import com.jdktomcat.showcase.system.design.pay.repository.AccountRepository;
+import com.jdktomcat.showcase.system.design.pay.repository.PaymentOrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 public class AccountService {
 
+    private final AccountRepository accountRepository;
+
+    public AccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    /**
+     * find user account
+     *
+     * @param userId account id
+     * @return user account
+     */
+    public Optional<Account> find(Long userId) {
+        return accountRepository.findById(userId);
+    }
+
     @Transactional
     public void freeze(Long userId, BigDecimal amount) {
-//        Account acc = find(userId);
-//        if (acc.getAvailableBalance() < amount) {
-//            throw new RuntimeException("insufficient balance");
-//        }
-//        acc.setAvailableBalance(acc.getAvailableBalance() - amount);
-//        acc.setFrozenBalance(acc.getFrozenBalance() + amount);
+        Optional<Account> acc = find(userId);
+        if (acc.isEmpty()) {
+            throw new RuntimeException("account not exist!");
+        }
+        Account account = acc.get();
+        if (account.getAvailable().compareTo(amount) < 0) {
+            throw new RuntimeException("insufficient balance");
+        }
+        account.setAvailable(account.getAvailable().subtract(amount));
+        account.setFrozen(account.getFrozen().add(amount));
     }
 
     @Transactional

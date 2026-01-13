@@ -14,35 +14,35 @@ import java.math.BigDecimal;
 public class PaymentService {
 
     private final PaymentOrderRepository orderRepo;
+
     private final AccountService accountService;
-//    private final ChannelService channelService;
-//    private final ApplicationEventPublisher publisher;
 
     public PaymentService(PaymentOrderRepository orderRepo, AccountService accountService, ChannelService channelService, ApplicationEventPublisher publisher) {
         this.orderRepo = orderRepo;
         this.accountService = accountService;
-//        this.channelService = channelService;
-//        this.publisher = publisher;
     }
 
     @Transactional
     public String pay(String requestId, Long userId, BigDecimal amount) {
-
-        // 幂等：存在直接返回
+        // idempotent：return fail if exist
         orderRepo.findByRequestId(requestId).ifPresent(o -> {
             throw new RuntimeException("duplicate request");
         });
-
+        // check user account exist
+        if(accountService.find(userId).isEmpty()){
+            throw new RuntimeException("user account not exist!");
+        }
+        // create payment order
         PaymentOrder order = new PaymentOrder();
         order.setRequestId(requestId);
         order.setUserId(userId);
         order.setAmount(amount);
+        // status:init
         order.setStatus(PaymentOrder.Status.INIT);
         orderRepo.save(order);
-
-        // 冻结余额
+        // freeze account
         accountService.freeze(userId, amount);
-
+        // change order status
         order.setStatus(PaymentOrder.Status.PROCESSING);
 
 //        // 调用下游（模拟）
@@ -56,7 +56,7 @@ public class PaymentService {
 //            accountService.rollback(userId, amount);
 //            order.setStatus(PaymentOrder.Status.FAIL);
 //        }
-        return "ok";
+        return "success";
     }
 }
 

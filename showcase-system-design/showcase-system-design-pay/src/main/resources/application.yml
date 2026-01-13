@@ -1,24 +1,23 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:paydb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: create
     show-sql: true
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      group-id: pay-system
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#    consumer:
+#      group-id: pay-system
+#      auto-offset-reset: earliest
+#      enable-auto-commit: false
 
 redisson:
   singleServerConfig:
