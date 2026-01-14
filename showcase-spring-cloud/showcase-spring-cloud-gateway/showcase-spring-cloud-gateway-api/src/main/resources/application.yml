@@ -12,19 +12,18 @@ spring:
         response-timeout: 20s
       discovery:
         locator:
-          enabled: false
+          enabled: true
+          lower-case-service-id: true
       routes:
         - id: route-service
-          uri: lb://matchup-pay-service
+          uri: lb://pay-service
           predicates:
-            - Path=/withdraw/fast/**
-hystrix:
-  command:
-    fallbackcmd:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 300000
+            - Path=/pay/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
 
 # eureka client
 eureka:

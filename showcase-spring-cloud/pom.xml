@@ -20,6 +20,8 @@
         <jib.skip>true</jib.skip>
         <!-- Dependencies not covered by imported BOMs -->
         <httpmime.version>4.5.14</httpmime.version>
+        <!-- skywalking version -->
+        <skywalking.version>9.5.0</skywalking.version>
     </properties>
 
     <modules>
@@ -78,6 +80,23 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
+
+        <!-- skywalking -->
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-logback-1.x</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-trace</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-webflux</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -119,42 +138,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-
-    <!--
-      SkyWalking 的 apm-toolkit-logback-1.x 依赖 SLF4J 1.7 / Logback 1.2 生态，
-      会与 Spring Boot 3.x（Spring Cloud 2023.x 对应）使用的 SLF4J 2.x / Logback 1.4 生态冲突，
-      导致启动期日志系统异常（NOPLoggerFactory vs Logback LoggerContext）。
-
-      如需启用 SkyWalking，请显式开启 profile: -Dskywalking=true
-    -->
-    <profiles>
-        <profile>
-            <id>skywalking</id>
-            <activation>
-                <property>
-                    <name>skywalking</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.skywalking</groupId>
-                    <artifactId>apm-toolkit-logback-1.x</artifactId>
-                    <version>8.13.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.skywalking</groupId>
-                    <artifactId>apm-toolkit-trace</artifactId>
-                    <version>8.13.0</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.skywalking</groupId>
-                    <artifactId>apm-toolkit-webflux</artifactId>
-                    <version>8.13.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>
