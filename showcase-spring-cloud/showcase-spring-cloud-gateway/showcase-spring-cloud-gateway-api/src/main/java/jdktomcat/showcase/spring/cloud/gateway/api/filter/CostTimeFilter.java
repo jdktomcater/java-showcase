@@ -1,4 +1,4 @@
-package jdktomcat.showcase.springcloud.gateway.api.filter;
+package jdktomcat.showcase.spring.cloud.gateway.api.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

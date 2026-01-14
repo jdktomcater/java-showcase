@@ -2,7 +2,7 @@ server:
   port: 7000
 spring:
   application:
-    name: showcase-springcloud-gateway-api
+    name: showcase-spring-cloud-gateway-api
   cloud:
     inetutils:
       use-only-site-local-interfaces: true
@@ -32,4 +32,4 @@ eureka:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://172.30.2.84:8762/eureka
+      defaultZone: http://eureka:8761/eureka

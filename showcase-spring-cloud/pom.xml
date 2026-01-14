@@ -111,6 +111,7 @@
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                         <ports>
+                            <!--suppress UnresolvedMavenProperty -->
                             <port>${docker.exposed.port}</port>
                         </ports>
                     </container>

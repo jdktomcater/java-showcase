@@ -1,4 +1,4 @@
-package jdktomcat.showcase.springcloud.gateway.api;
+package jdktomcat.showcase.spring.cloud.gateway.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -7,7 +7,6 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
-import org.springframework.context.annotation.Bean;
 
 /**
  * 启动类
@@ -21,6 +20,5 @@ public class ApiApplication {
         System.setProperty("reactor.ipc.netty.workerCount","256");
         System.setProperty("reactor.ipc.netty.selectCount","8");
         SpringApplication.run(ApiApplication.class);
-
     }
 }

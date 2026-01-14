@@ -1,4 +1,4 @@
-package jdktomcat.showcase.springcloud.gateway.api.config;
+package jdktomcat.showcase.spring.cloud.gateway.api.config;
 
 import org.springframework.context.annotation.Configuration;
 
