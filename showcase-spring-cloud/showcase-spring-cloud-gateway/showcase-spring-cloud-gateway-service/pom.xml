@@ -12,6 +12,11 @@
     <artifactId>showcase-spring-cloud-gateway-service</artifactId>
     <packaging>jar</packaging>
     <description>网关路由</description>
+    <properties>
+        <!-- Jib image build -->
+        <jib.skip>false</jib.skip>
+        <docker.exposed.port>7001</docker.exposed.port>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>

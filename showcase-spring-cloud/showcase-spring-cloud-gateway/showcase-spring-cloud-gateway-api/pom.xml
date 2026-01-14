@@ -10,6 +10,11 @@
     </parent>
     <artifactId>showcase-spring-cloud-gateway-api</artifactId>
     <packaging>jar</packaging>
+    <properties>
+        <!-- Jib image build -->
+        <jib.skip>false</jib.skip>
+        <docker.exposed.port>7000</docker.exposed.port>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
