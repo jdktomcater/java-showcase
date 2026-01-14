@@ -3,11 +3,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
-    password: 1234
+    password: root
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
+
 
 #  kafka:
 #    bootstrap-servers: localhost:9092
@@ -22,3 +23,6 @@ spring:
 redisson:
   singleServerConfig:
     address: redis://localhost:6379
+
+server:
+  port: 8081
