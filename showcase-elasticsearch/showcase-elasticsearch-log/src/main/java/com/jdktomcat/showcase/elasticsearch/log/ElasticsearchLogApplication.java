@@ -32,7 +32,7 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
     public void run(String... args) {
         int batchSize = 100;
         String[] indexNames = {
-                "fat-txzf-2026.01.11"
+                "fat-wallet-2026.01.11"
         };
         String[] appNames = {
 //                "TyPayJV2Dispatch"
@@ -41,7 +41,7 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
 //                "TyPayJV2Api",
 //                "TyPayJV2FinancialFront",
 //                "typayjv2mqorderfinishconsumer",
-//                "TyPayJV2ThirdchannelUser",
+//                "TyPayJV2ThirdchannelUser"
 //                "plugin-kms-service",
 //                "TyPayJV2ThirdchannelThird",
 //                "typayjv2mqalarmconsumer",
@@ -51,17 +51,27 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
 //                "TyPayJV2BusinessFront",
 //                "TyPayJV2MerchantServer",
 //                "automachinejv2logadmin",
-                "TyPayJV2MatchupPayService"
+//                "TyPayJV2MatchupPayService"
+//                "MatchupPayHub",
+//                "MatchupAdmin",
+//                "MatchupPayApi"
+//                "wallet-b2b-manager",
+//                "wallet-pay-server",
+//                "wallet-job-server",
+//                "wallet-hub-manager",
+//                "wallet-thirdchannel-third",
+//                "wallet-api-server",
+//                "wallet-admin-gateway",
+//                "wallet-thirdchannel-dispatch",
+//                "wallet-notice-server",
+//                "wallet-api-gateway"
         };
         for (String appName : appNames) {
             String capacityKey = "es:scan:elklog:capacity:" + appName;
             for (String indexName : indexNames) {
                 esFullScanService.scrollAll(indexName, appName, batchSize, elkLog -> {
                     String message = elkLog.getMessage();
-                    String logAnchor = RegexUtil.getLogAnchor(message);
-                    if(logAnchor == null){
-                        return;
-                    }
+                    String logAnchor = RegexUtil.getWalletLogAnchor(message);
                     // 统计容量
                     stringRedisTemplate.opsForZSet().incrementScore(capacityKey, logAnchor, message.length());
                 });

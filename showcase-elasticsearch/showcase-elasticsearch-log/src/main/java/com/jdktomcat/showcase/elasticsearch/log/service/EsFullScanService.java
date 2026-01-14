@@ -59,11 +59,11 @@ public class EsFullScanService {
                 .build();
         // Spring Boot 2.7.x / Spring Data Elasticsearch 4.4.x 推荐使用 searchForStream：内部使用 scroll，并在 close() 时自动清理 scroll 上下文
         try (SearchHitsIterator<ElkLog> it = ops.searchForStream(query, ElkLog.class, index)) {
-            log.info("scan total:{}", it.getTotalHits());
+            log.info("appName:{} scan total:{}", appName, it.getTotalHits());
             long count = 0L;
             while (it.hasNext()) {
                 if (count != 0 && count % 10_000 == 0) {
-                    log.info("scan count:{}", count);
+                    log.info("appName:{} scan count:{}", appName, count);
                 }
                 count++;
                 SearchHit<ElkLog> hit = it.next();
