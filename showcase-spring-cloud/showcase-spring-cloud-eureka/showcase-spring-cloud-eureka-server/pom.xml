@@ -8,8 +8,8 @@
         <artifactId>showcase-spring-cloud-eureka</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
     <artifactId>showcase-spring-cloud-eureka-server</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -20,6 +20,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
         </dependency>
     </dependencies>
 </project>
