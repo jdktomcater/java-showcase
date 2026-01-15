@@ -4,6 +4,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: pay
+      MYSQL_USER: pay
+      MYSQL_PASSWORD: 123456
     ports:
       - "3306:3306"
 
@@ -59,8 +61,23 @@ services:
     container_name: gateway
     platform: linux/amd64
     ports:
-      - "7000:7001"
+      - "7001:7001"
     depends_on:
       - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+
+  pay:
+    image: showcase/showcase-system-design-pay:1.0-SNAPSHOT
+    container_name: pay-service
+    platform: linux/amd64
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka
+      - gateway
+      - mysql
+      - redis
+      - kafka
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
