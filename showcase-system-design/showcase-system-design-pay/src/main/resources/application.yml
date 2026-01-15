@@ -3,7 +3,14 @@ server:
 spring:
   application:
     name: pay-service
-
+  redis:
+    redisson:
+      singleServerConfig:
+        address: redis://redis:6379
+        database: 0
+        timeout: 3000
+        connectionPoolSize: 64
+        connectionMinimumIdleSize: 24
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
@@ -26,6 +33,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka:8761/eureka/
-redisson:
-  singleServerConfig:
-    address: redis://redis:6379
