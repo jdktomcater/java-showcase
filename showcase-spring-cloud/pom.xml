@@ -27,6 +27,7 @@
     <modules>
         <module>showcase-spring-cloud-gateway</module>
         <module>showcase-spring-cloud-eureka</module>
+        <module>showcase-spring-cloud-service</module>
     </modules>
 
     <dependencyManagement>
