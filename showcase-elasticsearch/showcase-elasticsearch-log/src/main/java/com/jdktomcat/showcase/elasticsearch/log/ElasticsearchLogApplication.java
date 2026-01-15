@@ -32,7 +32,7 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
     public void run(String... args) {
         int batchSize = 100;
         String[] indexNames = {
-                "fat-wallet-2026.01.11"
+                "fat-txzf-2026.01.13"
         };
         String[] appNames = {
 //                "TyPayJV2Dispatch"
@@ -41,7 +41,7 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
 //                "TyPayJV2Api",
 //                "TyPayJV2FinancialFront",
 //                "typayjv2mqorderfinishconsumer",
-//                "TyPayJV2ThirdchannelUser"
+                "TyPayJV2ThirdchannelUser"
 //                "plugin-kms-service",
 //                "TyPayJV2ThirdchannelThird",
 //                "typayjv2mqalarmconsumer",
@@ -71,7 +71,10 @@ public class ElasticsearchLogApplication implements CommandLineRunner {
             for (String indexName : indexNames) {
                 esFullScanService.scrollAll(indexName, appName, batchSize, elkLog -> {
                     String message = elkLog.getMessage();
-                    String logAnchor = RegexUtil.getWalletLogAnchor(message);
+                    String logAnchor = RegexUtil.getTxLogAnchor(message);
+                    if(logAnchor == null){
+                        return;
+                    }
                     // 统计容量
                     stringRedisTemplate.opsForZSet().incrementScore(capacityKey, logAnchor, message.length());
                 });
