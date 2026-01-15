@@ -11,23 +11,56 @@
     <modules>
         <module>showcase-system-design-order</module>
         <module>showcase-system-design-pay</module>
+        <module>showcase-system-design-base</module>
     </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>3.2.0</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Container image build (Jib) -->
+        <jib.version>3.5.1</jib.version>
+        <!-- Override via -Ddocker.image.prefix=yourRepo -->
+        <docker.image.prefix>showcase</docker.image.prefix>
+        <!-- Skip Jib by default for aggregator/pom modules; enable in runnable modules -->
+        <jib.skip>true</jib.skip>
+        <!-- Dependencies not covered by imported BOMs -->
+        <httpmime.version>4.5.14</httpmime.version>
+        <!-- skywalking version -->
+        <skywalking.version>9.5.0</skywalking.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- 显式引入 Spring Boot BOM，避免 Spring Framework 版本在多模块/IDE 解析时发生漂移 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <version>3.2.0</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2023.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 兜底：强制 Spring Framework 关键模块与 Boot 3.2 对齐，避免出现 6.0.x / 6.1.x 混装 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>6.1.1</version>
+            </dependency>
+
+            <!-- Explicitly manage deps that are not in imported BOMs -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${httpmime.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -36,7 +69,34 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
+            <version>1.18.32</version>
+        </dependency>
+
+        <!-- 让 Spring Cloud LoadBalancer 使用 Caffeine Cache（生产推荐），避免默认 cache 警告 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- skywalking -->
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-logback-1.x</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-trace</artifactId>
+            <version>${skywalking.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.skywalking</groupId>
+            <artifactId>apm-toolkit-webflux</artifactId>
+            <version>${skywalking.version}</version>
         </dependency>
     </dependencies>
 
@@ -45,7 +105,37 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <version>3.2.0</version>
+            </plugin>
+
+            <!-- Build Docker images via Maven without Dockerfile: mvn -pl <module> jib:dockerBuild -->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib.version}</version>
+                <configuration>
+                    <skip>${jib.skip}</skip>
+                    <from>
+                        <image>eclipse-temurin@sha256:4a3d699d5bc3bd63a2361dbb346562e8f0aaff1b513f70fbb457c1e9392ea137</image>
+                    </from>
+                    <to>
+                        <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>
+                    </to>
+                    <container>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                        <ports>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <port>${docker.exposed.port}</port>
+                        </ports>
+                    </container>
+                </configuration>
             </plugin>
         </plugins>
     </build>
