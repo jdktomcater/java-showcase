@@ -1,4 +1,24 @@
 services:
+  skywalking-oap:
+    image: apache/skywalking-oap-server:9.5.0
+    container_name: skywalking-oap
+    ports:
+      - "11800:11800" # gRPC for agents
+      - "12800:12800" # HTTP for UI
+    environment:
+      # Demo mode: in-memory storage
+      SW_STORAGE: memory
+
+  skywalking-ui:
+    image: apache/skywalking-ui:9.5.0
+    container_name: skywalking-ui
+    ports:
+      - "8089:8080"
+    environment:
+      SW_OAP_ADDRESS: http://skywalking-oap:12800
+    depends_on:
+      - skywalking-oap
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -58,6 +78,15 @@ services:
     platform: linux/amd64
     ports:
       - "8761:8761"
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
+    environment:
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: eureka-server
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+    depends_on:
+      - skywalking-oap
+
   gateway:
     image: showcase/showcase-system-design-base-gateway:1.0-SNAPSHOT
     container_name: gateway
@@ -66,8 +95,14 @@ services:
       - "7000:7000"
     depends_on:
       - eureka
+      - skywalking-oap
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: gateway
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
 
   pay:
     image: showcase/showcase-system-design-pay:1.0-SNAPSHOT
@@ -81,9 +116,15 @@ services:
       - mysql
       - redis
       - kafka
+      - skywalking-oap
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
       # redisson-spring-boot-starter 使用 spring.redis.redisson.config
       SPRING_REDIS_REDISSON_CONFIG: |
         singleServerConfig:
           address: "redis://redis:6379"
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: pay-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
