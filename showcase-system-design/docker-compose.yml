@@ -63,7 +63,7 @@ services:
     container_name: gateway
     platform: linux/amd64
     ports:
-      - "7001:7001"
+      - "7000:7000"
     depends_on:
       - eureka
     environment:
@@ -83,4 +83,7 @@ services:
       - kafka
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
-      REDISSON_SINGLE_SERVER_CONFIG_ADDRESS: redis://redis:6379
+      # redisson-spring-boot-starter 使用 spring.redis.redisson.config
+      SPRING_REDIS_REDISSON_CONFIG: |
+        singleServerConfig:
+          address: "redis://redis:6379"

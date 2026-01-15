@@ -5,12 +5,14 @@ spring:
     name: pay-service
   redis:
     redisson:
-      singleServerConfig:
-        address: redis://redis:6379
-        database: 0
-        timeout: 3000
-        connectionPoolSize: 64
-        connectionMinimumIdleSize: 24
+      # redisson-spring-boot-starter 需要通过 config/file 注入配置
+      config: |
+        singleServerConfig:
+          address: "redis://redis:6379"
+          database: 0
+          timeout: 3000
+          connectionPoolSize: 64
+          connectionMinimumIdleSize: 24
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
