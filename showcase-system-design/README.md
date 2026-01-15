@@ -3,7 +3,8 @@
 ## SkyWalking Tracing
 
 This compose setup is ready for SkyWalking APM. It uses the official OAP/UI
-containers and mounts the Java agent into each service container.
+containers and mounts the Java agent into each service container. Storage is
+backed by a single-node Elasticsearch container for simplicity.
 
 ### 1) Download the SkyWalking agent
 
