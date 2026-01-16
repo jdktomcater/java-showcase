@@ -104,6 +104,11 @@ services:
       SW_AGENT_NAME: eureka-server
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8761/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
     depends_on:
       - skywalking-oap
 
@@ -114,8 +119,10 @@ services:
     ports:
       - "7000:7000"
     depends_on:
-      - eureka
-      - skywalking-oap
+      eureka:
+        condition: service_healthy
+      skywalking-oap:
+        condition: service_healthy
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
       JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
@@ -132,12 +139,17 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - eureka
-      - gateway
-      - mysql
-      - redis
-      - kafka
-      - skywalking-oap
+      gateway:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      skywalking-oap:
+        condition: service_healthy
+
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
       # redisson-spring-boot-starter 使用 spring.redis.redisson.config
