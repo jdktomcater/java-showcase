@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.system.design.pay.exception;
+package com.jdktomcat.showcase.system.design.pay.web.exception;
 
-import com.jdktomcat.showcase.system.design.pay.response.Response;
+import com.jdktomcat.showcase.system.design.pay.web.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

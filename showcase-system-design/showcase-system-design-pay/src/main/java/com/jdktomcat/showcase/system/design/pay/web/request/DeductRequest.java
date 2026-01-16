@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.system.design.pay.request;
+package com.jdktomcat.showcase.system.design.pay.web.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

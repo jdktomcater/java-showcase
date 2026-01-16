@@ -1,8 +1,8 @@
 
-package com.jdktomcat.showcase.system.design.pay.controller;
+package com.jdktomcat.showcase.system.design.pay.web.controller;
 
-import com.jdktomcat.showcase.system.design.pay.request.DeductRequest;
-import com.jdktomcat.showcase.system.design.pay.response.Response;
+import com.jdktomcat.showcase.system.design.pay.web.request.DeductRequest;
+import com.jdktomcat.showcase.system.design.pay.web.response.Response;
 import com.jdktomcat.showcase.system.design.pay.service.PaymentService;
 import org.springframework.web.bind.annotation.*;
 

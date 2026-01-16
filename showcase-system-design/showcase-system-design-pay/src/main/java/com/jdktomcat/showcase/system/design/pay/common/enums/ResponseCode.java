@@ -1,5 +1,5 @@
 
-package com.jdktomcat.showcase.system.design.pay.enums;
+package com.jdktomcat.showcase.system.design.pay.common.enums;
 
 /**
  * response code enum

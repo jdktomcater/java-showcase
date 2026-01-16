@@ -1,7 +1,7 @@
 
-package com.jdktomcat.showcase.system.design.pay.response;
+package com.jdktomcat.showcase.system.design.pay.web.response;
 
-import com.jdktomcat.showcase.system.design.pay.enums.ResponseCode;
+import com.jdktomcat.showcase.system.design.pay.common.enums.ResponseCode;
 import lombok.Data;
 import org.springframework.web.bind.annotation.ResponseBody;
 
