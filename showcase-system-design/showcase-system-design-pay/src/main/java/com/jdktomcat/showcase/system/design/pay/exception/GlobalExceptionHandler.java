@@ -6,19 +6,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * 全局异常处理器
- *
- * @author js-oswald
+ * Global exception handler
  */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * 系统异常
+     * system error
      */
     @ExceptionHandler(Exception.class)
     public Response<String> handleException(Exception e) {
+        log.error("occur exception:{}", e.getMessage(), e);
         return Response.fail(e.getMessage());
     }
 }
