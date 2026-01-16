@@ -3,7 +3,6 @@ package com.jdktomcat.showcase.system.design.pay.service;
 
 import com.jdktomcat.showcase.system.design.pay.domain.PaymentOrder;
 import com.jdktomcat.showcase.system.design.pay.repository.PaymentOrderRepository;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,7 @@ public class PaymentService {
 
     private final AccountService accountService;
 
-    public PaymentService(PaymentOrderRepository orderRepo, AccountService accountService, ChannelService channelService, ApplicationEventPublisher publisher) {
+    public PaymentService(PaymentOrderRepository orderRepo, AccountService accountService) {
         this.orderRepo = orderRepo;
         this.accountService = accountService;
     }

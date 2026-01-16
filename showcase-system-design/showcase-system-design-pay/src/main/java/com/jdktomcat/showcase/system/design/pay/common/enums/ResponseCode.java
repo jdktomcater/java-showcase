@@ -1,9 +1,12 @@
 
 package com.jdktomcat.showcase.system.design.pay.common.enums;
 
+import lombok.Getter;
+
 /**
  * response code enum
  */
+@Getter
 public enum ResponseCode {
     
     /**
@@ -16,24 +19,18 @@ public enum ResponseCode {
      */
     FAIL(3000, "fail");
 
-
+    /**
+     * status
+     */
     private final int status;
-    
+
+    /**
+     * description message
+     */
     private final String message;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public int getStatus() {
-        return status;
-    }
 
     ResponseCode(int status, String message) {
         this.status = status;
         this.message = message;
     }
-
-
-
 }
