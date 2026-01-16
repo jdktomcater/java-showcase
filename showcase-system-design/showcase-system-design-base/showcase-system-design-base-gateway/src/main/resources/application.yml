@@ -25,6 +25,12 @@ management:
       exposure:
         include: health,info,gateway
 
+logging:
+  level:
+    root: info
+  config: classpath:logback.xml
+  file:
+    name: /data/log/gateway.log
 # eureka client
 eureka:
   instance:

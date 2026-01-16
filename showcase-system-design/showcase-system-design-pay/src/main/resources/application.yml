@@ -31,6 +31,14 @@ spring:
 #      group-id: pay-system
 #      auto-offset-reset: earliest
 #      enable-auto-commit: false
+
+logging:
+  level:
+    root: info
+  config: classpath:logback.xml
+  file:
+    name: /data/log/pay-service.log
+
 eureka:
   client:
     service-url:

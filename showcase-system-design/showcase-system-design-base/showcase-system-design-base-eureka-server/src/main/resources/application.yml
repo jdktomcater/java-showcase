@@ -11,3 +11,10 @@ eureka:
     fetch-registry: false
   instance:
     hostname: eureka
+
+logging:
+  level:
+    root: info
+  config: classpath:logback.xml
+  file:
+    name: /data/log/eureka-server.log
