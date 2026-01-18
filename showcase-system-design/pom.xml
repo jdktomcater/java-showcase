@@ -9,9 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-system-design-order</module>
         <module>showcase-system-design-pay</module>
         <module>showcase-system-design-base</module>
+        <module>showcase-system-design-channel</module>
     </modules>
 
     <properties>
@@ -101,42 +101,44 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <version>3.2.0</version>
-            </plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <version>3.2.0</version>
+                </plugin>
 
-            <!-- Build Docker images via Maven without Dockerfile: mvn -pl <module> jib:dockerBuild -->
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib.version}</version>
-                <configuration>
-                    <skip>${jib.skip}</skip>
-                    <from>
-                        <image>eclipse-temurin@sha256:4a3d699d5bc3bd63a2361dbb346562e8f0aaff1b513f70fbb457c1e9392ea137</image>
-                    </from>
-                    <to>
-                        <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>
-                    </to>
-                    <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                        <ports>
-                            <!--suppress UnresolvedMavenProperty -->
-                            <port>${docker.exposed.port}</port>
-                        </ports>
-                    </container>
-                </configuration>
-            </plugin>
-        </plugins>
+                <!-- Build Docker images via Maven without Dockerfile: mvn -pl <module> jib:dockerBuild -->
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib.version}</version>
+                    <configuration>
+                        <skip>${jib.skip}</skip>
+                        <from>
+                            <image>eclipse-temurin@sha256:4a3d699d5bc3bd63a2361dbb346562e8f0aaff1b513f70fbb457c1e9392ea137</image>
+                        </from>
+                        <to>
+                            <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>
+                        </to>
+                        <container>
+                            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                            <ports>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <port>${docker.exposed.port}</port>
+                            </ports>
+                        </container>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
