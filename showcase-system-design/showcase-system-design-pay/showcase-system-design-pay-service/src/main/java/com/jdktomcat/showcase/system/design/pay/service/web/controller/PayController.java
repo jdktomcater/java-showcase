@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/com/jdktomcat/showcase/system/design/pay/service")
+@RequestMapping("/pay")
 public class PayController {
 
     private final PaymentService paymentService;
