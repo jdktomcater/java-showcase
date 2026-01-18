@@ -22,6 +22,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
 #  kafka:
 #    bootstrap-servers: localhost:9092
 #    producer:
@@ -43,3 +49,14 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka:8761/eureka/
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      channel-service:
+        failureRateThreshold: 50        # 失败率 %
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: 2s
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: 10s
