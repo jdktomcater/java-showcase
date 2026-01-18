@@ -169,7 +169,7 @@ services:
         singleServerConfig:
           address: "redis://redis:6379"
       JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
-      SW_AGENT_NAME: pay-service
+      SW_AGENT_NAME: channel-service
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
