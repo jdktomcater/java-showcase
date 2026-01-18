@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
+        <module>showcase-system-design-common</module>
         <module>showcase-system-design-pay</module>
         <module>showcase-system-design-base</module>
         <module>showcase-system-design-channel</module>
