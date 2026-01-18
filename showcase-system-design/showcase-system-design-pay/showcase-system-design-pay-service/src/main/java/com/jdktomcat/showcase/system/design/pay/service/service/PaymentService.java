@@ -4,7 +4,7 @@ package com.jdktomcat.showcase.system.design.pay.service.service;
 import com.jdktomcat.showcase.system.design.channel.service.api.client.domain.Channel;
 import com.jdktomcat.showcase.system.design.common.web.response.Response;
 import com.jdktomcat.showcase.system.design.pay.service.domain.PaymentOrder;
-import com.jdktomcat.showcase.system.design.pay.service.feign.ChannelFeignClient;
+import com.jdktomcat.showcase.system.design.pay.service.feign.channel.ChannelFeignClient;
 import com.jdktomcat.showcase.system.design.pay.service.repository.PaymentOrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

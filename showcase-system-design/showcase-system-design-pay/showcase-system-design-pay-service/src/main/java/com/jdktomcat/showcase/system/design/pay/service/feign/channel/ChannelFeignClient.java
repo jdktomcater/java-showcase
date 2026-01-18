@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.system.design.pay.service.feign;
+package com.jdktomcat.showcase.system.design.pay.service.feign.channel;
 
 import com.jdktomcat.showcase.system.design.channel.service.api.client.domain.Channel;
 import com.jdktomcat.showcase.system.design.common.web.response.Response;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
-@FeignClient(name = "channel-service")
+@FeignClient(name = "channel-service", fallback = ChannelFeignFallback.class, fallbackFactory = ChannelFeignFallback.class)
 public interface ChannelFeignClient {
     /**
      * get channel info by channel id
