@@ -119,10 +119,7 @@ services:
     ports:
       - "7000:7000"
     depends_on:
-      eureka:
-        condition: service_healthy
-      skywalking-oap:
-        condition: service_healthy
+      - eureka
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
       JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
@@ -133,22 +130,37 @@ services:
       - ./skywalking/agent:/skywalking/agent:ro
 
   pay:
-    image: showcase/showcase-system-design-pay:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-pay-service:1.0-SNAPSHOT
     container_name: pay-service
     platform: linux/amd64
     ports:
       - "8081:8081"
     depends_on:
-      gateway:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      skywalking-oap:
-        condition: service_healthy
+      - gateway
+      - mysql
+      - redis
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # redisson-spring-boot-starter 使用 spring.redis.redisson.config
+      SPRING_REDIS_REDISSON_CONFIG: |
+        singleServerConfig:
+          address: "redis://redis:6379"
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: pay-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+      SW_LOGGING_DIR: /tmp/skywalking/logs
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
+  channel:
+    image: showcase/showcase-system-design-channel-service:1.0-SNAPSHOT
+    container_name: channel-service
+    platform: linux/amd64
+    ports:
+      - "8082:8082"
+    depends_on:
+      - gateway
+      - mysql
+      - redis
 
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
