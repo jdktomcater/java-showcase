@@ -1,14 +1,18 @@
 
 package com.jdktomcat.showcase.system.design.pay.service.service;
 
+import com.jdktomcat.showcase.system.design.channel.service.api.client.domain.Channel;
+import com.jdktomcat.showcase.system.design.common.web.response.Response;
 import com.jdktomcat.showcase.system.design.pay.service.domain.PaymentOrder;
+import com.jdktomcat.showcase.system.design.pay.service.feign.ChannelFeignClient;
 import com.jdktomcat.showcase.system.design.pay.service.repository.PaymentOrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-
+@Slf4j
 @Service
 public class PaymentService {
 
@@ -16,9 +20,14 @@ public class PaymentService {
 
     private final AccountService accountService;
 
-    public PaymentService(PaymentOrderRepository orderRepo, AccountService accountService) {
+    private final ChannelFeignClient channelFeignClient;
+
+    public PaymentService(PaymentOrderRepository orderRepo,
+                          AccountService accountService,
+                          ChannelFeignClient channelFeignClient) {
         this.orderRepo = orderRepo;
         this.accountService = accountService;
+        this.channelFeignClient = channelFeignClient;
     }
 
     @Transactional
@@ -44,7 +53,6 @@ public class PaymentService {
         accountService.freeze(userId, amount);
         // change order status
         order.setStatus(PaymentOrder.Status.PROCESSING);
-
 //        // 调用下游（模拟）
 //        boolean success = channelService.pay();
 //
@@ -56,6 +64,8 @@ public class PaymentService {
 //            accountService.rollback(userId, amount);
 //            order.setStatus(PaymentOrder.Status.FAIL);
 //        }
+        Response<Channel> response = channelFeignClient.getChannel(1L);
+        log.info("channel feign response:{}", response);
         return "success";
     }
 }
