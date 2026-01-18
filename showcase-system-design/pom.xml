@@ -29,6 +29,8 @@
         <httpmime.version>4.5.14</httpmime.version>
         <!-- skywalking version -->
         <skywalking.version>9.5.0</skywalking.version>
+        <!-- Spring Cloud Alibaba (compatible with Spring Cloud 2023 / Boot 3.2) -->
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
     </properties>
 
     <dependencyManagement>
@@ -46,6 +48,15 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>2023.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Cloud Alibaba BOM: required for nacos starter compatibility -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
