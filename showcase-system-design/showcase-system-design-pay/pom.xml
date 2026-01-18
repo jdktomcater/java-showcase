@@ -15,6 +15,7 @@
     <modules>
         <module>showcase-system-design-pay-service</module>
         <module>showcase-system-design-pay-api</module>
+        <module>showcase-system-design-pay-common</module>
     </modules>
 
 </project>
