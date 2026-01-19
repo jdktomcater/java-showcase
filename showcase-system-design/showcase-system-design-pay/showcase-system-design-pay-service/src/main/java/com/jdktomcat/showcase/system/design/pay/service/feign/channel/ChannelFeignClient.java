@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
-@FeignClient(name = "channel-service", fallback = ChannelFeignFallback.class, fallbackFactory = ChannelFeignFallback.class)
+@FeignClient(name = "channel-service", fallbackFactory = ChannelFeignFallbackFactory.class)
 public interface ChannelFeignClient {
     /**
      * get channel info by channel id
