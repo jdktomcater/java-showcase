@@ -4,22 +4,16 @@ server:
 spring:
   application:
     name: vault-data
-  config:
-    import: optional:vault://
   cloud:
     vault:
       authentication: TOKEN
       token: hvs.Y3fVFzoLiYz57p2Muvm6dAlT
       enabled: true
       uri: http://127.0.0.1:8200
-      kv:
-        enabled: false
       database:
         backend: database
         enabled: true
         role: tx-role
-        username-property: spring.datasource.username
-        password-property: spring.datasource.password
       config:
         lifecycle:
           min-renewal: 4s
