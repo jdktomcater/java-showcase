@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mybatis-plus-showcase</artifactId>
+    <artifactId>showcase-data-mybatis-plus</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

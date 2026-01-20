@@ -12,8 +12,8 @@
     </parent>
     <packaging>pom</packaging>
     <modules>
-        <module>druid-data-source</module>
-        <module>mybatis-plus-showcase</module>
+        <module>showcase-data-druid</module>
+        <module>showcase-data-mybatis-plus</module>
         <module>showcase-data-vault</module>
     </modules>
 
