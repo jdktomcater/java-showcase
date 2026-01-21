@@ -43,11 +43,12 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: pay
-      MYSQL_USER: pay
-      MYSQL_PASSWORD: 123456
+      TZ: Asia/Shanghai
     ports:
-      - "3306:3306"
+      - "3307:3306"
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/data:/var/lib/mysql
 
   redis:
     image: redis:7
