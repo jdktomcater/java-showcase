@@ -16,11 +16,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TyPayV2SlaveDruidProperties extends DruidProperties {
 
-    @Value(("${spring.datasource.druid.typayv2slave.password:''}"))
+    @Value("${spring.datasource.druid.typayv2slave.password:}")
     private String password;
-    @Value(("${spring.datasource.druid.typayv2slave.username:''}"))
+    @Value("${spring.datasource.druid.typayv2slave.username:}")
     private String username;
-    @Value(("${spring.datasource.druid.typayv2slave.url}"))
+    @Value("${spring.datasource.druid.typayv2slave.url:}")
     private String url;
 
     public DruidDataSource dataSource(DruidDataSource datasource) {
