@@ -1,0 +1,86 @@
+@startuml
+title HashiCorp Vault - Overall Architecture (High-level)
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment left
+
+' ==== Clients ====
+actor "用户/运维\n(Ops/Admin)" as admin
+actor "应用/服务\n(Apps)" as apps
+actor "CI/CD\n(Jenkins/GitHub Actions)" as cicd
+component "Terraform/SDK/CLI" as cli
+component "Vault Agent\n(Auto-Auth/Template/Cache)" as agent
+component "Vault UI\n(Web)" as ui
+
+admin --> cli
+admin --> ui
+apps --> agent
+agent --> cli
+cicd --> cli
+
+' ==== Network Edge ====
+cloud "LB / API Gateway\n(HTTPS/TLS)" as lb
+
+cli --> lb : HTTPS :8200
+ui  --> lb : HTTPS :8200
+
+' ==== Vault Cluster ====
+frame "Vault Cluster (Active/Standby)" as cluster {
+  node "Vault Server (Active)" as v_active {
+    component "HTTP API" as api
+    component "Core\n(Token/Policy/Lease)" as core
+    component "Auth Methods\n(Kubernetes/LDAP/OIDC/AppRole/...)" as auth
+    component "Secrets Engines\n(KV/PKI/DB/AWS/...)" as secrets
+    component "Audit Devices\n(File/Syslog/Socket/...)" as audit
+    component "Lease & Revocation\n(TTL/Renew/Revoke)" as lease
+  }
+
+  node "Vault Server (Standby)" as v_standby {
+    component "HA Standby\n(Readiness/Failover)" as ha
+  }
+
+  api --> core
+  core --> auth
+  core --> secrets
+  core --> lease
+  core --> audit : "记录请求/响应\n(审计日志)"
+}
+
+lb --> api : "请求路由到 Active"
+
+' ==== Storage / HA Coordination ====
+database "Storage Backend\n(Integrated Storage/Raft\nor Consul/DynamoDB/Etcd/...)" as storage
+core --> storage : "读写加密数据\n(配置/密钥/租约/状态)"
+ha --> storage : "HA 锁/选主\n(取决于后端)"
+
+' ==== Seal / Key Management ====
+cloud "Seal / KMS / HSM\n(AWS KMS/Azure Key Vault/GCP KMS/PKCS#11)" as kms
+component "Seal/Unseal\n(Shamir或Auto-Unseal)" as seal
+core --> seal
+seal --> kms : "解封密钥保护\n(主密钥封装/解封)"
+
+' ==== External Systems used by engines (examples) ====
+cloud "云厂商/基础设施\n(AWS/Azure/GCP)" as cloud
+database "数据库\n(PostgreSQL/MySQL/...)" as db
+queue "Kubernetes API" as k8s
+
+secrets --> cloud : "动态云凭据"
+secrets --> db : "动态DB账号/轮转"
+auth --> k8s : "K8s JWT 验证/SA绑定"
+
+' ==== Observability (optional) ====
+cloud "监控/日志\n(Prometheus/ELK/...)" as obs
+audit --> obs : "审计日志输出(可选)"
+
+legend right
+  == 核心概念 ==
+  - **Auth Methods**: 身份认证与登录
+  - **Policies/Tokens**: 授权与访问控制
+  - **Secrets Engines**: 静态/动态密钥发放
+  - **Storage Backend**: 持久化(默认加密后写入)
+  - **Seal/Unseal**: 加解封，保护主密钥
+  - **HA Active/Standby**: 高可用主备切换
+endlegend
+
+@enduml
