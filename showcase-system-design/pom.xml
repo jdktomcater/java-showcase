@@ -14,6 +14,7 @@
         <module>showcase-system-design-risk</module>
         <module>showcase-system-design-base</module>
         <module>showcase-system-design-channel</module>
+        <module>showcase-system-design-order</module>
     </modules>
 
     <properties>
