@@ -1,0 +1,50 @@
+@startuml
+title Payment Deduction Flow
+
+actor User
+participant "API Gateway" as GW
+participant "Payment Service" as PS
+participant "Risk Service" as RS
+participant "Ledger Service" as LS
+database "Payment DB" as PDB
+database "Ledger DB" as LDB
+queue "Message Queue" as MQ
+
+User -> GW: Pay request
+GW -> PS: Forward request\n(idempotency key)
+
+PS -> PDB: Check idempotency\n(payment_order_id)
+alt Order already exists
+    PS -> GW: Return existing result
+else New payment
+    PS -> RS: Risk & validation check
+    RS --> PS: OK / Reject
+
+    PS -> PDB: Create payment order\nstatus = INIT
+    PS -> PDB: Update status\nINIT -> PROCESSING
+
+    PS -> LS: Deduct balance\n(payment_order_id)
+    LS -> LDB: Begin local transaction
+    LS -> LDB: Check balance
+    LS -> LDB: Deduct balance
+    LS -> LDB: Insert ledger record
+    LS -> LDB: Commit
+
+    alt Deduction success
+        LS --> PS: Success\n(ledger_txn_id)
+        PS -> PDB: Update payment status\nPROCESSING -> SUCCESS
+        PS -> MQ: Publish payment success event
+        PS --> GW: Payment success
+    else Deduction failed
+        LS --> PS: Failure
+        PS -> PDB: Update payment status\nPROCESSING -> FAILED
+        PS --> GW: Payment failed
+    end
+end
+
+== Async Processing ==
+MQ -> PS: Async event handling
+PS -> User: Notification / Callback
+PS -> "Reconciliation Job": T+1 / Real-time reconciliation
+
+@enduml
