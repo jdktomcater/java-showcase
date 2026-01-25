@@ -8,10 +8,10 @@ spring:
     import: optional:vault://
   cloud:
     vault:
-      authentication: TOKEN
-      token: hvs.pER0xhc85jcsKkVLr3oe0UxE
+      authentication: APPROLE
+#      token: hvs.pER0xhc85jcsKkVLr3oe0UxE
       enabled: true
-      uri: https://txdev-vault.qwasn.com
+      uri: http://127.0.0.1:8200
       kv:
         enabled: false
       database:
@@ -26,6 +26,9 @@ spring:
           enabled: true
           lease-endpoints: Leases
       fail-fast: true
+      app-role:
+        role-id: ff73aca2-1981-44a0-4f29-1130af37522e
+        secret-id: 2afa8b3a-1cc5-2895-7522-1becf0150d10
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
