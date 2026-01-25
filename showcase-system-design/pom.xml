@@ -22,7 +22,7 @@
         <!-- Container image build (Jib) -->
         <jib.version>3.5.1</jib.version>
         <!-- Override via -Ddocker.image.prefix=yourRepo -->
-        <docker.image.prefix>showcase</docker.image.prefix>
+        <docker.image.prefix>timmytang</docker.image.prefix>
         <!-- Skip Jib by default for aggregator/pom modules; enable in runnable modules -->
         <jib.skip>true</jib.skip>
         <!-- Dependencies not covered by imported BOMs -->
