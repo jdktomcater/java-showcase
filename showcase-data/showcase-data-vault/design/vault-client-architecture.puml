@@ -1,0 +1,68 @@
+@startuml
+title Service <-> Vault Interaction Flow (AppRole)
+
+hide footbox
+skinparam shadowing false
+skinparam defaultTextAlignment left
+
+participant "Service\n(App)" as app
+participant "Vault\n(HTTP API)" as vault
+participant "SecretID Broker\n(CI/CD/Init Job/HSM/Operator)" as broker
+database "Target System\n(DB/Cloud/etc.)" as target
+
+== Bootstrap: get RoleID & SecretID ==
+app -> vault : GET /v1/auth/approle/role/<role>/role-id\n(usually done by operator/CI)\n(or pre-baked)
+vault --> app : 200 {role_id}
+
+app -> broker : Request SecretID\n(one-time / short TTL)\n(option: response-wrapping token)
+broker -> vault : POST /v1/auth/approle/role/<role>/secret-id
+vault --> broker : 200 {secret_id}\n(or wrap_info.token)
+broker --> app : Deliver secret_id\n(or wrapping_token)
+
+alt Using Response Wrapping
+  app -> vault : POST /v1/sys/wrapping/unwrap\nX-Vault-Token: <wrapping_token>
+  vault --> app : 200 {secret_id}
+end
+
+== Login ==
+app -> vault : POST /v1/auth/approle/login\n{role_id, secret_id}
+vault --> app : 200 {auth.client_token, lease_duration, renewable}
+
+app -> app : Cache token\n(schedule renew\n+ forget secret_id)
+
+== Use secrets ==
+app -> vault : GET /v1/kv/data/<path>\n(or database/creds/<role>)\nX-Vault-Token
+vault --> app : 200 {data...}\n(+ lease_id if dynamic)
+
+app -> target : Connect / Call using secret
+target --> app : OK
+
+== Renew ==
+loop Every (TTL * safety_factor)
+  app -> vault : POST /v1/auth/token/renew-self\nX-Vault-Token
+  vault --> app : 200 {auth.lease_duration}
+
+  opt Dynamic secret lease renew (DB/Cloud/PKI)
+    app -> vault : POST /v1/sys/leases/renew\n{lease_id}\nX-Vault-Token
+    vault --> app : 200 {lease_duration}
+  end
+end
+
+== Failure handling ==
+alt 403 / token expired / renew denied
+  app -> app : Drop token\n(backoff)
+  app -> broker : Request fresh SecretID
+  app -> vault : AppRole login again
+else Vault unavailable
+  app -> app : Use cached/last-known secret\nuntil TTL + retry with backoff
+end
+
+== Shutdown (optional) ==
+opt Revoke lease(s)
+  app -> vault : POST /v1/sys/leases/revoke\n{lease_id}\nX-Vault-Token
+  vault --> app : 204
+end
+app -> vault : POST /v1/auth/token/revoke-self\nX-Vault-Token
+vault --> app : 204
+
+@enduml
