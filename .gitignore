@@ -15,3 +15,5 @@ showcase-rocketmq/showcase-rocketmq-transaction/showcase-rocketmq-transaction-pr
 showcase-rocketmq/showcase-rocketmq-transaction/showcase-rocketmq-transaction-producer/target/generated-test-sources/test-annotations/com/jdktomcat/showcase/rocketmq/transaction/producer/generated/TransactionProducerApplicationTest_testSetIfAbsent_jmhTest.java
 showcase-rocketmq/showcase-rocketmq-transaction/showcase-rocketmq-transaction-producer/target/test-classes/com/jdktomcat/showcase/rocketmq/transaction/producer/generated/TransactionProducerApplicationTest_jmhType_B1.class
 target/
+.DS_Store
+showcase-system-design/skywalking/.DS_Store
