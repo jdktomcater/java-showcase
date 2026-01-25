@@ -1,10 +1,7 @@
 
 package com.jdktomcat.showcase.system.design.risk.service.service;
 
-import com.jdktomcat.showcase.system.design.channel.service.api.client.domain.Channel;
-import com.jdktomcat.showcase.system.design.common.web.response.Response;
 import com.jdktomcat.showcase.system.design.risk.service.domain.PaymentOrder;
-import com.jdktomcat.showcase.system.design.risk.service.feign.channel.ChannelFeignClient;
 import com.jdktomcat.showcase.system.design.risk.service.repository.PaymentOrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,14 +17,11 @@ public class PaymentService {
 
     private final AccountService accountService;
 
-    private final ChannelFeignClient channelFeignClient;
 
     public PaymentService(PaymentOrderRepository orderRepo,
-                          AccountService accountService,
-                          ChannelFeignClient channelFeignClient) {
+                          AccountService accountService) {
         this.orderRepo = orderRepo;
         this.accountService = accountService;
-        this.channelFeignClient = channelFeignClient;
     }
 
     @Transactional
@@ -64,8 +58,8 @@ public class PaymentService {
 //            accountService.rollback(userId, amount);
 //            order.setStatus(PaymentOrder.Status.FAIL);
 //        }
-        Response<Channel> response = channelFeignClient.getChannel(1L);
-        log.info("channel feign response:{}", response);
+//        Response<Channel> response = channelFeignClient.getChannel(1L);
+//        log.info("channel feign response:{}", response);
         return "success";
     }
 }
