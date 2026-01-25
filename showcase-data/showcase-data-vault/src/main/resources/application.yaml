@@ -9,15 +9,15 @@ spring:
   cloud:
     vault:
       authentication: TOKEN
-      token: hvs.Y3fVFzoLiYz57p2Muvm6dAlT
+      token: hvs.pER0xhc85jcsKkVLr3oe0UxE
       enabled: true
-      uri: http://127.0.0.1:8200
+      uri: https://txdev-vault.qwasn.com
       kv:
         enabled: false
       database:
         backend: database
         enabled: true
-        role: tx-role
+        role: tx-typayv2slave-role
         username-property: spring.datasource.username
         password-property: spring.datasource.password
       config:
@@ -25,10 +25,11 @@ spring:
           min-renewal: 4s
           enabled: true
           lease-endpoints: Leases
+      fail-fast: true
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/pay
+    url: jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8
     druid:
       initial-size: 3
       min-idle: 3
@@ -44,3 +45,4 @@ logging:
   level:
     org.springframework.cloud.vault: DEBUG
     org.springframework.vault: DEBUG
+  config: classpath:logback.xml
