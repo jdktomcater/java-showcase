@@ -24,7 +24,7 @@ public class VaultCheckJob extends IJobHandler {
         long t1 = System.currentTimeMillis();
         log.info("定时任务：验证定时任务vault开始");
         int result = healthMapper.ping();
-        log.debug("定时任务：验证定时任务vault结束,耗时:{} 结果：{}", System.currentTimeMillis() - t1, result);
+        log.info("定时任务：验证定时任务vault结束,耗时:{} 结果：{}", System.currentTimeMillis() - t1, result);
         return ReturnT.SUCCESS;
     }
 }
