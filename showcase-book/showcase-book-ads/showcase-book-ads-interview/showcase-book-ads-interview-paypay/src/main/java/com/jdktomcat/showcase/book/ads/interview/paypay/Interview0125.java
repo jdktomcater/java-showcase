@@ -39,13 +39,67 @@ public class Interview0125 {
     }
 
     /**
+     * merge sorted transactions
      *
-     * @param a
-     * @param b
-     * @return
+     * @param a first target transaction
+     * @param b second target transaction
+     * @return merged
      */
-    static int[] mergeSortedTransactions(int[] a, int[] b){
-        return  Arrays.copyOf(a,a.length + b.length);
+    static int[] mergeSortedTransactions(int[] a, int[] b) {
+        if (a == null && b == null) {
+            return new int[0];
+        }
+        if (a == null || a.length == 0) {
+            return b;
+        }
+        if (b == null || b.length == 0) {
+            return a;
+        }
+        int[] merged = new int[a.length + b.length];
+        int indexA = 0, indexB = 0;
+        for (int index = 0; index < merged.length; index++) {
+            if (indexA < a.length && indexB < b.length) {
+                if (a[indexA] <= b[indexB]) {
+                    merged[index] = a[indexA++];
+                } else {
+                    merged[index] = b[indexB++];
+                }
+            } else if (indexA < a.length) {
+                merged[index] = a[indexA++];
+            } else if (indexB < b.length) {
+                merged[index] = b[indexB++];
+            }
+        }
+        return merged;
+    }
+
+    /**
+     * max successful payments
+     *
+     * @param amounts amounts
+     * @param limit   limit
+     * @return max
+     */
+    static int maxSuccessfulPayments(int[] amounts, int limit) {
+        if (amounts == null || amounts.length == 0) {
+            return 0;
+        }
+        if (amounts.length == 1) {
+            return amounts[0] > limit ? 0 : 1;
+        }
+
+        int start = 0, end = 1, amount = amounts[0], max = (amounts[0] > limit ? 0 : 1);
+        while (start <= end && end < amounts.length) {
+            if (amount + amounts[end] <= limit) {
+                max = Math.max(max, end - start + 1);
+                amount += amounts[end];
+                end++;
+            } else {
+                amount -= amounts[start];
+                start++;
+            }
+        }
+        return max;
     }
 
 }
