@@ -39,6 +39,19 @@
             <artifactId>apm-toolkit-logback-1.x</artifactId>
             <version>6.2.0</version>
         </dependency>
+
+        <!--XXLJOB集成-->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <version>2.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- Web (embedded Tomcat + Spring MVC). Without this the app will start and immediately exit. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,6 +83,8 @@
             <artifactId>nacos-common</artifactId>
             <version>2.2.3</version>
         </dependency>
+
+
         <!-- vault相关配置依赖 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
