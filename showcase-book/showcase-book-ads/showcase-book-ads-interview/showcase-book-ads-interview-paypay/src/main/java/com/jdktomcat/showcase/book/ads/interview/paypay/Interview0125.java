@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.book.ads.interview.paypay;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * interview 0125
@@ -102,4 +102,59 @@ public class Interview0125 {
         return max;
     }
 
+    /**
+     * validate payment graph
+     *
+     * @param n     edge number
+     * @param edges edges
+     * @return true:validate false invalidate
+     */
+    static boolean validatePaymentGraph(int n, int[][] edges) {
+        boolean[][] rely = new boolean[n][n];
+        for (int[] edge : edges) {
+            rely[edge[0]][edge[1]] = true;
+        }
+
+        for (int i = 0; i < n; i++) {
+            Set<Integer> relyNode = new HashSet<>();
+            for (int j = 0; j < n; j++) {
+                if (rely[i][j]) {
+                    relyNode.add(i);
+                    boolean sub = isValidPaymentGraph(j, rely, relyNode);
+                    if (sub) {
+                        continue;
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * is valid payment graph
+     *
+     * @param t    target
+     * @param rely rely map
+     * @return true:rely false:not rely
+     */
+    private static boolean isValidPaymentGraph(int t, boolean[][] rely, Set<Integer> relyNode) {
+        relyNode.add(t);
+        for (int i = 0; i < rely[t].length; i++) {
+            if (rely[t][i]) {
+                boolean contained = relyNode.contains(i);
+                if (contained) {
+                    return false;
+                }
+                relyNode.add(i);
+                boolean sub = isValidPaymentGraph(i, rely, relyNode);
+                if (sub) {
+                    relyNode.remove(i);
+                }
+                return sub;
+            }
+        }
+        relyNode.remove(t);
+        return true;
+    }
 }

@@ -101,4 +101,17 @@ public class Interview0125Test {
         int max10 = Interview0125.maxSuccessfulPayments(amounts10, limit10);
         assertEquals(7, max10);
     }
+
+    @Test
+    public void testIsValidTransactionId() {
+        int n1 = 3;
+        int[][] edges1 = new int[][]{{0, 1}, {1, 2}, {2, 0}};
+        boolean validate1 = Interview0125.validatePaymentGraph(n1, edges1);
+        assertFalse(validate1);
+
+        int n2 = 3;
+        int[][] edges2 = new int[][]{{0, 1}, {1, 2}};
+        boolean validate2 = Interview0125.validatePaymentGraph(n2, edges2);
+        assertTrue(validate2);
+    }
 }
