@@ -110,51 +110,31 @@ public class Interview0125 {
      * @return true:validate false invalidate
      */
     static boolean validatePaymentGraph(int n, int[][] edges) {
-        boolean[][] rely = new boolean[n][n];
-        for (int[] edge : edges) {
-            rely[edge[0]][edge[1]] = true;
-        }
-
+        List<List<Integer>> graph = new ArrayList<>();
+        int[] indegree = new int[n];
         for (int i = 0; i < n; i++) {
-            Set<Integer> relyNode = new HashSet<>();
-            for (int j = 0; j < n; j++) {
-                if (rely[i][j]) {
-                    relyNode.add(i);
-                    boolean sub = isValidPaymentGraph(j, rely, relyNode);
-                    if (sub) {
-                        continue;
-                    }
-                    return false;
+            graph.add(new ArrayList<>());
+        }
+        for (int[] e : edges) {
+            graph.get(e[0]).add(e[1]);
+            indegree[e[1]]++;
+        }
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int visited = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            visited++;
+            for (int next : graph.get(cur)) {
+                if (--indegree[next] == 0) {
+                    queue.offer(next);
                 }
             }
         }
-        return true;
-    }
-
-    /**
-     * is valid payment graph
-     *
-     * @param t    target
-     * @param rely rely map
-     * @return true:rely false:not rely
-     */
-    private static boolean isValidPaymentGraph(int t, boolean[][] rely, Set<Integer> relyNode) {
-        relyNode.add(t);
-        for (int i = 0; i < rely[t].length; i++) {
-            if (rely[t][i]) {
-                boolean contained = relyNode.contains(i);
-                if (contained) {
-                    return false;
-                }
-                relyNode.add(i);
-                boolean sub = isValidPaymentGraph(i, rely, relyNode);
-                if (sub) {
-                    relyNode.remove(i);
-                }
-                return sub;
-            }
-        }
-        relyNode.remove(t);
-        return true;
+        return visited == n;
     }
 }
