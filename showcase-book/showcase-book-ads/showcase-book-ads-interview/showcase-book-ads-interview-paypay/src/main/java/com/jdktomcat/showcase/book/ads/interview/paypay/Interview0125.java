@@ -81,23 +81,16 @@ public class Interview0125 {
      * @return max
      */
     static int maxSuccessfulPayments(int[] amounts, int limit) {
-        if (amounts == null || amounts.length == 0) {
+        if(amounts == null) {
             return 0;
         }
-        if (amounts.length == 1) {
-            return amounts[0] > limit ? 0 : 1;
-        }
-
-        int start = 0, end = 1, amount = amounts[0], max = (amounts[0] > limit ? 0 : 1);
-        while (start <= end && end < amounts.length) {
-            if (amount + amounts[end] <= limit) {
-                max = Math.max(max, end - start + 1);
-                amount += amounts[end];
-                end++;
-            } else {
-                amount -= amounts[start];
-                start++;
+        int start = 0, sum = 0, max = 0;
+        for (int end = 0; end < amounts.length; end++) {
+            sum += amounts[end];
+            while (sum > limit) {
+                sum -= amounts[start++];
             }
+            max = Math.max(max, end - start + 1);
         }
         return max;
     }
