@@ -14,6 +14,7 @@
     <modules>
         <module>showcase-data-druid</module>
         <module>showcase-data-mybatis-plus</module>
+        <module>showcase-data-sharding-jdbc</module>
         <module>showcase-data-vault</module>
     </modules>
 

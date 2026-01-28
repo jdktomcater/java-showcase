@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/order?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+
+  data:
+    redis:
+      password: dVhyG5CkNkqFp95k
+      timeout: 5000
+      cluster:
+        nodes: 172.30.3.31:7002,172.30.3.31:7001,172.30.3.32:7002,172.30.3.32:7001,172.30.3.33:7002,172.30.3.33:7001
+      jedis:
+        pool:
+          max-wait: 5000
+          max-active: 1500
+          max-idle: 1500
+          min-idle: 500
+
+benchmark:
+  enabled: true
+  threads: 4
+  warmupOps: 10000
+  ops: 100000
+  # 显式设置主键（true） vs 置空依赖 mybatis-plus ASSIGN_ID（false）
+  setIdExplicitly: false
+  baseOrderIndex: 2000000000000000000
+  # 用于验证重试路径：按比例使用 fixedOrderIndex 制造主键冲突
+  conflictRate: 0.0
+  fixedOrderIndex: 1
+  maxSamples: 200000
