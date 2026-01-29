@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>jdktomcat.showcase</groupId>
+        <artifactId>showcase-book-ads</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>showcase-book-ads-offer</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>showcase-book-ads-offer-integer</module>
+        <module>showcase-book-ads-offer-array</module>
+        <module>showcase-book-ads-offer-string</module>
+        <module>showcase-book-ads-offer-list</module>
+        <module>showcase-book-ads-offer-map</module>
+        <module>showcase-book-ads-offer-stack</module>
+        <module>showcase-book-ads-offer-hash</module>
+        <module>showcase-book-ads-offer-queue</module>
+        <module>showcase-book-ads-offer-heap</module>
+        <module>showcase-book-ads-offer-tree</module>
+        <module>showcase-book-ads-offer-sort</module>
+        <module>showcase-book-ads-offer-pt</module>
+        <module>showcase-book-ads-offer-bf</module>
+        <module>showcase-book-ads-offer-bt</module>
+        <module>showcase-book-ads-offer-dp</module>
+    </modules>
+
+</project>

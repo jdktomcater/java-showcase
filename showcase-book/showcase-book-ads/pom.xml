@@ -11,8 +11,8 @@
     <artifactId>showcase-book-ads</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>showcase-book-ads-integer</module>
         <module>showcase-book-ads-interview</module>
+        <module>showcase-book-ads-offer</module>
     </modules>
 
 </project>
