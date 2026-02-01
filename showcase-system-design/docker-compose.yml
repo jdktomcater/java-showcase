@@ -135,6 +135,20 @@ services:
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
       - ./skywalking/agent:/skywalking/agent:ro
+  fep:
+    image: showcase/showcase-system-design-fep-service:1.0-SNAPSHOT
+    container_name: fep
+    platform: linux/amd64
+    depends_on:
+      - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: fep
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+      SW_LOGGING_DIR: /tmp/skywalking/logs
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
 
   pay:
     image: showcase/showcase-system-design-pay-service:1.0-SNAPSHOT

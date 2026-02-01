@@ -1,8 +1,8 @@
 server:
-  port: 8084
+  port: 7000
 spring:
   application:
-    name: order-service
+    name: fep-service
   redis:
     redisson:
       # redisson-spring-boot-starter 需要通过 config/file 注入配置
@@ -13,16 +13,6 @@ spring:
           timeout: 3000
           connectionPoolSize: 64
           connectionMinimumIdleSize: 24
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: pay
-    password: 123456
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
   cloud:
     openfeign:
       circuitbreaker:
@@ -33,7 +23,7 @@ logging:
     root: info
   config: classpath:logback.xml
   file:
-    name: /data/log/order-service.log
+    name: /data/log/fep-service.log
 
 eureka:
   client:
