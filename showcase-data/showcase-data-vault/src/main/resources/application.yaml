@@ -1,6 +1,5 @@
 server:
   port: 8080
-
 spring:
   application:
     name: vault-data
@@ -9,16 +8,15 @@ spring:
   cloud:
     vault:
       authentication: CERT
-#      token: hvs.pER0xhc85jcsKkVLr3oe0UxE
       enabled: true
       uri: https://127.0.0.1:8200
       ssl:
+        trust-store: classpath:vault-truststore.jks
+        trust-store-password: 123456
+        trust-store-type: JKS
         key-store: classpath:client.p12
         key-store-password: 1234
-        trust-store: classpath:ca.p12
-        trust-store-password: 123456
-        cert-auth-path: cert
-
+        key-store-type: PKCS12
       kv:
         enabled: false
       database:
@@ -49,10 +47,9 @@ spring:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
       min-evictable-idle-time-millis: 300000
-#    username: root
-#    password: 12345678
 logging:
   level:
     org.springframework.cloud.vault: DEBUG
     org.springframework.vault: DEBUG
+    org.springframework.http.client: DEBUG
   config: classpath:logback.xml
