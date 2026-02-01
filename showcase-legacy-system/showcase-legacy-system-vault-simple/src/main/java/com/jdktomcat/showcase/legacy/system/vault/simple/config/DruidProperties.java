@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DruidProperties {
 
-    @Value("${spring.datasource.druid.initialSize}")
+    @Value("${spring.datasource.druid.initial-size}")
     private int initialSize;
 
     @Value("${spring.datasource.druid.minIdle:}")
