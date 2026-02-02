@@ -9,6 +9,7 @@
   <modules>
     <module>showcase-legacy-system-vault</module>
     <module>showcase-legacy-system-vault-simple</module>
+    <module>showcase-legacy-system-vault-tidb</module>
   </modules>
 
   <properties>
