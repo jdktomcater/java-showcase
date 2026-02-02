@@ -16,6 +16,7 @@
         <module>showcase-system-design-channel</module>
         <module>showcase-system-design-order</module>
         <module>showcase-system-design-fef</module>
+        <module>showcase-system-design-admin</module>
     </modules>
 
     <properties>
