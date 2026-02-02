@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>showcase-system-design-fep-service</module>
+        <module>showcase-system-design-fef-service</module>
     </modules>
 
     <dependencies>
