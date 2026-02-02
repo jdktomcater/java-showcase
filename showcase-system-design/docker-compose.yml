@@ -135,9 +135,9 @@ services:
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
       - ./skywalking/agent:/skywalking/agent:ro
-  fep:
-    image: showcase/showcase-system-design-fep-service:1.0-SNAPSHOT
-    container_name: fep
+  fef:
+    image: showcase/showcase-system-design-fef-service:1.0-SNAPSHOT
+    container_name: fef
     platform: linux/amd64
     depends_on:
       - eureka

@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>showcase-system-design-fep</artifactId>
+    <artifactId>showcase-system-design-fef</artifactId>
     <packaging>pom</packaging>
 
     <modules>
