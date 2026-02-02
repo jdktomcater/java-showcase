@@ -15,10 +15,14 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: route-service
+        - id: route-pay
           uri: lb://pay-service
           predicates:
             - Path=/pay/**
+        - id: route-page
+          uri: lb://fef-service
+          predicates:
+            - Path=/page/**
 management:
   endpoints:
     web:

@@ -2,7 +2,7 @@ server:
   port: 7000
 spring:
   application:
-    name: fep-service
+    name: fef-service
   redis:
     redisson:
       # redisson-spring-boot-starter 需要通过 config/file 注入配置
@@ -23,7 +23,7 @@ logging:
     root: info
   config: classpath:logback.xml
   file:
-    name: /data/log/fep-service.log
+    name: /data/log/fef-service.log
 
 eureka:
   client:
