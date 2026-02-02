@@ -6,14 +6,12 @@
         <artifactId>showcase-system-design-fef</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>showcase-system-design-fep-service</artifactId>
+    <artifactId>showcase-system-design-fef-service</artifactId>
 
     <properties>
-        <!-- Jib image build -->
         <jib.skip>false</jib.skip>
-        <docker.exposed.port>8084</docker.exposed.port>
+        <docker.exposed.port>7000</docker.exposed.port>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -54,7 +52,6 @@
             <artifactId>jakarta.validation-api</artifactId>
             <version>3.0.2</version>
         </dependency>
-
         <dependency>
             <groupId>com.jdktomcater.showcase</groupId>
             <artifactId>showcase-system-design-channel-api</artifactId>
@@ -68,7 +65,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!-- Build Docker images via Maven without Dockerfile: mvn -pl <module> jib:dockerBuild -->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
