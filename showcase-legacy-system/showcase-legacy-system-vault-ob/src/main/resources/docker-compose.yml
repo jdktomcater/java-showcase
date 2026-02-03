@@ -1,0 +1,27 @@
+services:
+  oceanbase:
+    image: oceanbase/oceanbase-ce:4.2.1
+    container_name: oceanbase
+    privileged: true
+    environment:
+      OB_MODE: mini
+      OB_ROOT_PASSWORD: root123
+      OB_TENANT_PASSWORD: test123
+      MEMORY_LIMIT: 6G
+    ports:
+      - "2881:2881"   # SQL
+      - "2882:2882"   # RPC
+    volumes:
+      - ./ob-data:/root/ob
+  obproxy:
+    image: oceanbase/obproxy-ce:4.2.1.0-11-arm64
+    container_name: obproxy
+    restart: unless-stopped
+    depends_on:
+      - oceanbase
+    ports:
+      - "2883:2883"
+    environment:
+      APP_NAME: obcluster
+      OBPROXY_OB_ROOT_PASSWORD: root123
+      OBPROXY_OB_SERVER: oceanbase:2881
