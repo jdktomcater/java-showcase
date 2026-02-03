@@ -25,11 +25,13 @@ public class TyPayV2SlaveDruidProperties extends DruidProperties {
 
     public DruidDataSource dataSource(DruidDataSource datasource) {
         super.dataSource(datasource);
-        datasource.setUsername(username);
+        String obUsername = username + "@tx_zf_yace#txobserver";
+        datasource.setUsername(obUsername);
         datasource.setUrl(url);
         datasource.setPassword(password);
         // 设置数据源名称
         datasource.setName("typayv2slave");
+        log.info("username:{}, password:{}, url:{}", obUsername, password, url);
         return datasource;
     }
 }
