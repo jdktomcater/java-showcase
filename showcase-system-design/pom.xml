@@ -6,7 +6,7 @@
 
     <groupId>com.jdktomcater.showcase</groupId>
     <artifactId>showcase-system-design</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>showcase-system-design-common</module>

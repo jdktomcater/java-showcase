@@ -11,7 +11,7 @@
 
     <groupId>com.jdktomcat.showcase</groupId>
     <artifactId>showcase-webflux</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>showcase-webflux</name>
 
     <properties>

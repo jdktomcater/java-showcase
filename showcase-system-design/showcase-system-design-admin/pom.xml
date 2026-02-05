@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
         <artifactId>showcase-system-design</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>showcase-system-design-admin</artifactId>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.jdktomcater.showcase</groupId>
             <artifactId>showcase-system-design-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

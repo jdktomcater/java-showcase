@@ -22,7 +22,7 @@ under the License.
     <parent>
         <groupId>com.jdktomcater.flink</groupId>
         <artifactId>showcase-flink</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>showcase-flink-data-stream-fraud-detection</artifactId>
     <packaging>jar</packaging>

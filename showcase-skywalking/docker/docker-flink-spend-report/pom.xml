@@ -4,7 +4,7 @@
     <parent>
         <groupId>jdktomcat.showcase.skywalking</groupId>
         <artifactId>docker</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>docker-flink-spend-report</artifactId>
     <packaging>jar</packaging>

@@ -10,7 +10,7 @@
     </parent>
     <groupId>jdktomcat.showcase</groupId>
     <artifactId>showcase-elasticsearch</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>showcase-elasticsearch-canal</module>

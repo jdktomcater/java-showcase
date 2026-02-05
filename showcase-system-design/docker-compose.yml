@@ -93,7 +93,7 @@ services:
       - kafka
 
   eureka:
-    image: showcase/showcase-system-design-base-eureka-server:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-base-eureka-server:1.0.0-SNAPSHOT
     container_name: eureka-server
     platform: linux/amd64
     ports:
@@ -122,7 +122,7 @@ services:
     depends_on:
       - gateway
   gateway:
-    image: showcase/showcase-system-design-base-gateway:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-base-gateway:1.0.0-SNAPSHOT
     container_name: gateway
     platform: linux/amd64
     depends_on:
@@ -136,7 +136,7 @@ services:
     volumes:
       - ./skywalking/agent:/skywalking/agent:ro
   fef:
-    image: showcase/showcase-system-design-fef-service:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-fef-service:1.0.0-SNAPSHOT
     container_name: fef
     platform: linux/amd64
     depends_on:
@@ -151,7 +151,7 @@ services:
       - ./skywalking/agent:/skywalking/agent:ro
 
   pay:
-    image: showcase/showcase-system-design-pay-service:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-pay-service:1.0.0-SNAPSHOT
     platform: linux/amd64
     expose:
       - 8081
@@ -172,7 +172,7 @@ services:
     volumes:
       - ./skywalking/agent:/skywalking/agent:ro
   channel:
-    image: showcase/showcase-system-design-channel-service:1.0-SNAPSHOT
+    image: showcase/showcase-system-design-channel-service:1.0.0-SNAPSHOT
     platform: linux/amd64
     expose:
       - 8082

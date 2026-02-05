@@ -5,10 +5,10 @@
     <parent>
         <groupId>com.jdktomcat.showcase</groupId>
         <artifactId>showcase-common</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>showcase-fastdfs</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>showcase-fastdfs</name>
     <description>showcase-fastdfs</description>
     <dependencies>

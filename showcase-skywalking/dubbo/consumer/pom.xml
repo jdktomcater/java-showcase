@@ -4,7 +4,7 @@
     <parent>
         <groupId>jdktomcat.showcase.skywalking</groupId>
         <artifactId>dubbo</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>consumer</artifactId>
 
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>jdktomcat.showcase.skywalking</groupId>
             <artifactId>api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- 引入spring-boot-starter 以及dubbo和curator的依赖 -->

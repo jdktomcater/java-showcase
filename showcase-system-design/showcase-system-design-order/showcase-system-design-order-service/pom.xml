@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.jdktomcater.showcase</groupId>
         <artifactId>showcase-system-design-order</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>showcase-system-design-order-service</artifactId>
 
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>com.jdktomcater.showcase</groupId>
             <artifactId>showcase-system-design-channel-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

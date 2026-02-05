@@ -1,12 +1,12 @@
 services:
   eureka:
-    image: showcase/showcase-spring-cloud-eureka-server:1.0-SNAPSHOT
+    image: showcase/showcase-spring-cloud-eureka-server:1.0.0-SNAPSHOT
     container_name: eureka
     platform: linux/amd64
     ports:
       - "8761:8761"
   gateway:
-    image: showcase/showcase-spring-cloud-gateway-api:1.0-SNAPSHOT
+    image: showcase/showcase-spring-cloud-gateway-api:1.0.0-SNAPSHOT
     container_name: gateway
     platform: linux/amd64
     ports:

@@ -4,7 +4,7 @@
     <parent>
         <groupId>jdktomcat.showcase</groupId>
         <artifactId>showcase-rocketmq</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>showcase-rocketmq-tag</artifactId>
     <packaging>pom</packaging>

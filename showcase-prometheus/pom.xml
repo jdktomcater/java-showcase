@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.jdktomcat.showcase</groupId>
     <artifactId>showcase-prometheus</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>showcase-prometheus</name>
     <description>showcase-prometheus</description>
