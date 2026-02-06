@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>jdktomcat.showcase</groupId>
-        <artifactId>showcase-kafka</artifactId>
+        <artifactId>showcase-mq-kafka</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 

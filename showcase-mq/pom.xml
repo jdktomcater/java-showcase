@@ -18,8 +18,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <modules>
-        <module>showcase-rocketmq</module>
-        <module>showcase-kafka</module>
+        <module>showcase-mq-rocketmq</module>
+        <module>showcase-mq-kafka</module>
     </modules>
     <dependencies>
         <dependency>
