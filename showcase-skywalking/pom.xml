@@ -13,9 +13,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>dubbo</module>
-        <module>gateway</module>
-        <module>docker</module>
+        <module>showcase-skywalking-dubbo</module>
+        <module>showcase-skywalking-gateway</module>
+        <module>showcase-skywalking-docker</module>
     </modules>
 
     <properties>
