@@ -10,4 +10,12 @@
     </parent>
     <artifactId>showcase-book-ads-interview-paypay</artifactId>
 
+    <dependencies>
+        <!-- 本地缓存依赖 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+    </dependencies>
 </project>
