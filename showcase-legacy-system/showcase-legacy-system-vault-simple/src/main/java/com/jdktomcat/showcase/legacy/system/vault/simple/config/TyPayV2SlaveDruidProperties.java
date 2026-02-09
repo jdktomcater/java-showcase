@@ -28,6 +28,7 @@ public class TyPayV2SlaveDruidProperties extends DruidProperties {
         datasource.setUsername(username);
         datasource.setUrl(url);
         datasource.setPassword(password);
+        log.info("TyPayV2SlaveDruidProperties initialize url:{} username:{} password:{}", url, username, password);
         // 设置数据源名称
         datasource.setName("typayv2slave");
         return datasource;

@@ -9,6 +9,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface HealthMapper {
 
-    @Select("select 1")
+    @Select("select count(0) from t_bankcard_agent")
     int ping();
 }
