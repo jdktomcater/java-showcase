@@ -45,7 +45,7 @@ public class LRUCache {
         moveToHead(node);
         return node.value;
     }
-    public int put(int key, int value) {
+    public void put(int key, int value) {
         if (!cache.containsKey(key)) {
             Node node = new Node(key, value);
             cache.put(key, node);
@@ -55,13 +55,11 @@ public class LRUCache {
                 remove(last);
                 cache.remove(last.key);
             }
-            return node.value;
+            return;
         }
         Node node = cache.get(key);
         moveToHead(node);
-        int oldValue = node.value;
         node.value = value;
-        return oldValue;
     }
 
     private void moveToHead(Node node) {
