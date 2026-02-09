@@ -15,13 +15,17 @@ public class LongestSubstringWithoutRepeatingCharacters {
      * @return max length
      */
     public static int lengthOfLongestSubstring(String str) {
+        // check the input str
+        if(str == null || str.isEmpty()) {
+            return 0;
+        }
         Map<Character, Integer> charIndexMap = new HashMap<>();
         int maxLength = 0;
         int start = 0;
         for (int end = 0; end < str.length(); end++) {
             Integer index = charIndexMap.put(str.charAt(end), end);
             if (index != null) {
-                // important
+                // important the start pointer must never move backward
                 start = Math.max(start, index + 1);
             }
             maxLength = Math.max(maxLength, end - start + 1);
