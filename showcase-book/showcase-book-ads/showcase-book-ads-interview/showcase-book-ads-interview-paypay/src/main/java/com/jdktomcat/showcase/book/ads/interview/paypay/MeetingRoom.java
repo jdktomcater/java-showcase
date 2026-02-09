@@ -28,15 +28,14 @@ public class MeetingRoom {
             return 0;
         }
         Arrays.sort(schedules, Comparator.comparingInt(o -> o[0]));
-        PriorityQueue<int[]> minHeap = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
-        for(int[] schedule : schedules) {
-            int[] minSchedule = minHeap.peek();
-            if(minSchedule == null) {
-                minHeap.offer(schedule);
-            }else{
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int[] schedule : schedules) {
+            // if the earliest ending meeting is finished, reuse the room
+            if (!minHeap.isEmpty() && schedule[0] >= minHeap.peek()) {
+                minHeap.poll();
             }
+            minHeap.offer(schedule[1]);
         }
-        return 0;
-
+        return minHeap.size();
     }
 }
