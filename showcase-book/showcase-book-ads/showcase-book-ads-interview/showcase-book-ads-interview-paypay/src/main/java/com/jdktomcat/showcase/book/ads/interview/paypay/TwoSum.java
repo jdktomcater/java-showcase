@@ -30,6 +30,7 @@ public class TwoSum {
             if (numIndexMap.containsKey(target - nums[i])) {
                 return new int[]{numIndexMap.get(target - nums[i]), i};
             }
+            // put if absent prevent same num occur something wrong
             numIndexMap.putIfAbsent(nums[i], i);
         }
         throw new IllegalArgumentException("No two sum solution");
