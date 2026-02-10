@@ -30,7 +30,7 @@ public class TopKFrequentElements {
         for (int num : nums) {
             map.put(num, map.getOrDefault(num, 0) + 1);
         }
-        PriorityQueue<Map.Entry<Integer,Integer>> minHeap = new PriorityQueue<>(Map.Entry.comparingByValue());
+        PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(Map.Entry.comparingByValue());
         map.entrySet().forEach(entry -> {
             minHeap.offer(entry);
             if (minHeap.size() > k) {
@@ -38,9 +38,10 @@ public class TopKFrequentElements {
             }
         });
         int[] result = new int[k];
-        for (int i = k-1; i >= 0; i--) {
+        for (int i = k - 1; i >= 0; i--) {
             result[i] = Objects.requireNonNull(minHeap.poll()).getKey();
         }
+        Arrays.sort(result);
         return result;
     }
 }
