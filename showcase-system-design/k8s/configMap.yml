@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+data:
+  bootstrap.properties: >
+    spring.application.name=typay-merchant-server-fat
+    spring.cloud.nacos.config.server-addr=172.30.2.16:8848
+    spring.cloud.nacos.config.file-extension=yaml
+    spring.cloud.nacos.config.namespace=typay-merchant-server
+    spring.cloud.nacos.config.username=typaynew
+    spring.cloud.nacos.config.password=HJgYDjFkd67j5.H
+kind: ConfigMap
+metadata:
+  annotations: { }
+  labels: { }
+  name: ty-pay-jv2-merchant-server-cm
+  namespace: txzf-fat
+  resourceVersion: '88469428'

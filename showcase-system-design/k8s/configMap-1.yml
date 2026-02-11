@@ -1,0 +1,110 @@
+---
+apiVersion: v1
+data:
+  bootstrap.properties: >
+    spring.application.name=typay-matchup-pay-service-fat
+
+    spring.cloud.nacos.config.server-addr=172.30.2.16:8848
+
+    spring.cloud.nacos.config.file-extension=yaml
+
+    spring.cloud.nacos.config.namespace=typay-dispatch
+
+    spring.cloud.nacos.config.username=typaynew
+
+    spring.cloud.nacos.config.password=HJgYDjFkd67j5.H
+
+    spring.cloud.nacos.config.shared-configs[0].data-id=tx-sensitive-plugin.yaml
+
+    spring.cloud.vault.enabled=${VAULT_ENABLED:true}
+
+    spring.cloud.vault.fail-fast=true
+
+    spring.cloud.vault.authentication=${VAULT_AUTHENTICATION:APPROLE}
+
+    spring.cloud.vault.app-role.role=${VAULT_AUTHENTICATION_ROLE:tx-fat-role-v0}
+
+    spring.cloud.vault.app-role.role-id=${VAULT_AUTHENTICATION_ROLE_ID:e9310958-a686-f381-4026-6c68cbb5e998}
+
+    spring.cloud.vault.app-role.secret-id=${VAULT_AUTHENTICATION_SECRET_ID:ea79c10c-8982-f347-4320-a5dac02db60a}
+
+    spring.cloud.vault.uri=${VAULT_URI:https://txdev-vault.qwasn.com}
+
+    spring.cloud.vault.kv.enabled=false
+
+    spring.cloud.vault.config.lifecycle.enabled=true
+
+    spring.cloud.vault.config.lifecycle.min-renewal=10s
+
+    spring.cloud.vault.config.lifecycle.lease-endpoints=Legacy
+
+
+    # Vault Database Secrets Engine: database/creds/<role>
+
+    spring.cloud.vault.databases.typayv2slave.enabled=${VAULT_TYPAYV2SLAVE_ENABLED:true}
+
+    spring.cloud.vault.databases.typayv2slave.backend=${VAULT_TYPAYV2SLAVE_BACKEND:database}
+
+    spring.cloud.vault.databases.typayv2slave.role=${VAULT_TYPAYV2SLAVE_ROLE:tx-typayv2slave-role-v0}
+
+    spring.cloud.vault.databases.typayv2slave.username-property=spring.datasource.druid.typayv2slave.username
+
+    spring.cloud.vault.databases.typayv2slave.password-property=spring.datasource.druid.typayv2slave.password
+
+
+    # Vault Database Secrets Engine: database/creds/<role>
+
+    spring.cloud.vault.databases.tysupplieradmin.enabled=${VAULT_TYSUPPLIERADMINSLAVE_ENABLED:true}
+
+    spring.cloud.vault.databases.tysupplieradmin.backend=${VAULT_TYSUPPLIERADMINSLAVE_BACKEND:database}
+
+    spring.cloud.vault.databases.tysupplieradmin.role=${VAULT_TYSUPPLIERADMINSLAVE_ROLE:tx-tysupplieradmin-role-v0}
+
+    spring.cloud.vault.databases.tysupplieradmin.username-property=spring.datasource.druid.tysupplieradmin.username
+
+    spring.cloud.vault.databases.tysupplieradmin.password-property=spring.datasource.druid.tysupplieradmin.password
+
+
+    # Vault Database Secrets Engine: database/creds/<role>
+
+    spring.cloud.vault.databases.tymerchantadmin.enabled=${VAULT_TYSUPPLIERADMINSLAVE_ENABLED:true}
+
+    spring.cloud.vault.databases.tymerchantadmin.backend=${VAULT_TYSUPPLIERADMINSLAVE_BACKEND:database}
+
+    spring.cloud.vault.databases.tymerchantadmin.role=${VAULT_TYSUPPLIERADMINSLAVE_ROLE:tx-tymerchantadmin-role-v0}
+
+    spring.cloud.vault.databases.tymerchantadmin.username-property=spring.datasource.druid.tymerchantadmin.username
+
+    spring.cloud.vault.databases.tymerchantadmin.password-property=spring.datasource.druid.tymerchantadmin.password
+
+
+    # Vault Database Secrets Engine: database/creds/<role>
+
+    spring.cloud.vault.databases.tyadmin.enabled=${VAULT_TYADMIN_ENABLED:true}
+
+    spring.cloud.vault.databases.tyadmin.backend=${VAULT_TYADMIN_BACKEND:database}
+
+    spring.cloud.vault.databases.tyadmin.role=${VAULT_TYADMIN_ROLE:tx-tyadmin-role-v0}
+
+    spring.cloud.vault.databases.tyadmin.username-property=spring.datasource.druid.tyadmin.username
+
+    spring.cloud.vault.databases.tyadmin.password-property=spring.datasource.druid.tyadmin.password
+
+
+    # Vault Database Secrets Engine: database/creds/<role>
+
+    spring.cloud.vault.databases.typayv2.enabled=${VAULT_TYPAYV2_ENABLED:true}
+
+    spring.cloud.vault.databases.typayv2.backend=${VAULT_TYPAYV2_BACKEND:database}
+
+    spring.cloud.vault.databases.typayv2.role=${VAULT_TYPAYV2_ROLE:tx-typayv2-role-v0}
+
+    spring.cloud.vault.databases.typayv2.username-property=spring.datasource.druid.typayv2.username
+
+    spring.cloud.vault.databases.typayv2.password-property=spring.datasource.druid.typayv2.password
+kind: ConfigMap
+metadata:
+  name: ty-pay-jv2-matchup-pay-service-cm
+  namespace: txzf-fat
+  resourceVersion: '88440350'
+
