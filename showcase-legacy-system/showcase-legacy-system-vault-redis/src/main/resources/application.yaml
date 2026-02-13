@@ -1,0 +1,50 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: showcase-vault-redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    lettuce:
+      cluster:
+        refresh:
+          adaptive: true
+      pool:
+        enabled: true
+        min-idle: 3
+        max-idle: 8
+        max-active: 10
+        max-wait: 30ms
+  config:
+    import: optional:vault://
+  cloud:
+    vault:
+      enabled: true
+      fail-fast: true
+      uri: https://127.0.0.1:8200
+      authentication: ${VAULT_AUTHENTICATION:APPROLE}
+      app-role:
+        role: ${VAULT_AUTHENTICATION_ROLE:redis-auth-role}
+        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:c5df9b98-3c10-5c5b-0e12-aaa23eb4ced1}
+        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:728670d7-f77a-210f-bee0-e2d2053f23ed}
+      kv:
+        enabled: false
+      config:
+        lifecycle:
+          enabled: true
+          min-renewal: 4s
+          lease-endpoints: Legacy
+      database:
+        enabled: true
+        backend: database
+        role: redis-role
+        username-property: spring.redis.username
+        password-property: spring.redis.password
+logging:
+  level:
+    org.springframework.cloud.vault: debug
+    org.springframework.vault: debug
+  config: classpath:logback.xml
+  file:
+    name: /data/logs/showcase/showcase-vault-redis.log
