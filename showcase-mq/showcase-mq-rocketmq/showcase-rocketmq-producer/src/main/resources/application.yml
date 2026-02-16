@@ -6,7 +6,7 @@ rocketmq:
   producer:
     sendMessageTimeout: 300000
     maxMessageSize: 131072
-    group: timmy-group
+    group: yuhata-producer-group
 
 
 logging:
@@ -18,7 +18,7 @@ logging:
 
 demo:
   rocketmq:
-    topic: telegram_send_topic:telegram_send_normal_tag
+    topic: queue_notify_withdraw:pressure_tag
     dis:
       topic: channelDistribution:findDistributionMatchupJob
     delay:

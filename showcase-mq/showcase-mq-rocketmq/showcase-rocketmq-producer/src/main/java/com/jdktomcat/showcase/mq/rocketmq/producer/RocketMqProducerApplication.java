@@ -26,15 +26,6 @@ public class RocketMqProducerApplication implements CommandLineRunner {
         SpringApplication.run(RocketMqProducerApplication.class, args);
     }
 
-    /**
-     * 模拟机器人
-     */
-    private static final String[] BOTS = {"6774799455:AAFeHKrLxxMRVpBLg8LFj7N62drOxz7b25g", "6347956777:AAGkrZ2ii7AuiKNiO1LflAGy8owYjTg3oWk", "6860056824:AAHoBVhelMHs6KXRHey2ARiKegaYlfiKpwk"};
-
-    /**
-     * 模拟群组
-     */
-    private static final String[] CHATS = {"-4043624377", "-4086688530", "-4095197160"};
 
     private static final String tag = "findDistributionMatchupJob";
 
@@ -42,7 +33,7 @@ public class RocketMqProducerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        sendDelayMessage();
+        sendDisMessage();
     }
 
 
@@ -55,9 +46,9 @@ public class RocketMqProducerApplication implements CommandLineRunner {
     }
 
 
-    private void sendDisMessage() throws InterruptedException {
+    private void sendDisMessage() {
         int i = 0;
-        while (i++ < 10000) {
+        while (i++ < 100000) {
             DistributeMessage distributeMessage = new DistributeMessage();
             distributeMessage.setType(tag);
             distributeMessage.setUsername("timmy"+i);
@@ -67,7 +58,6 @@ public class RocketMqProducerApplication implements CommandLineRunner {
             distributeMessage.setWithdrawOrderList(dataList);
             SendResult sendResult = messageProducerComponent.sendDisMessage(JSONObject.toJSONString(distributeMessage), key+i);
             log.info("syncSend to sendResult:{}", sendResult);
-            TimeUnit.SECONDS.sleep(1);
         }
     }
 }
