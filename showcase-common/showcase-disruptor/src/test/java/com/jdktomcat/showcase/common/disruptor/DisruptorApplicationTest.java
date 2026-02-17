@@ -1,9 +1,5 @@
 package com.jdktomcat.showcase.common.disruptor;
 
-import com.jdktomcat.showcase.common.disruptor.event.LongEvent;
-import com.jdktomcat.showcase.common.disruptor.event.LongEventFactory;
-import com.jdktomcat.showcase.common.disruptor.event.LongEventHandler;
-import com.jdktomcat.showcase.common.disruptor.event.LongEventProducerWithTranslator;
 import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -12,8 +8,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import java.nio.ByteBuffer;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -21,13 +15,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Unit test for simple App.
  */
-public class DisruptorAppTest extends TestCase {
+public class DisruptorApplicationTest extends TestCase {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public DisruptorAppTest(String testName) {
+    public DisruptorApplicationTest(String testName) {
         super(testName);
     }
 
@@ -35,7 +29,7 @@ public class DisruptorAppTest extends TestCase {
      * @return the suite of tests being tested
      */
     public static Test suite() {
-        return new TestSuite(DisruptorAppTest.class);
+        return new TestSuite(DisruptorApplicationTest.class);
     }
 
     /**
