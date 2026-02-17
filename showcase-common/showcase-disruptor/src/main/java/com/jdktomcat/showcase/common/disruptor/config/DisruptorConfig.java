@@ -18,7 +18,13 @@ public class DisruptorConfig {
     @Bean
     public Disruptor<OrderEvent> disruptor() {
         int bufferSize = 1024; // 必须是 2 的幂
-        Disruptor<OrderEvent> disruptor = new Disruptor<>(new OrderEventFactory(), bufferSize, Executors.defaultThreadFactory(), ProducerType.SINGLE, new BusySpinWaitStrategy());
+        Disruptor<OrderEvent> disruptor = new Disruptor<>(
+                new OrderEventFactory(),
+                bufferSize,
+                Executors.defaultThreadFactory(),
+                ProducerType.SINGLE,
+                new BusySpinWaitStrategy()
+        );
         disruptor.handleEventsWith(new OrderEventHandler());
         disruptor.start();
         return disruptor;
