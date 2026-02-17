@@ -1,0 +1,27 @@
+
+package com.jdktomcat.showcase.system.design.fep.service.web.controller;
+
+import com.jdktomcat.showcase.system.design.common.web.response.Response;
+import com.jdktomcat.showcase.system.design.fep.service.web.request.DeductRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/order")
+public class OrderController {
+
+
+    /**
+     * user deduct end point
+     *
+     * @param deductRequest deduct request
+     * @return response
+     */
+    @PostMapping("/deduct")
+    public Response<String> deduct(@RequestBody DeductRequest deductRequest) {
+        // param validate
+        return Response.success("");
+    }
+}
