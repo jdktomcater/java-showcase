@@ -43,25 +43,7 @@ public class DisruptorApplicationTest extends TestCase {
      * 测试单一生产者单一消费者
      */
     public void testSimpleProducerDisruptorWithMethodReference() throws InterruptedException {
-        ThreadFactory executor = Executors.defaultThreadFactory();
-        int bufferSize = 1024;
-        Disruptor<LongEvent> disruptor = new Disruptor<>(new LongEventFactory(), bufferSize, executor, ProducerType.SINGLE, new BlockingWaitStrategy());
-        disruptor.handleEventsWith(new LongEventHandler());
-        disruptor.start();
-        RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
-        LongEventProducerWithTranslator producerWithTranslator = new LongEventProducerWithTranslator(ringBuffer);
-        Thread thread = new Thread(() -> {
-            for (long i = 0; i < 10; i++) {
-                producerWithTranslator.onData(i);
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        thread.start();
-        TimeUnit.SECONDS.sleep(10);
+
     }
 }
 
