@@ -11,4 +11,7 @@ public interface HealthMapper {
 
     @Select("select count(0) from t_bankcard_agent")
     int ping();
+
+    @Select("select current_user()")
+    String currentUser();
 }

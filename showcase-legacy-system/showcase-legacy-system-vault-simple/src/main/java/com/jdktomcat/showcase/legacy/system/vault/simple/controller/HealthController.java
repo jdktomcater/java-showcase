@@ -17,4 +17,14 @@ public class HealthController {
     public int ping() {
         return mapper.ping();
     }
+
+    @GetMapping("/current")
+    public String current() {
+        return mapper.currentUser();
+    }
+
+    @GetMapping("/current-user")
+    public String currentUser() {
+        return mapper.currentUser();
+    }
 }
