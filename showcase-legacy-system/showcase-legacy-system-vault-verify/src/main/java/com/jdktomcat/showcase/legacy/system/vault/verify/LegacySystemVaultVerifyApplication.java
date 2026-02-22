@@ -8,9 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Hello world!
  */
-@MapperScan(value = "com.jdktomcat.showcase.legacy.system.vault.simple.mapper")
+@MapperScan(value = "com.jdktomcat.showcase.legacy.system.vault.verify.mapper")
 @SpringBootApplication
-@EnableScheduling
 public class LegacySystemVaultVerifyApplication {
     public static void main(String[] args) {
         SpringApplication.run(LegacySystemVaultVerifyApplication.class, args);
