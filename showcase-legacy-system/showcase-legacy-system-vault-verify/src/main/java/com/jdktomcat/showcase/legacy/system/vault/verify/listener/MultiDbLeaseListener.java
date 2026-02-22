@@ -88,6 +88,7 @@ public class MultiDbLeaseListener implements LeaseListener {
             return;
         }
         // 异步关闭旧数据源，避免 setEnable(false) 导致健康检查等仍引用旧数据源时抛出 DataSourceDisableException
+        log.info("旧数据源：{}，即将被回收！。", old.getUsername());
         safeCloseAsync(old);
     }
 

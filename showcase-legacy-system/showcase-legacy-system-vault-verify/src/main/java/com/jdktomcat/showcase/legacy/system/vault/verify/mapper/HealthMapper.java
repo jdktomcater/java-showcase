@@ -19,4 +19,7 @@ public interface HealthMapper {
 
     @Update("UPDATE typayv2.fk_rule_operate_log SET rule_name = #{ruleName} WHERE id = #{id}")
     int update(@Param("id") Long id, @Param("ruleName") String ruleName);
+
+    @Select("select count(0) from mysql.`user` u where u.`User` = #{username}")
+    int checkUser(@Param("username") String username);
 }
