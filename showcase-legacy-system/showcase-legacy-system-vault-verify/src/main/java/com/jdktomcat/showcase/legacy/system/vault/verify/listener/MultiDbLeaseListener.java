@@ -46,6 +46,7 @@ public class MultiDbLeaseListener implements LeaseListener {
 
     @Override
     public void onLeaseEvent(@NonNull SecretLeaseEvent event) {
+        // TODO 如何兜底vault服务器异常场景（随机返回）
         if (shuttingDown.get()) {
             log.info("应用正在关闭，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
             return;
@@ -59,7 +60,7 @@ public class MultiDbLeaseListener implements LeaseListener {
         Map<String, Object> data = secretLeaseCreatedEvent.getSecrets();
         String username = (String) data.get("username");
         String password = (String) data.get("password");
-        log.info("发生相关事件路径：{}", path);
+        log.info("发生相关事件路径：{} username:{} password:{}", path, username, password);
         rotate( username, password);
     }
 

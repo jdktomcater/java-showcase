@@ -51,6 +51,7 @@ public class SwitchableDataSource extends AbstractDataSource {
     @PreDestroy
     public synchronized void shutdown() {
         if (current != null && !current.isClosed()) {
+            // TODO 日志
             current.close();
         }
     }
