@@ -128,7 +128,7 @@ public class MultiDbLeaseListener implements LeaseListener {
                     return;
                 }
             }
-            log.info("旧数据源活跃连接已清零，开始关闭连接池。");
+            log.info("旧数据源：{}活跃连接已清零，开始关闭连接池。", old.getUsername());
             old.close();
         };
         if (taskExecutor != null) {
