@@ -4,6 +4,7 @@ import com.jdktomcat.showcase.legacy.system.vault.verify.listener.MultiDbLeaseLi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -24,8 +25,8 @@ public class VaultConfig {
     @Value("${spring.cloud.vault.databases.typayv2slave.role}")
     private String typayv2slaveRole;
 
-    @Bean
-    public TaskScheduler vaultTaskScheduler() {
+    @Bean(name = "vaultLeaseTaskScheduler")
+    public TaskScheduler vaultLeaseTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(5);
         scheduler.setThreadNamePrefix("vault-lease-");
@@ -34,8 +35,9 @@ public class VaultConfig {
     }
 
     @Bean(destroyMethod = "destroy")
-    public SecretLeaseContainer leaseContainer(VaultOperations operations, TaskScheduler vaultTaskScheduler) {
-        SecretLeaseContainer container = new SecretLeaseContainer(operations, vaultTaskScheduler);
+    public SecretLeaseContainer leaseContainer(VaultOperations operations,
+                                               @Qualifier("vaultLeaseTaskScheduler") TaskScheduler vaultLeaseTaskScheduler) {
+        SecretLeaseContainer container = new SecretLeaseContainer(operations, vaultLeaseTaskScheduler);
         container.addLeaseListener(multiDbLeaseListener);
         // 必须添加 RequestedSecret，否则容器不会向 Vault 请求凭证，也就不会触发任何事件
         container.requestRotatingSecret("database/creds/" + typayv2slaveRole);

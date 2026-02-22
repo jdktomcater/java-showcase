@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Hello world!
  */
-@MapperScan(value = "com.jdktomcat.showcase.legacy.system.vault.verify.mapper")
 @SpringBootApplication
 public class VaultVerifyApplication {
     public static void main(String[] args) {
