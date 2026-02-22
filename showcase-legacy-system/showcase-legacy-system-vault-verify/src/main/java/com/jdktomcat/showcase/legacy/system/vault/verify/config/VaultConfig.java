@@ -21,8 +21,8 @@ public class VaultConfig {
     @Autowired
     private MultiDbLeaseListener multiDbLeaseListener;
 
-    @Value("${spring.cloud.vault.databases.matchuppay.role}")
-    private String matchup_payRole;
+    @Value("${spring.cloud.vault.databases.typayv2slave.role}")
+    private String typayv2slaveRole;
 
     @Bean
     public TaskScheduler vaultTaskScheduler() {
@@ -38,7 +38,7 @@ public class VaultConfig {
         SecretLeaseContainer container = new SecretLeaseContainer(operations, vaultTaskScheduler);
         container.addLeaseListener(multiDbLeaseListener);
         // 必须添加 RequestedSecret，否则容器不会向 Vault 请求凭证，也就不会触发任何事件
-        container.requestRotatingSecret("database/creds/" + matchup_payRole);
+        container.requestRotatingSecret("database/creds/" + typayv2slaveRole);
         container.afterPropertiesSet();
         container.start();
         return container;
