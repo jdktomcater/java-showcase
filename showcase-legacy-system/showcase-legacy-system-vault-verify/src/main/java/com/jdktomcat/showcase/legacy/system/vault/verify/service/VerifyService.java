@@ -36,9 +36,8 @@ public class VerifyService {
                 String ruleName = "rule_name_" + System.currentTimeMillis();
                 int ping = healthMapper.ping();
                 String user = healthMapper.currentUser();
-                int check = healthMapper.checkUser(user);
                 int update = healthMapper.update(id, ruleName);
-                log.info("user:{} exist:{} ping:{} update:{}", user, check, ping, update);
+                log.info("user:{} ping:{} update:{}", user, ping, update);
                 TimeUnit.MILLISECONDS.sleep(300);
             }
         }
