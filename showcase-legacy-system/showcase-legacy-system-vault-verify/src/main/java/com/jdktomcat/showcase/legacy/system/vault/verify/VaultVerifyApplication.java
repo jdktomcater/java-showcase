@@ -3,15 +3,14 @@ package com.jdktomcat.showcase.legacy.system.vault.verify;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Hello world!
  */
 @MapperScan(value = "com.jdktomcat.showcase.legacy.system.vault.verify.mapper")
 @SpringBootApplication
-public class LegacySystemVaultVerifyApplication {
+public class VaultVerifyApplication {
     public static void main(String[] args) {
-        SpringApplication.run(LegacySystemVaultVerifyApplication.class, args);
+        SpringApplication.run(VaultVerifyApplication.class, args);
     }
 }
