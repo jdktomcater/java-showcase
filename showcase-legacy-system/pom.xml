@@ -12,6 +12,7 @@
     <module>showcase-legacy-system-vault-redis</module>
     <module>showcase-legacy-system-vault-tidb</module>
     <module>showcase-legacy-system-vault-ob</module>
+    <module>showcase-legacy-system-vault-verify</module>
   </modules>
   <properties>
     <java.version>1.8</java.version>
