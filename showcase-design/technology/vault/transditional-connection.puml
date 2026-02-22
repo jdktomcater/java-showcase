@@ -1,0 +1,52 @@
+@startuml
+title Spring 事务与 Connection 交互时序图（DataSourceTransactionManager）
+
+actor Client
+participant "AOP Proxy" as Proxy
+participant "TransactionInterceptor" as TI
+participant "DataSourceTransactionManager" as TM
+participant "TransactionSynchronizationManager\n(ThreadLocal)" as TSM
+participant "DataSource" as DS
+participant "Connection" as Conn
+participant "DAO / JdbcTemplate" as DAO
+database "Database" as DB
+
+Client -> Proxy : 调用 @Transactional 方法
+Proxy -> TI : invoke()
+
+TI -> TM : getTransaction()
+
+alt 当前线程无事务
+  TM -> DS : getConnection()
+  DS --> TM : Conn
+  TM -> Conn : setAutoCommit(false)
+  TM -> Conn : setTransactionIsolation(...) [可选]
+  TM -> Conn : setReadOnly(true/false) [可选]
+  TM -> TSM : bindResource(DS, Conn)\n绑定到当前线程
+else 当前线程已有事务
+  TM -> TSM : 复用已绑定 Conn
+end
+
+TI -> DAO : 执行业务 SQL
+DAO -> TSM : 按 DS 查找线程绑定 Conn
+TSM --> DAO : 返回同一个 Conn
+DAO -> Conn : prepare/execute SQL
+Conn -> DB : 执行语句
+DB --> Conn : 返回结果
+Conn --> DAO : 返回结果
+DAO --> TI : 返回
+
+alt 方法正常结束
+  TI -> TM : commit()
+  TM -> Conn : commit()
+else 方法抛异常且命中回滚规则
+  TI -> TM : rollback()
+  TM -> Conn : rollback()
+end
+
+TM -> TSM : unbindResource(DS)
+TM -> Conn : reset(readOnly/isolation/autocommit)
+TM -> Conn : close() / 归还连接池
+TI --> Proxy : 返回/抛异常
+Proxy --> Client : 返回/抛异常
+@enduml

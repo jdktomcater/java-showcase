@@ -1,0 +1,51 @@
+@startuml
+title Spring @Transactional 时序图（典型成功/异常路径）
+
+actor Client
+participant "Service Proxy\n(AOP Proxy)" as Proxy
+participant "TransactionInterceptor" as TI
+participant "PlatformTransactionManager" as TM
+participant "Target Service Method" as Target
+database "DB" as DB
+
+Client -> Proxy : 调用 serviceMethod()
+Proxy -> TI : invoke(method, args)
+
+TI -> TI : 解析@Transactional属性\n(传播行为/隔离级别/回滚规则)
+TI -> TM : getTransaction(txAttr)
+
+alt 已有事务(如 REQUIRED)
+  TM --> TI : 返回现有事务状态
+else 无事务
+  TM -> TM : doBegin()\n开启新事务
+  TM --> TI : 返回新事务状态
+end
+
+TI -> Target : 调用目标方法
+Target -> DB : 执行业务SQL
+
+alt 正常返回
+  DB --> Target : 返回结果
+  Target --> TI : return result
+  TI -> TM : commit(status)
+  TM -> TM : doCommit()
+  TM --> TI : commit完成
+  TI --> Proxy : return result
+  Proxy --> Client : return result
+else 抛出异常
+  DB --> Target : 抛异常/返回错误
+  Target --> TI : throw ex
+  TI -> TI : 判断是否回滚\n(默认RuntimeException/Error回滚)
+  alt 需要回滚
+    TI -> TM : rollback(status)
+    TM -> TM : doRollback()
+    TM --> TI : rollback完成
+  else 不回滚
+    TI -> TM : commit(status)
+    TM -> TM : doCommit()
+    TM --> TI : commit完成
+  end
+  TI --> Proxy : throw ex
+  Proxy --> Client : throw ex
+end
+@enduml

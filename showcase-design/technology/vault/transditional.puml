@@ -1,0 +1,39 @@
+@startuml
+title Spring @Transactional 工作流程（简化版）
+
+start
+
+:调用 Service 方法（标注 @Transactional）;
+:进入 AOP 代理(TransactionInterceptor);
+:读取事务属性\n(传播行为/隔离级别/超时/只读/回滚规则);
+
+if (当前线程已有事务?) then (是)
+  if (传播行为=REQUIRED/ SUPPORTS / MANDATORY) then (加入现有事务)
+    :参与当前事务;
+  else (REQUIRES_NEW 等)
+    :挂起当前事务并创建新事务;
+  endif
+else (否)
+  if (传播行为允许创建事务?) then (是)
+    :通过 PlatformTransactionManager 开启事务;
+  else (否)
+    :无事务执行;
+  endif
+endif
+
+:执行目标业务方法;
+
+if (方法抛出异常?) then (是)
+  :根据回滚规则判断\n(默认 RuntimeException/Error 回滚);
+  if (需要回滚?) then (是)
+    :TransactionManager.rollback();
+  else (否)
+    :TransactionManager.commit();
+  endif
+else (否)
+  :TransactionManager.commit();
+endif
+
+:恢复被挂起事务（若有）;
+stop
+@enduml
