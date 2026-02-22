@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -38,8 +37,8 @@ public class VerifyService {
                 String user = healthMapper.currentUser();
                 int update = healthMapper.update(id, ruleName);
                 log.info("user:{} ping:{} update:{}", user, ping, update);
-                TimeUnit.MILLISECONDS.sleep(300);
             }
+            TimeUnit.MILLISECONDS.sleep(3000);
         }
     }
 }
