@@ -36,4 +36,9 @@ public class HealthController {
     public void verify() throws InterruptedException {
         verifyService.tranVerify();
     }
+
+    @GetMapping("/exception")
+    public void exception() throws InterruptedException {
+        verifyService.exceptionVerify();
+    }
 }
