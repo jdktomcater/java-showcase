@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -44,11 +45,17 @@ public class MultiDbLeaseListener implements LeaseListener {
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
+    private final AtomicInteger atomicInteger = new AtomicInteger(0);
+
     @Override
     public void onLeaseEvent(@NonNull SecretLeaseEvent event) {
         // TODO 如何兜底vault服务器异常场景（随机返回）
         if (shuttingDown.get()) {
             log.info("应用正在关闭，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
+            return;
+        }
+        if(atomicInteger.incrementAndGet() % 3 == 0){
+            log.warn("人为跳过更新事件！");
             return;
         }
         if (!(event instanceof SecretLeaseCreatedEvent)) {
@@ -61,16 +68,16 @@ public class MultiDbLeaseListener implements LeaseListener {
         String username = (String) data.get("username");
         String password = (String) data.get("password");
         log.info("发生相关事件路径：{} username:{} password:{}", path, username, password);
-        rotate( username, password);
+        rotate(username, password);
     }
 
     /**
      * 转换
      *
-     * @param user            新用户名
-     * @param pwd             新密码
+     * @param user 新用户名
+     * @param pwd  新密码
      */
-    private synchronized void rotate( String user, String pwd) {
+    private synchronized void rotate(String user, String pwd) {
         DruidDataSource old = slaveTypayv2DataSourceWrapper.getCurrent();
         if (Objects.equals(old.getUsername(), user) && Objects.equals(old.getPassword(), pwd)) {
             log.warn("数据库连接用户名及密码未发生变化，不做切换！");
@@ -96,7 +103,7 @@ public class MultiDbLeaseListener implements LeaseListener {
     /**
      * 校验数据源
      *
-     * @param dataSource  数据源
+     * @param dataSource 数据源
      * @throws SQLException SQL异常
      */
     private void validateConnection(DruidDataSource dataSource) throws SQLException {
