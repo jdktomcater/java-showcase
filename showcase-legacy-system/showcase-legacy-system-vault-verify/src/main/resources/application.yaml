@@ -1,0 +1,89 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: showcase-vault-verify
+  config:
+    import: "optional:vault://"
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      typayv2slave:
+        url: "jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
+      initial-size: 2
+      min-idle: 2
+      max-active: 30
+      max-wait: 5000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 30000
+      validation-query: "SELECT 1"
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        login-username: admin
+        login-password: admin
+      web-stat-filter:
+        enabled: true
+      filter:
+        stat:
+          enabled: true
+
+  cloud:
+    vault:
+      enabled: true
+      fail-fast: true
+      authentication: APPROLE
+      uri: https://txdev-vault.qwasn.com
+      kv:
+        enabled: false
+      app-role:
+        role: tx-fat-role-verify
+        role-id: 46203305-d050-ddcd-98e9-c3dda7c20313
+        secret-id: 4cad55aa-545f-6b26-2e6e-ee05b43ae60f
+      read-timeout: 15000
+      config:
+        lifecycle:
+          enabled: true
+          min-renewal: 3s
+          lease-endpoints: leases
+      databases:
+        typayv2slave:
+          enabled: true
+          backend: database
+          role: tx-typayv2slave-role-verify
+          username-property: spring.datasource.druid.typayv2slave.username
+          password-property: spring.datasource.druid.typayv2slave.password
+
+management:
+  server:
+    port: 18000
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - pause
+          - restart
+  endpoint:
+    pause:
+      enabled: true
+    restart:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.vault: debug
+    org.springframework.vault: debug
+  config: classpath:logback.xml
+  file:
+    name: /data/logs/showcase/showcase-vault-verify.log
+
+verify:
+  target:
+    ids: "30072,30073,30074,30075,30076,30077,30078,30079"

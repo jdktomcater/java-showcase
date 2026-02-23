@@ -52,6 +52,17 @@ public class VerifyService {
      *
      * @throws InterruptedException exception
      */
+    public String expand(long holdMs) throws InterruptedException {
+        String user = healthMapper.currentUser();
+        TimeUnit.MILLISECONDS.sleep(holdMs);
+        return user;
+    }
+
+    /**
+     * verify long transaction
+     *
+     * @throws InterruptedException exception
+     */
     @Transactional(rollbackFor = Exception.class)
     public void exceptionVerify() throws InterruptedException {
         String[] targetIds = verifyTargetIds.split(",");

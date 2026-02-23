@@ -3,6 +3,7 @@ package com.jdktomcat.showcase.legacy.system.vault.verify.controller;
 import com.jdktomcat.showcase.legacy.system.vault.verify.mapper.HealthMapper;
 import com.jdktomcat.showcase.legacy.system.vault.verify.service.VerifyService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -40,5 +41,10 @@ public class HealthController {
     @GetMapping("/exception")
     public void exception() throws InterruptedException {
         verifyService.exceptionVerify();
+    }
+
+    @GetMapping("/expand")
+    public String expand(@RequestParam(defaultValue = "300") long holdMs) throws InterruptedException {
+        return verifyService.expand(holdMs);
     }
 }
