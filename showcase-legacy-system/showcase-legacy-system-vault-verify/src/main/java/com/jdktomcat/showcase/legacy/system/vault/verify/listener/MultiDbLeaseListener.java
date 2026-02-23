@@ -145,6 +145,6 @@ public class MultiDbLeaseListener implements LeaseListener {
     @PreDestroy
     public void onShutdown() {
         shuttingDown.set(true);
-        log.info("MultiDbLeaseListener 开始关闭，不再处理新的Vault租约事件。");
+        log.info("触发优雅下线:MultiDbLeaseListener 开始关闭，不再处理新的Vault租约事件。");
     }
 }

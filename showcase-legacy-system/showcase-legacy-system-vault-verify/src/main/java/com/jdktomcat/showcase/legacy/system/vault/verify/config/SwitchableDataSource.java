@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.legacy.system.vault.verify.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
 import javax.annotation.PreDestroy;
@@ -9,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 
+@Slf4j
 @Getter
 public class SwitchableDataSource extends AbstractDataSource {
 
@@ -50,8 +52,8 @@ public class SwitchableDataSource extends AbstractDataSource {
 
     @PreDestroy
     public synchronized void shutdown() {
+        log.info("触发优雅下线: SwitchableDataSource shutdown!");
         if (current != null && !current.isClosed()) {
-            // TODO 日志
             current.close();
         }
     }
