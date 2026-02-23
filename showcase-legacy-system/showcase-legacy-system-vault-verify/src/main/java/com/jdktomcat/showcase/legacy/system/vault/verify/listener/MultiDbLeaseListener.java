@@ -54,7 +54,8 @@ public class MultiDbLeaseListener implements LeaseListener {
             return;
         }
         // 如何兜底vault服务器异常场景（随机返回）
-        if(atomicInteger.incrementAndGet() % 3 == 0){
+        int target = atomicInteger.incrementAndGet();
+        if (target % 3 == 0 || target % 3 == 1) {
             log.warn("人为跳过更新事件！");
             return;
         }
