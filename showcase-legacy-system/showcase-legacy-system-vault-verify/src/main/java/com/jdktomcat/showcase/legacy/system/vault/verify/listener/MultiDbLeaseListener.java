@@ -45,7 +45,7 @@ public class MultiDbLeaseListener implements LeaseListener {
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
-    private final AtomicInteger atomicInteger = new AtomicInteger(0);
+//    private final AtomicInteger atomicInteger = new AtomicInteger(0);
 
     @Override
     public void onLeaseEvent(@NonNull SecretLeaseEvent event) {
@@ -54,11 +54,11 @@ public class MultiDbLeaseListener implements LeaseListener {
             return;
         }
         // 如何兜底vault服务器异常场景（随机返回）
-        int target = atomicInteger.incrementAndGet();
-        if (target % 3 == 0 || target % 3 == 1) {
-            log.warn("人为跳过更新事件！");
-            return;
-        }
+//        int target = atomicInteger.incrementAndGet();
+//        if (target % 3 == 0 || target % 3 == 1) {
+//            log.warn("人为跳过更新事件！");
+//            return;
+//        }
         if (!(event instanceof SecretLeaseCreatedEvent)) {
             log.info("收到Vault租约事件，类型={}, source={}", event.getClass().getSimpleName(), event.getSource());
             return;
