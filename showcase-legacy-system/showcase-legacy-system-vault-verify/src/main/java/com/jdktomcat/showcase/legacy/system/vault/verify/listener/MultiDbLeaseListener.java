@@ -49,11 +49,11 @@ public class MultiDbLeaseListener implements LeaseListener {
 
     @Override
     public void onLeaseEvent(@NonNull SecretLeaseEvent event) {
-        // TODO 如何兜底vault服务器异常场景（随机返回）
         if (shuttingDown.get()) {
             log.info("应用正在关闭，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
             return;
         }
+        // 如何兜底vault服务器异常场景（随机返回）
         if(atomicInteger.incrementAndGet() % 3 == 0){
             log.warn("人为跳过更新事件！");
             return;
