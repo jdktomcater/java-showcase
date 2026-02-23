@@ -14,18 +14,19 @@ spring:
       typayv2slave:
         url: "jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
       initial-size: 2
-      min-idle: 2
-      max-active: 30
-      max-wait: 5000
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      max-evictable-idle-time-millis: 30000
-      validation-query: "SELECT 1"
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
+      minIdle: 2
+      maxActive: 30
+      maxWait: 5000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      maxEvictableIdleTimeMillis: 500000
+      validationQuery: "SELECT 1"
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
       stat-view-servlet:
         enabled: true
+        url-pattern: /druid/*
         login-username: admin
         login-password: admin
       web-stat-filter:
