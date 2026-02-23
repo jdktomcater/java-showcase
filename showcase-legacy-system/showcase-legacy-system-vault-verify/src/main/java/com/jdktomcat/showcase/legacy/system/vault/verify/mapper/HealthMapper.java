@@ -11,12 +11,12 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface HealthMapper {
 
-    @Select("select count(0) from typayv2.t_bankcard_agent")
+    @Select("select count(0) from pay.agent_info")
     int ping();
 
     @Select("select current_user()")
     String currentUser();
 
-    @Update("UPDATE typayv2.fk_rule_operate_log SET rule_name = #{ruleName} WHERE id = #{id}")
+    @Update("UPDATE pay.rule_operate_log SET rule_name = #{ruleName} WHERE id = #{id}")
     int update(@Param("id") Long id, @Param("ruleName") String ruleName);
 }
