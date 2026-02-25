@@ -11,6 +11,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.vault.core.VaultOperations;
 import org.springframework.vault.core.lease.SecretLeaseContainer;
+import org.springframework.vault.support.LeaseStrategy;
 
 /**
  * vault 相关配置
@@ -41,6 +42,8 @@ public class VaultConfig {
         container.addLeaseListener(multiDbLeaseListener);
         // 必须添加 RequestedSecret，否则容器不会向 Vault 请求凭证，也就不会触发任何事件
         container.requestRotatingSecret("database/creds/" + typayv2slaveRole);
+        // 设置网络相关策略 网络/I/O 错误时保留租约并继续重试，网络恢复后自动恢复续期
+        container.setLeaseStrategy(LeaseStrategy.retainOnError());
         container.afterPropertiesSet();
         container.start();
         return container;

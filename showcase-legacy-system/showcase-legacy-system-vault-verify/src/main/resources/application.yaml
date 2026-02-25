@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
       typayv2slave:
-        url: "jdbc:mysql://127.0.0.1:3306/pay?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
+        url: "jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
       initial-size: 2
       minIdle: 2
       maxActive: 30
