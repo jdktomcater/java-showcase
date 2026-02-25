@@ -20,7 +20,7 @@
         <includeCallerData>true</includeCallerData>
         <appender-ref ref="STDOUT" />
     </appender>
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="async"/>
     </root>
 

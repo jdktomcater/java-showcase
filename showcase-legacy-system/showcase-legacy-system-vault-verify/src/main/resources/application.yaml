@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
       typayv2slave:
-        url: "jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
+        url: "jdbc:mysql://127.0.0.1:3306/pay?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8"
       initial-size: 2
       minIdle: 2
       maxActive: 30
@@ -40,7 +40,7 @@ spring:
       enabled: true
       fail-fast: true
       authentication: APPROLE
-      uri: https://txdev-vault.qwasn.com
+      uri: https://127.0.0.1:8200
       kv:
         enabled: false
       app-role:
@@ -57,7 +57,7 @@ spring:
         typayv2slave:
           enabled: true
           backend: database
-          role: tx-typayv2slave-role-verify
+          role: verify-role
           username-property: spring.datasource.druid.typayv2slave.username
           password-property: spring.datasource.druid.typayv2slave.password
 
