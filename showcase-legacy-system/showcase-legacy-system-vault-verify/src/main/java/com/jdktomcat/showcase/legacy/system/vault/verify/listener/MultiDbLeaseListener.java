@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -54,7 +55,7 @@ public class MultiDbLeaseListener implements LeaseListener {
         }
         // 如何兜底vault服务器异常场景（随机返回）
 //        int target = atomicInteger.incrementAndGet();
-//        if (target % 3 == 0 || target % 3 == 1) {
+//        if (target % 3 == 0 || target % 3 == 1 || target % 3 == 2) {
 //            log.warn("人为跳过更新事件！");
 //            return;
 //        }

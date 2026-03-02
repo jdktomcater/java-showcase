@@ -54,6 +54,7 @@ public class SwitchableDataSource extends AbstractDataSource {
     public synchronized void shutdown() {
         log.info("触发优雅下线: SwitchableDataSource shutdown!");
         if (current != null && !current.isClosed()) {
+            // TODO 优雅关闭，让数据连接里活跃对象执行完之后再关闭。
             current.close();
         }
     }
