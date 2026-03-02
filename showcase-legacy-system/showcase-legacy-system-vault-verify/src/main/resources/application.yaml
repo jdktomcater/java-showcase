@@ -47,12 +47,12 @@ spring:
         role: tx-fat-role-verify
         role-id: 46203305-d050-ddcd-98e9-c3dda7c20313
         secret-id: 4cad55aa-545f-6b26-2e6e-ee05b43ae60f
-      read-timeout: 15000
       config:
         lifecycle:
           enabled: true
-          min-renewal: 3s
+          min-renewal: 5s
           lease-endpoints: leases
+          expiry-threshold: 50s
       databases:
         typayv2slave:
           enabled: true

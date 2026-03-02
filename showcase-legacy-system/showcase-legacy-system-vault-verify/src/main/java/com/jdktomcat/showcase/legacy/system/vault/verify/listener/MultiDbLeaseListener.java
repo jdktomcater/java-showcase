@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -40,7 +39,7 @@ public class MultiDbLeaseListener implements LeaseListener {
     @Value("${vault.datasource.close-check-interval-ms:5000}")
     private long closeCheckIntervalMs;
 
-    @Value("${vault.datasource.close-warn-after-ms:300000}")
+    @Value("${vault.datasource.close-warn-after-ms:10000}")
     private long closeWarnAfterMs;
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
@@ -130,16 +129,24 @@ public class MultiDbLeaseListener implements LeaseListener {
                     waitedMs += closeCheckIntervalMs;
                     if (!warned && waitedMs >= closeWarnAfterMs) {
                         warned = true;
-                        log.warn("旧数据源仍有活跃连接，延迟关闭。activeCount={}, waitedMs={}", old.getActiveCount(), waitedMs);
+                        log.warn("旧数据源:{}仍有活跃连接，延迟关闭。activeCount={}, waitedMs={}", old.getUsername(), old.getActiveCount(), waitedMs);
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    log.warn("旧数据源关闭等待被中断，activeCount={}", old.getActiveCount());
+                    log.warn("旧数据源:{} 关闭等待被中断，activeCount={}", old.getUsername(),old.getActiveCount());
                     return;
                 }
             }
             log.info("旧数据源：{}活跃连接已清零，开始关闭连接池。", old.getUsername());
-            old.close();
+            try {
+                old.close();
+            } catch (Exception e) {
+                if (e.getCause() instanceof javax.management.InstanceNotFoundException || e.getCause() != null && e.getCause().getClass().getName().contains("InstanceNotFoundException")) {
+                    log.info("关闭旧数据源时JMX MBean已不存在，忽略。old={}", old.getName());
+                } else {
+                    log.warn("关闭旧数据源异常", e);
+                }
+            }
         };
         if (taskExecutor != null) {
             taskExecutor.execute(task);

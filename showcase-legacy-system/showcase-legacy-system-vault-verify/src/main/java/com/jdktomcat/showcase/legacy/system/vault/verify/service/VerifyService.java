@@ -41,7 +41,7 @@ public class VerifyService {
                 int ping = healthMapper.ping();
                 String user = healthMapper.currentUser();
                 int update = healthMapper.update(id, ruleName);
-                log.info("user:{} ping:{} update:{}", user, ping, update);
+                log.info("user:{} ping:{} update:{} id:{} newRuleName:{}", user, ping, update, id, ruleName);
             }
             TimeUnit.MILLISECONDS.sleep(3000);
         }
@@ -74,10 +74,10 @@ public class VerifyService {
                 int ping = healthMapper.ping();
                 String user = healthMapper.currentUser();
                 int update = healthMapper.update(id, ruleName);
-                log.info("user:{} ping:{} update:{}", user, ping, update);
+                log.info("user:{} ping:{} update:{} id:{} newRuleName:{}", user, ping, update, id, ruleName);
             }
             TimeUnit.MILLISECONDS.sleep(3000);
-            if (System.currentTimeMillis() - start < TARGET_DURATION / 2) {
+            if (System.currentTimeMillis() - start > TARGET_DURATION / 2) {
                 throw new RuntimeException("Exception!");
             }
         }

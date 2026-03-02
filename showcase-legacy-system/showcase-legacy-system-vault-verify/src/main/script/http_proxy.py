@@ -25,6 +25,22 @@ class H(BaseHTTPRequestHandler):
         headers = {k: v for k, v in self.headers.items() if k.lower() != "host"}
         r = requests.request(self.command, url, data=body, headers=headers, timeout=10, verify=True)
 
+        # 打印 HTTP 响应结果
+        print(f"\n--- Request: {self.command} {self.path} ---")
+        print(f"Response Status: {r.status_code} {r.reason}")
+        print("Response Headers:")
+        for k, v in r.headers.items():
+            print(f"  {k}: {v}")
+        print("Response Body:")
+        try:
+            body_str = r.content.decode("utf-8")
+            if len(body_str) > 2000:
+                print(body_str[:2000] + f"\n... [truncated, total {len(body_str)} chars]")
+            else:
+                print(body_str)
+        except UnicodeDecodeError:
+            print(f"  [binary content, {len(r.content)} bytes]")
+        print("---\n")
         self.send_response(r.status_code)
         for k, v in r.headers.items():
             if k.lower() not in ("transfer-encoding", "content-encoding", "connection"):
