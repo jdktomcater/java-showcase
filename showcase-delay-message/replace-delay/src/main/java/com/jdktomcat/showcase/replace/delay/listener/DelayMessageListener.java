@@ -74,25 +74,18 @@ public class DelayMessageListener extends BaseConsumerListener {
             String[] params = entry.split(KEY_VALUE_SPLIT);
             long pttl = redisComponent.pttl(params[0]);
             log.info("原先redis业务key：{}对应pttl：{}", params[0], pttl);
-            if(pttl > delayConfig.getTtlDifferenceTime()){
-                log.warn("标签：{} 延迟对应的标识：{}对应的延迟业务发生了更新变化，延迟时间：{}，设置时间间隔：{}，后续业务不做处理！", tag, params[0], pttl, delayConfig.getTtlDifferenceTime());
-                return;
-            }
             long total = messageWrapper.getTotalTimeout() * 1000L;
             long cost = System.currentTimeMillis() - messageWrapper.getCreateTime();
             log.info("延迟消息已经完成延迟，触发预设业务逻辑！预设延迟时间：{}ms 真实耗时：{}ms 误差：{}ms", total, cost, (cost - total));
             long count = redisComponent.incr(MATCH_INCR_KEY + params[0]);
             if (count == 1) {
                 redisComponent.expire(MATCH_INCR_KEY + params[0], 10);
-                switch (tag) {
-                    case DELAY_TAG_UEWF: {
-                        boolean del = redisComponent.del(params[0]);
-                        log.info("DelayMessageListener consume del:{} result:{}", params[0], del);
-                        break;
-                    }
-                    default:
-                        log.warn("该延迟消息tag:{}没有对应的处理逻辑！", tag);
-                        break;
+                if (tag.equals(DELAY_TAG_UEWF)) {
+
+                    boolean del = redisComponent.del(params[0]);
+                    log.info("DelayMessageListener consume del:{} result:{}", params[0], del);
+                } else {
+                    log.warn("该延迟消息tag:{}没有对应的处理逻辑！", tag);
                 }
             } else {
                 log.warn("订单状态驱动处理延迟：{}超时回调存在并发！", params[0]);

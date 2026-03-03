@@ -6,9 +6,9 @@ package com.jdktomcat.showcase.replace.delay.constant;
 public class ReplaceDelayConstant {
 
     /**
-     * 零钱支付前缀
+     * 会员锁版本号前缀
      */
-    public static final String UAMT_PREFIX = "UEWD_";
+    public static final String UEWF_VER_PREFIX = "UEWF_VER";
 
     /**
      * 会员锁前缀

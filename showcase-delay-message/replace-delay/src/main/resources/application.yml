@@ -30,4 +30,3 @@ rocketmq:
 
 order.state.delay.mq.enable: true
 order.state.delay.redis.enable: true
-order.state.delay.redis.ttl.time.difference: 500

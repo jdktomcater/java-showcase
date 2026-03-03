@@ -19,10 +19,4 @@ public class DelayConfig {
      */
     @Value("${order.state.delay.redis.enable:true}")
     private boolean enableDelayRedis;
-
-    /**
-     * 时间差
-     */
-    @Value("${order.state.delay.redis.ttl.time.difference:500}")
-    private Long ttlDifferenceTime;
 }
