@@ -13,15 +13,19 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class ParallelConfig {
 
+    /**
+     * parallelExecutor
+     *
+     * @return ThreadPoolExecutor
+     */
     @Bean
     public ExecutorService parallelExecutor() {
         return new ThreadPoolExecutor(
-                10,50,
+                10, 50,
                 5, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(100),
                 r -> new Thread(r, "parallelExecutor-thread"),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
-
 }
