@@ -31,6 +31,27 @@ public class ParallelController {
     }
 
     /**
+     * 调试用：返回本次请求的 taskCount 与服务器端耗时，便于与 JMeter 压测数据对照
+     */
+    @GetMapping("/serial/timed")
+    public TimedResponse serialTimed(@RequestParam(required = false) Integer count) {
+        List<Long> ids = toIds(count);
+        long start = System.currentTimeMillis();
+        List<String> result = parallelService.serial(ids);
+        long elapsedMs = System.currentTimeMillis() - start;
+        return new TimedResponse("serial", ids.size(), elapsedMs, result.size());
+    }
+
+    @GetMapping("/parallel/timed")
+    public TimedResponse parallelTimed(@RequestParam(required = false) Integer count) {
+        List<Long> ids = toIds(count);
+        long start = System.currentTimeMillis();
+        List<String> result = parallelService.parallel(ids);
+        long elapsedMs = System.currentTimeMillis() - start;
+        return new TimedResponse("parallel", ids.size(), elapsedMs, result.size());
+    }
+
+    /**
      * 性能对比基准：串行 vs 并行，返回耗时与提升倍数
      *
      * @param count 任务数量，默认 10
@@ -70,6 +91,26 @@ public class ParallelController {
             this.serialMs = serialMs;
             this.parallelMs = parallelMs;
             this.improvement = improvement;
+        }
+    }
+
+    /** 带耗时的响应，便于与 JMeter 对照 */
+    public static class TimedResponse {
+        public final String mode;
+        public final int taskCount;
+        public final long serverMs;
+        public final int resultSize;
+        /** 理论耗时（串行=taskCount×100ms，并行≈100ms） */
+        public final String expectedNote;
+
+        public TimedResponse(String mode, int taskCount, long serverMs, int resultSize) {
+            this.mode = mode;
+            this.taskCount = taskCount;
+            this.serverMs = serverMs;
+            this.resultSize = resultSize;
+            this.expectedNote = "serial".equals(mode)
+                    ? taskCount + "×100ms≈" + (taskCount * 100) + "ms"
+                    : "parallel≈100-200ms";
         }
     }
 }

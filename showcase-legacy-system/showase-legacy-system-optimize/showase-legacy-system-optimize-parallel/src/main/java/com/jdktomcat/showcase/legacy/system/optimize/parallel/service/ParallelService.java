@@ -2,9 +2,12 @@ package com.jdktomcat.showcase.legacy.system.optimize.parallel.service;
 
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -13,6 +16,12 @@ public class ParallelService {
 
     /** 模拟单次任务耗时（毫秒），如 RPC/DB 调用 */
     private static final long TASK_LATENCY_MS = 100;
+
+    /**
+     * 专用线程池：避免与 ForkJoinPool.commonPool 竞争。
+     * 压测时多请求并发会各自提交 N 个任务，commonPool 易饱和导致并行反而更慢。
+     */
+    private final ExecutorService parallelExecutor = Executors.newFixedThreadPool(50);
 
     /**
      * 模拟耗时任务（如远程调用、数据库查询）
@@ -58,7 +67,7 @@ public class ParallelService {
             ids = defaultIds();
         }
         List<CompletableFuture<String>> futures = ids.stream()
-                .map(id -> CompletableFuture.supplyAsync(() -> simulateTask(id)))
+                .map(id -> CompletableFuture.supplyAsync(() -> simulateTask(id), parallelExecutor))
                 .collect(Collectors.toList());
         return futures.stream()
                 .map(CompletableFuture::join)
@@ -67,5 +76,10 @@ public class ParallelService {
 
     private List<Long> defaultIds() {
         return LongStream.rangeClosed(1, 10).boxed().collect(Collectors.toList());
+    }
+
+    @PreDestroy
+    void shutdown() {
+        parallelExecutor.shutdown();
     }
 }
