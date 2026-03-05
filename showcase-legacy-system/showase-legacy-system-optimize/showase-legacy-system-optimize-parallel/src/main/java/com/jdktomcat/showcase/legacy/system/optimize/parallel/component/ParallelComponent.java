@@ -42,9 +42,7 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
-        return items.stream()
-                .map(mapper)
-                .collect(Collectors.toList());
+        return items.stream().map(mapper).collect(Collectors.toList());
     }
 
     /**
@@ -55,12 +53,8 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致
      */
     public <T, R> List<R> executeParallel(List<T> items, Function<T, R> mapper) {
-        List<CompletableFuture<R>> futures = items.stream()
-                .map(item -> CompletableFuture.supplyAsync(() -> mapper.apply(item), executor))
-                .collect(Collectors.toList());
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
+        List<CompletableFuture<R>> futures = items.stream().map(item -> CompletableFuture.supplyAsync(() -> mapper.apply(item), executor)).collect(Collectors.toList());
+        return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
     }
 
     @PreDestroy
