@@ -1,11 +1,14 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel;
 
+import com.jdktomcat.showcase.legacy.system.optimize.parallel.component.ParallelComponent;
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.service.ParallelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -21,7 +24,9 @@ class ParallelPerformanceTest {
 
     @BeforeEach
     void setUp() {
-        parallelService = new ParallelService();
+        ExecutorService executor = Executors.newFixedThreadPool(20);
+        ParallelComponent component = new ParallelComponent(executor);
+        parallelService = new ParallelService(component);
     }
 
     @Test
@@ -49,7 +54,6 @@ class ParallelPerformanceTest {
         parallelService.parallel(ids);
         long parallelMs = System.currentTimeMillis() - parallelStart;
 
-        // 串行 10 个 100ms 任务 ≈ 1000ms，并行 ≈ 100ms
         assertTrue(serialMs > parallelMs,
                 String.format("串行 %dms 应大于并行 %dms", serialMs, parallelMs));
 
