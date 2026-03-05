@@ -15,7 +15,7 @@ public class ParallelService {
      * @param ids target id list
      * @return result
      */
-    List<String> serial(List<Long> ids){
+    public List<String> serial(List<Long> ids){
         return null;
     }
 
@@ -25,7 +25,7 @@ public class ParallelService {
      * @param ids target id list
      * @return result
      */
-    List<String> parallel(List<Long> ids){
+    public List<String> parallel(List<Long> ids){
         return null;
     }
 }

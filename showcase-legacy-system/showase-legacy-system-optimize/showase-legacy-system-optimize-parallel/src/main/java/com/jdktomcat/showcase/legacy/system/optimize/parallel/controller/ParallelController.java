@@ -1,9 +1,10 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.controller;
 
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.service.ParallelService;
-import com.jdktomcat.showcase.legacy.system.vault.simple.mapper.HealthMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ParallelController {
@@ -15,12 +16,12 @@ public class ParallelController {
     }
 
     @GetMapping("/serial")
-    public String serial() {
-        return mapper.currentUser();
+    public List<String> serial() {
+        return parallelService.serial(null);
     }
 
     @GetMapping("/parallel")
-    public String serial() {
-        return mapper.currentUser();
+    public List<String> parallel() {
+        return parallelService.serial(null);
     }
 }
