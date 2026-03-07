@@ -23,6 +23,7 @@
     <mybatis.version>3.5.6</mybatis.version>
     <mybatis-plus.version>3.4.2</mybatis-plus.version>
     <mybatis-spring.version>2.0.6</mybatis-spring.version>
+    <skywalking.version>8.9.0</skywalking.version>
   </properties>
 
   <!-- 依赖声明 -->
@@ -63,6 +64,18 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
+    </dependency>
+
+    <!-- skywalking -->
+    <dependency>
+      <groupId>org.apache.skywalking</groupId>
+      <artifactId>apm-toolkit-logback-1.x</artifactId>
+      <version>${skywalking.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.skywalking</groupId>
+      <artifactId>apm-toolkit-trace</artifactId>
+      <version>${skywalking.version}</version>
     </dependency>
   </dependencies>
 

@@ -1,9 +1,11 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.component;
 
+import org.apache.skywalking.apm.toolkit.trace.SupplierWrapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
@@ -38,23 +40,31 @@ public class ParallelComponent {
      * 串行执行：按输入顺序逐个处理
      *
      * @param items  输入列表
-     * @param mapper 每个元素的处理逻辑
-     * @return 处理结果列表，顺序与 items 一致
+     * @param mapper 每个元素的处理逻辑，返回 null 时该结果会被过滤
+     * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
-        return items.stream().map(mapper).collect(Collectors.toList());
+        return items.stream()
+                .map(mapper)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
      * 并行执行：使用线程池并发处理，结果顺序与输入一致
      *
      * @param items  输入列表
-     * @param mapper 每个元素的处理逻辑（需线程安全）
-     * @return 处理结果列表，顺序与 items 一致
+     * @param mapper 每个元素的处理逻辑（需线程安全），返回 null 时该结果会被过滤
+     * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeParallel(List<T> items, Function<T, R> mapper) {
-        List<CompletableFuture<R>> futures = items.stream().map(item -> CompletableFuture.supplyAsync(() -> mapper.apply(item), executor)).collect(Collectors.toList());
-        return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        List<CompletableFuture<R>> futures = items.stream()
+                .map(item -> CompletableFuture.supplyAsync(SupplierWrapper.of(()-> mapper.apply(item)), executor))
+                .collect(Collectors.toList());
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @PreDestroy
