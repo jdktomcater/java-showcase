@@ -10,26 +10,13 @@ import java.util.stream.LongStream;
 @Service
 public class ParallelService {
 
-    /** 模拟单次任务耗时（毫秒），如 RPC/DB 调用 */
-    private static final long TASK_LATENCY_MS = 100;
-
     private final ParallelComponent parallelComponent;
 
-    public ParallelService(ParallelComponent parallelComponent) {
-        this.parallelComponent = parallelComponent;
-    }
+    private final BusinessService businessService;
 
-    /**
-     * 模拟耗时任务（如远程调用、数据库查询）
-     */
-    private String simulateTask(long id) {
-        try {
-            Thread.sleep(TASK_LATENCY_MS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-        return "result-" + id;
+    public ParallelService(ParallelComponent parallelComponent, BusinessService businessService) {
+        this.parallelComponent = parallelComponent;
+        this.businessService = businessService;
     }
 
     /**
@@ -37,7 +24,7 @@ public class ParallelService {
      */
     public List<String> serial(List<Long> ids) {
         List<Long> targetIds = ids != null && !ids.isEmpty() ? ids : defaultIds();
-        return parallelComponent.executeSerial(targetIds, this::simulateTask);
+        return parallelComponent.executeSerial(targetIds, businessService::doBusiness);
     }
 
     /**
@@ -45,7 +32,7 @@ public class ParallelService {
      */
     public List<String> parallel(List<Long> ids) {
         List<Long> targetIds = ids != null && !ids.isEmpty() ? ids : defaultIds();
-        return parallelComponent.executeParallel(targetIds, this::simulateTask);
+        return parallelComponent.executeParallel(targetIds, businessService::doBusiness);
     }
 
     private List<Long> defaultIds() {

@@ -9,4 +9,8 @@
     <packaging>pom</packaging>
     <artifactId>showase-legacy-system-optimize</artifactId>
 
+    <modules>
+        <module>showase-legacy-system-optimize-parallel</module>
+    </modules>
+
 </project>

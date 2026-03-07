@@ -1,6 +1,7 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel;
 
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.component.ParallelComponent;
+import com.jdktomcat.showcase.legacy.system.optimize.parallel.service.BusinessService;
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.service.ParallelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,8 @@ class ParallelPerformanceTest {
     void setUp() {
         ExecutorService executor = Executors.newFixedThreadPool(20);
         ParallelComponent component = new ParallelComponent(executor);
-        parallelService = new ParallelService(component);
+        BusinessService businessService = new BusinessService();
+        parallelService = new ParallelService(component, businessService);
     }
 
     @Test
