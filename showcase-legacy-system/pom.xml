@@ -7,10 +7,8 @@
   <packaging>pom</packaging>
   <name>showcase-legacy-system</name>
   <modules>
-
     <module>showcase-legacy-system-vault</module>
     <module>showase-legacy-system-optimize</module>
-    <module>showase-legacy-system-optimize/showase-legacy-system-optimize-parallel</module>
   </modules>
   <properties>
     <java.version>1.8</java.version>
