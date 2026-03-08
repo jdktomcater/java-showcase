@@ -8,10 +8,17 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Configuration
 public class ParallelConfig {
+
+    /**
+     * threadNumber
+     */
+    private final AtomicInteger threadNumber = new AtomicInteger(1);
+
 
     /**
      * parallelExecutor
@@ -24,7 +31,7 @@ public class ParallelConfig {
                 10, 50,
                 5, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(100),
-                r -> new Thread(r, "parallelExecutor-thread"),
+                r -> new Thread(r, "parallel-thread-" + threadNumber.getAndIncrement()),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }

@@ -20,6 +20,7 @@ public class BusinessService {
      */
     public String doBusiness(Long id) {
         try {
+            log.info("doBusiness id:{}", id);
             Thread.sleep(TASK_LATENCY_MS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
