@@ -1,12 +1,14 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.service;
 
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.component.ParallelComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+@Slf4j
 @Service
 public class ParallelService {
 
@@ -33,6 +35,17 @@ public class ParallelService {
     public List<String> parallel(List<Long> ids) {
         List<Long> targetIds = ids != null && !ids.isEmpty() ? ids : defaultIds();
         return parallelComponent.executeParallel(targetIds, businessService::doBusiness);
+    }
+
+    /**
+     * 并行处理：使用通用组件并发执行任务
+     */
+    public List<String> pe(List<Long> ids) {
+        List<Long> targetIds = ids != null && !ids.isEmpty() ? ids : defaultIds();
+        return parallelComponent.executeParallel(targetIds, businessService::doBusiness, (id,ex)->{
+            log.error("doBusiness occur exception:", ex);
+            return "result-fail-" + id;
+        });
     }
 
     private List<Long> defaultIds() {

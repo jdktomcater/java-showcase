@@ -30,6 +30,12 @@ public class ParallelController {
         return parallelService.parallel(ids);
     }
 
+    @GetMapping("/pe")
+    public List<String> pe(@RequestParam(required = false) Integer count) {
+        List<Long> ids = toIds(count);
+        return parallelService.pe(ids);
+    }
+
     /**
      * 调试用：返回本次请求的 taskCount 与服务器端耗时，便于与 JMeter 压测数据对照
      */

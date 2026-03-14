@@ -1,13 +1,19 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.component;
 
+import com.jdktomcat.showcase.legacy.system.optimize.parallel.config.ParallelConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.skywalking.apm.toolkit.trace.CallableWrapper;
 import org.apache.skywalking.apm.toolkit.trace.SupplierWrapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,13 +33,17 @@ import java.util.stream.Collectors;
  * }</pre>
  * </p>
  */
+@Slf4j
 @Component
 public class ParallelComponent {
 
     private final ExecutorService executor;
 
-    public ParallelComponent(ExecutorService parallelExecutor) {
+    private final ParallelConfig parallelConfig;
+
+    public ParallelComponent(ExecutorService parallelExecutor,ParallelConfig parallelConfig) {
         this.executor = parallelExecutor;
+        this.parallelConfig = parallelConfig;
     }
 
     /**
@@ -66,6 +76,48 @@ public class ParallelComponent {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 并行执行：使用线程池并发处理，结果顺序与输入一致。异常时由 exceptionMapper 处理并返回兜底结果。
+     *
+     * @param items           输入列表
+     * @param mapper          每个元素的处理逻辑（需线程安全）
+     * @param exceptionMapper 异常时的处理逻辑，入参为 (item, exception)，返回兜底结果（可返回 null 表示跳过）
+     * @return 处理结果列表，顺序与 items 一致
+     */
+    public <T, R> List<R> executeParallel(List<T> items, Function<T, R> mapper, BiFunction<T, Exception, R> exceptionMapper) {
+        if (items.isEmpty()) {
+            return Collections.emptyList();
+        }
+        long timeoutMs = parallelConfig.getTaskTimeout();
+        List<Pair<T, Future<R>>> futures = new ArrayList<>(items.size());
+        for (T item : items) {
+            final T it = item;
+            futures.add(Pair.of(item, executor.submit(new CallableWrapper<>(() -> mapper.apply(it)))));
+        }
+        List<R> results = new ArrayList<>(items.size());
+        futures.stream().parallel().forEach(result -> {
+            T item = result.getLeft();
+            Future<R> future = result.getRight();
+            try {
+                R res = future.get(timeoutMs, TimeUnit.MILLISECONDS);
+                if (res != null) {
+                    results.add(res);
+                }
+            } catch (Exception e) {
+                log.error("ParallelComponent task timeout or cancelled! item={}", item, e);
+                R fallback = exceptionMapper.apply(item, e);
+                if (fallback != null) {
+                    results.add(fallback);
+                }
+            }
+        });
+        return results;
+    }
+
+
+
+
 
     @PreDestroy
     public void shutdown() {

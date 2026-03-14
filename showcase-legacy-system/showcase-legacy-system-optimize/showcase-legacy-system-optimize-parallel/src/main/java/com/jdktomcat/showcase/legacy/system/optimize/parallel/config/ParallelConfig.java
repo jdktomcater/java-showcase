@@ -1,6 +1,8 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.config;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,12 +14,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Configuration
+@Data
 public class ParallelConfig {
 
     /**
      * threadNumber
      */
     private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+    /**
+     * 任务超时时间
+     */
+    @Value("${spring.task.pool.parallel.timeout:200}")
+    private int taskTimeout;
 
 
     /**
