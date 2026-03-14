@@ -3,15 +3,13 @@ package com.jdktomcat.showcase.legacy.system.optimize.parallel.component;
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.config.ParallelConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.skywalking.apm.toolkit.trace.CallableWrapper;
 import org.apache.skywalking.apm.toolkit.trace.SupplierWrapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -89,30 +87,32 @@ public class ParallelComponent {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
-        long timeoutMs = parallelConfig.getTaskTimeout();
-        List<Pair<T, Future<R>>> futures = new ArrayList<>(items.size());
-        for (T item : items) {
-            final T it = item;
-            futures.add(Pair.of(item, executor.submit(new CallableWrapper<>(() -> mapper.apply(it)))));
+        List<Triple<Integer, T, Future<R>>> futures = new ArrayList<>(items.size());
+        for (int i = 0; i < items.size(); i++) {
+            final T it = items.get(i);
+            futures.add(Triple.of(i, it, executor.submit(new CallableWrapper<>(() -> mapper.apply(it)))));
         }
-        List<R> results = new ArrayList<>(items.size());
+        List<Pair<Integer,R>> results = new ArrayList<>(items.size());
+        long timeoutMs = parallelConfig.getTaskTimeout();
         futures.stream().parallel().forEach(result -> {
-            T item = result.getLeft();
+            T item = result.getMiddle();
             Future<R> future = result.getRight();
+            R res;
             try {
-                R res = future.get(timeoutMs, TimeUnit.MILLISECONDS);
-                if (res != null) {
-                    results.add(res);
-                }
+                res = future.get(timeoutMs, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 log.error("ParallelComponent task timeout or cancelled! item={}", item, e);
-                R fallback = exceptionMapper.apply(item, e);
-                if (fallback != null) {
-                    results.add(fallback);
-                }
+                res = exceptionMapper.apply(item, e);
+            }
+            if (res != null) {
+                results.add(Pair.of(result.getLeft(), res));
             }
         });
-        return results;
+        // 保证原先顺序
+        results.sort(Comparator.comparing(Pair::getLeft));
+        List<R> finalResults = new ArrayList<>(results.size());
+        results.forEach(result -> finalResults.add(result.getRight()));
+        return finalResults;
     }
 
 
