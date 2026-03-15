@@ -110,9 +110,7 @@ public class ParallelComponent {
         });
         // 保证原先顺序
         results.sort(Comparator.comparing(Pair::getLeft));
-        List<R> finalResults = new ArrayList<>(results.size());
-        results.forEach(result -> finalResults.add(result.getRight()));
-        return finalResults;
+        return results.stream().map(Pair::getRight).collect(Collectors.toList());
     }
 
 
