@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class RetryEdgeAction implements EdgeAction<AnalysisTaskState> {
 
     @Override
-    public String apply(AnalysisTaskState analysisTaskState) throws Exception {
+    public String apply(AnalysisTaskState analysisTaskState) {
         return analysisTaskState.isNeedRetry() ? "retry" : "end";
     }
 }

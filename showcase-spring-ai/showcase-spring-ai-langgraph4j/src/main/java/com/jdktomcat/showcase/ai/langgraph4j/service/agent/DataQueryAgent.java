@@ -21,6 +21,7 @@ import java.util.Map;
 public class DataQueryAgent implements NodeAction<AnalysisTaskState> {
 
     private final JdbcTemplate jdbcTemplate;
+
     private final ChatModel chatModel;
 
     // 注入 Spring AI 的数据库工具（简化 SQL 执行）
@@ -49,7 +50,7 @@ public class DataQueryAgent implements NodeAction<AnalysisTaskState> {
         // 3. 调用数据库工具执行查询
 //        List<Map<String, Object>> resultList = jdbcTemplate.query(sql, new ColumnMapRowMapper());
         String rawData = JSONUtils.toJSONString(TestDataInitializer.orders);
-        log.info("查询原始数据：" + rawData);
+        log.info("查询原始数据：{}" , rawData);
 
         // 4. 返回更新后的状态
         return state.withRawData(rawData);
@@ -73,7 +74,7 @@ public class DataQueryAgent implements NodeAction<AnalysisTaskState> {
     }
 
     @Override
-    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) throws Exception {
+    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) {
         AnalysisTaskState result = this.query(analysisTaskState);
         return result.toMap();
     }

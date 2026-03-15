@@ -17,9 +17,14 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String category; // 商品品类（如 电子产品、服装、食品）
-    private LocalDate orderDate; // 订单日期
-    private BigDecimal amount; // 订单金额（元）
-    private Integer quantity; // 销售数量
-    private String region; // 销售区域（如 华北、华东）
+    // 商品品类（如 电子产品、服装、食品）
+    private String category;
+    // 订单日期
+    private LocalDate orderDate;
+    // 订单金额（元）
+    private BigDecimal amount;
+    // 销售数量
+    private Integer quantity;
+    // 销售区域（如 华北、华东）
+    private String region;
 }

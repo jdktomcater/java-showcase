@@ -38,7 +38,7 @@ public class ResultValidationAgent implements NodeAction<AnalysisTaskState> {
                 """, userQuery, reportDraft);
 
         String validationResult = chatModel.call(prompt);
-        log.info("报告校验结果：" + validationResult);
+        log.info("报告校验结果：{}" , validationResult);
 
         // 标记是否需要重试
         boolean needRetry = "不符合".equals(validationResult.trim());
@@ -49,7 +49,7 @@ public class ResultValidationAgent implements NodeAction<AnalysisTaskState> {
         }
     }
     @Override
-    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) throws Exception {
+    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) {
         AnalysisTaskState result = this.validate(analysisTaskState);
         return result.toMap();
     }

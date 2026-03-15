@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = MutilAgentApplication.class)
 // 测试结束后自动回滚事务，避免污染数据库
 @Transactional
-public class SpringAiStudyDbApplicationTests {
+public class MutilAgentApplicationTests {
 
     @Test
     void contextLoads() {

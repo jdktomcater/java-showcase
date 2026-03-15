@@ -41,13 +41,13 @@ public class ReportGenerationAgent implements NodeAction<AnalysisTaskState> {
                 """, state.getTargetIndicator(), analysisResult, userQuery, timeRange);
 
         String reportDraft = chatModel.call(prompt);
-        log.info("报告草稿：" + reportDraft);
+        log.info("报告草稿：{}" , reportDraft);
 
         return state.withReportDraft(reportDraft);
     }
 
     @Override
-    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) throws Exception {
+    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) {
         AnalysisTaskState result = this.generate(analysisTaskState);
         return result.toMap();
     }

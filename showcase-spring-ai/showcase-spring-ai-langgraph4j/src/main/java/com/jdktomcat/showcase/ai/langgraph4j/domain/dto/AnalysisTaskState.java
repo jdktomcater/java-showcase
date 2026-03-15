@@ -32,25 +32,9 @@ public class AnalysisTaskState extends AgentState {
         super(new HashMap<>());
     }
 
-    public AnalysisTaskState(String userQuery, String timeRange, String targetIndicator,
-            String analysisDimension, String rawData, String analysisResult, String reportDraft, String finalReport,
-            boolean needRetry) {
-        super(new HashMap<>());
-        this.userQuery = userQuery;
-        this.timeRange = timeRange;
-        this.targetIndicator = targetIndicator;
-        this.analysisDimension = analysisDimension;
-        this.rawData = rawData;
-        this.analysisResult = analysisResult;
-        this.reportDraft = reportDraft;
-        this.finalReport = finalReport;
-        this.needRetry = needRetry;
-    }
-
     public AnalysisTaskState(Map<String, Object> data) {
         super(data);
-        AnalysisTaskState oldState =
-                JSONUtils.parseObject(JSONUtils.toJSONString(data), AnalysisTaskState.class);
+        AnalysisTaskState oldState = JSONUtils.parseObject(JSONUtils.toJSONString(data), AnalysisTaskState.class);
         if (oldState == null) {
             return;
         }

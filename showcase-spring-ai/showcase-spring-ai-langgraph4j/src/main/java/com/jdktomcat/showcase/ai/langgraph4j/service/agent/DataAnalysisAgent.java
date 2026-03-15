@@ -44,14 +44,12 @@ public class DataAnalysisAgent implements NodeAction<AnalysisTaskState> {
 
         // 调用 AI 模型获取分析结果
         String analysisResult = chatModel.call(prompt);
-        log.info("数据分析结论：" + analysisResult);
-
+        log.info("数据分析结论：{}" , analysisResult);
         return state.withAnalysisResult(analysisResult);
     }
 
-
     @Override
-    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) throws Exception {
+    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) {
         AnalysisTaskState result = this.analyze(analysisTaskState);
         return result.toMap();
     }

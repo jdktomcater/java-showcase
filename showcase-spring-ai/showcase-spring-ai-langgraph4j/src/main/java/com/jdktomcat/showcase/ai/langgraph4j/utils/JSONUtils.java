@@ -42,7 +42,6 @@ public class JSONUtils {
         }
         try {
             return objectMapper.writeValueAsString(data);
-//            return gson.toJson(data);
         } catch (Exception e) {
             log.error("JsonUtils######toString： error data={}", data, e);
             return "";
@@ -116,7 +115,7 @@ public class JSONUtils {
         }
         try {
             // 使用 convertValue 直接将对象转换为 Map<String, Object>
-            return objectMapper.convertValue(data, new TypeReference<Map<String, Object>>() {
+            return objectMapper.convertValue(data, new TypeReference<>() {
             });
         } catch (Exception e) {
             String message = String.format(
