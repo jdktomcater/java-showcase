@@ -1,4 +1,4 @@
-import com.jdktomcat.showcase.ai.langgraph4j.MutilAgentApplication;
+import com.jdktomcat.showcase.ai.langgraph4j.MultiAgentApplication;
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
 import jakarta.transaction.Transactional;
 import org.bsc.langgraph4j.CompiledGraph;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = MutilAgentApplication.class)
+@SpringBootTest(classes = MultiAgentApplication.class)
 // 测试结束后自动回滚事务，避免污染数据库
 @Transactional
 public class MutilAgentApplicationTests {
