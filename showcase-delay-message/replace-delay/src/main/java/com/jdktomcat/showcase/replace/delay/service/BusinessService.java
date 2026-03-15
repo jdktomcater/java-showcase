@@ -33,7 +33,7 @@ public class BusinessService {
      * @param userId     用户标识
      */
     public void lock(String merchantId, String userId, BigDecimal amount) {
-        String maUserId = UAMT_PREFIX + merchantId + "_" + userId;
+//        String maUserId = UAMT_PREFIX + merchantId + "_" + userId;
 
         String mUserId = UEWF_PREFIX + merchantId + "_" + userId;
         long value = redisComponent.incr(mUserId);

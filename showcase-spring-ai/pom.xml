@@ -19,6 +19,7 @@
         <module>showcase-langchain4j</module>
         <module>showcase-spring-ai-cr</module>
         <module>showcase-spring-ai-ollama</module>
+        <module>showcase-spring-ai-langgraph4j</module>
     </modules>
     <properties>
         <java.version>17</java.version>
