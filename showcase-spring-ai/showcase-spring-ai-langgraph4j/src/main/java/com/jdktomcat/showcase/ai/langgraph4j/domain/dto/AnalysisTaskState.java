@@ -1,8 +1,7 @@
 package com.jdktomcat.showcase.ai.langgraph4j.domain.dto;
 
 import com.jdktomcat.showcase.ai.langgraph4j.utils.JSONUtils;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.bsc.langgraph4j.state.AgentState;
 
 import java.util.HashMap;
@@ -11,8 +10,7 @@ import java.util.Map;
 /**
  * 全局任务状态：所有智能体共享的数据载体
  */
-@Getter
-@Setter
+@Data
 public class AnalysisTaskState extends AgentState {
     // 基础信息
     private String userQuery;          // 用户原始需求
