@@ -37,7 +37,7 @@ public class ParallelConfig {
     @Bean
     public ExecutorService parallelExecutor() {
         return new ThreadPoolExecutor(
-                10, 50,
+                20, 50,
                 5, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(100),
                 r -> new Thread(r, "parallel-thread-" + threadNumber.getAndIncrement()),
