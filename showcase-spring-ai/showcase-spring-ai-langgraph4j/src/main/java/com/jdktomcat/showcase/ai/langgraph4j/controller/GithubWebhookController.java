@@ -26,7 +26,7 @@ public class GithubWebhookController {
             String id = commit.path("id").asText();
             String message = commit.path("message").asText();
             String author = commit.path("author").path("name").asText();
-            log.info("repo={}, ref={} , commit={}, author={} message={}", repo, ref, id, author, message);
+            log.info("repo={}, ref={} , commit={}, author={}, message={}", repo, ref, id, author, message);
         }
         return ResponseEntity.ok("success");
     }
