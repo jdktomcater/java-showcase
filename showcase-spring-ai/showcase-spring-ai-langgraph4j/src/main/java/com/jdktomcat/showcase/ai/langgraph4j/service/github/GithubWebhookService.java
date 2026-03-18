@@ -1,9 +1,12 @@
 package com.jdktomcat.showcase.ai.langgraph4j.service.github;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubCompareResponse;
 import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubPushPayload;
+import com.jdktomcat.showcase.ai.langgraph4j.service.telegram.TelegramNotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -14,12 +17,15 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Formatter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GithubWebhookService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
+    private final CommitReviewService commitReviewService;
+    private final TelegramNotificationService telegramNotificationService;
 
     @Value("${github.webhook.secret}")
     private String webhookSecret;
@@ -31,7 +37,6 @@ public class GithubWebhookService {
         if (signatureHeader == null || signatureHeader.isBlank()) {
             return false;
         }
-
         String expected = "sha256=" + hmacSha256(payload, webhookSecret);
         return expected.equals(signatureHeader);
     }
@@ -39,28 +44,14 @@ public class GithubWebhookService {
     public void handlePushEvent(String payload) {
         try {
             GithubPushPayload pushPayload = objectMapper.readValue(payload, GithubPushPayload.class);
-
             String fullName = pushPayload.getRepository().getFullName();
             String before = pushPayload.getBefore();
             String after = pushPayload.getAfter();
-
             GithubCompareResponse compareResponse = fetchCompare(fullName, before, after);
-
-            System.out.println("Repository: " + fullName);
-            System.out.println("Branch: " + pushPayload.getRef());
-            System.out.println("Compare commits: " + compareResponse.getTotalCommits());
-
-            if (compareResponse.getFiles() != null) {
-                for (GithubCompareResponse.FileDiff file : compareResponse.getFiles()) {
-                    System.out.println("==== file ====");
-                    System.out.println("filename: " + file.getFilename());
-                    System.out.println("status: " + file.getStatus());
-                    System.out.println("additions: " + file.getAdditions());
-                    System.out.println("deletions: " + file.getDeletions());
-                    System.out.println("changes: " + file.getChanges());
-                    System.out.println("patch:\n" + file.getPatch());
-                }
-            }
+            CommitTaskState finalState = commitReviewService.reviewPush(pushPayload, compareResponse);
+            telegramNotificationService.sendCommitReview(finalState);
+            log.info("GitHub push 处理完成 repository={} branch={} decision={}",
+                    fullName, pushPayload.getRef(), finalState.getDecision());
         } catch (Exception e) {
             throw new RuntimeException("Failed to handle push event", e);
         }

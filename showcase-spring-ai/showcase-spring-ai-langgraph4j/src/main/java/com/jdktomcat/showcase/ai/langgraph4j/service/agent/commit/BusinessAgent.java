@@ -21,12 +21,25 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
     /** 根据 diff 生成规范审查报告 */
     public CommitTaskState review(CommitTaskState state) {
         String prompt = String.format("""
-        你是业务领域专家，请判断本次改动是否满足以下业务需求（从用户故事或需求文档中抽取要点），若缺失关键业务流程，请在报告中标记。
-        业务需求示例：
-        %s   // 这里可以从 commit message 里抽取或单独传入
+        你是业务风险审查专家，请基于提交信息和代码 diff 识别业务逻辑层面的变更风险。
+        请严格使用中文，并按照以下 Markdown 结构输出：
+        ## 结论
+        风险等级：低风险 / 中风险 / 高风险
+        
+        ## 发现
+        - 最多 3 条，聚焦业务流程、边界条件、兼容性、回滚影响
+        
+        ## 建议
+        - 最多 3 条，可执行建议；如果没有明显风险，明确写“未发现阻断发布的业务风险”
+        
+        提交上下文：
+        - 仓库：%s
+        - 分支：%s
+        - 提交说明：%s
+        
         Diff:
         %s
-        """, state.getMessage(), state.getDiff());
+        """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
         String review = chatModel.call(prompt);
         log.info("业务完整审查完成，报告长度 {} 字", review.length());
         return state.businessReport(review);

@@ -3,9 +3,16 @@ server:
 
 github:
   webhook:
-    secret: yuhata2308
+    secret: ${GITHUB_WEBHOOK_SECRET:yuhata2308}
   api:
-    token: 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
+    token: ${GITHUB_API_TOKEN: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}
+  review:
+    max-diff-length: 12000
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN:8447064016:AAEs1GaaBb6ByEVJa9OpfzvD695Z38z_XPQ}
+    chat-id: ${TELEGRAM_CHAT_ID:-5036565176}
 
 spring:
   jackson:

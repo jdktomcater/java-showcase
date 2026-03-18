@@ -20,14 +20,25 @@ public class ConventionAgent implements NodeAction<CommitTaskState> {
     /** 根据 diff 生成规范审查报告 */
     public CommitTaskState review(CommitTaskState state) {
         String prompt = String.format("""
-                你是代码规范审查专家。请检查以下 diff，给出 **中文**（或你项目所在语言）的审查报告，包含：
-                1. 是否遵循项目的 Java 编码规范（命名、缩进、异常处理等）；
-                2. 是否符合 Checkstyle / SpotBugs 等工具的建议；
-                3. 如有不符合，请在报告中用 **Markdown 列表** 给出改进建议。
+                你是代码规范审查专家。请检查以下提交 diff，并用中文输出 Markdown 报告。
+                输出结构必须是：
+                ## 结论
+                风险等级：低风险 / 中风险 / 高风险
+                
+                ## 发现
+                - 最多 3 条，聚焦命名、可读性、异常处理、可维护性、风格一致性
+                
+                ## 建议
+                - 最多 3 条；如果没有明显问题，明确写“规范层面可接受”
+                
+                提交上下文：
+                - 仓库：%s
+                - 分支：%s
+                - 提交说明：%s
                 
                 Diff:
                 %s
-                """, state.getDiff());
+                """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
 
         String review = chatModel.call(prompt);
         log.info("规范审查完成，报告长度 {} 字", review.length());
