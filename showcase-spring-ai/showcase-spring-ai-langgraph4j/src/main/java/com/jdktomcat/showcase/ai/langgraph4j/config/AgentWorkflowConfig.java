@@ -90,12 +90,12 @@ public class AgentWorkflowConfig {
         StateGraph<CommitTaskState> graphBuilder = new StateGraph<>(stateFactory);
 
         // 2. 添加节点（每个智能体对应一个节点）
-        // 任务拆解
-        graphBuilder.addNode("business", node_async(businessAgent));
-        // 数据查询
-        graphBuilder.addNode("convention", node_async(conventionAgent));
-        // 数据分析
-        graphBuilder.addNode("performance", node_async(performanceAgent));
+//        // 任务拆解
+//        graphBuilder.addNode("business", node_async(businessAgent));
+//        // 数据查询
+//        graphBuilder.addNode("convention", node_async(conventionAgent));
+//        // 数据分析
+//        graphBuilder.addNode("performance", node_async(performanceAgent));
         // 报告生成
         graphBuilder.addNode("security",node_async(securityAgent));
         // 结果校验
@@ -103,12 +103,12 @@ public class AgentWorkflowConfig {
 
         // 3. 定义流程流转规则（边）
         // 起始节点 → 任务拆解节点
-        graphBuilder.addEdge(START, "business");
+        graphBuilder.addEdge(START, "security");
 
         // 任务拆解 → 数据查询 → 数据分析 → 报告生成 → 结果校验
-        graphBuilder.addEdge("business", "convention");
-        graphBuilder.addEdge("convention", "performance");
-        graphBuilder.addEdge("performance", "security");
+//        graphBuilder.addEdge("business", "convention");
+//        graphBuilder.addEdge("convention", "performance");
+//        graphBuilder.addEdge("performance", "security");
         graphBuilder.addEdge("security", "result");
 
         // 结果校验 → 分支判断（符合则结束，不符合则重试任务拆解）
@@ -117,7 +117,7 @@ public class AgentWorkflowConfig {
                 AsyncEdgeAction.edge_async(commitRetryEdgeAction),
                 // 映射：判断结果 → 目标节点（重试→任务拆解，结束→终止流程）
                 Map.of(
-                        "retry", "business",
+                        "retry", "security",
                         "end", END
                 )
         );
