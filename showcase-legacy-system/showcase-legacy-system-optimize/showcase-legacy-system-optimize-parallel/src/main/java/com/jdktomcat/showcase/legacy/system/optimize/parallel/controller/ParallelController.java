@@ -70,7 +70,7 @@ public class ParallelController {
     @GetMapping("/benchmark")
     public BenchmarkResult benchmark(@RequestParam(defaultValue = "10") int count) {
         List<Long> ids = LongStream.rangeClosed(1, count).boxed().collect(Collectors.toList());
-
+        log.info("benchmark");
         long serialStart = System.currentTimeMillis();
         parallelService.serial(ids);
         long serialMs = System.currentTimeMillis() - serialStart;
