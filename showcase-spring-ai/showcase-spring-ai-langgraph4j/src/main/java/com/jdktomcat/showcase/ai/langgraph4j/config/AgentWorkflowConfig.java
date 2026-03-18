@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.ai.langgraph4j.service.config;
+package com.jdktomcat.showcase.ai.langgraph4j.config;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;

@@ -1,6 +1,11 @@
+server:
+  port: 8000
 
-
-
+github:
+  webhook:
+    secret: yuhata2308
+  api:
+    token: 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
 
 spring:
   jackson:
@@ -29,5 +34,4 @@ logging:
   level:
     org.langchain4j: DEBUG
     com.example: DEBUG
-server:
-  port: 8000
+
