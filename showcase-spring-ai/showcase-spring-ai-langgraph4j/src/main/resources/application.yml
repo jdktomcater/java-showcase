@@ -1,3 +1,7 @@
+
+
+
+
 spring:
   jackson:
     serialization:
@@ -25,4 +29,5 @@ logging:
   level:
     org.langchain4j: DEBUG
     com.example: DEBUG
-
+server:
+  port: 8000
