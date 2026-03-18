@@ -1,6 +1,7 @@
 package com.jdktomcat.showcase.legacy.system.optimize.parallel.controller;
 
 import com.jdktomcat.showcase.legacy.system.optimize.parallel.service.ParallelService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+@Slf4j
 @RestController
 public class ParallelController {
 
@@ -33,6 +35,7 @@ public class ParallelController {
     @GetMapping("/pe")
     public List<String> pe(@RequestParam(required = false) Integer count) {
         List<Long> ids = toIds(count);
+        log.info("pe");
         return parallelService.pe(ids);
     }
 
