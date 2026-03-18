@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class RetryEdgeAction implements EdgeAction<AnalysisTaskState> {
+public class AnalysisRetryEdgeAction implements EdgeAction<AnalysisTaskState> {
 
     @Override
     public String apply(AnalysisTaskState analysisTaskState) {

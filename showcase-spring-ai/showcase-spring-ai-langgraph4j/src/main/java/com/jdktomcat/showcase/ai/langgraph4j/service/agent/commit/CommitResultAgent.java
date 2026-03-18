@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.ai.langgraph4j.service.agent;
+package com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit;
 
-import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import lombok.extern.slf4j.Slf4j;
 import org.bsc.langgraph4j.action.NodeAction;
 import org.springframework.ai.chat.model.ChatModel;
@@ -13,17 +13,17 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-public class ResultValidationAgent implements NodeAction<AnalysisTaskState> {
+public class CommitResultAgent implements NodeAction<CommitTaskState> {
 
     private final ChatModel chatModel;
 
-    public ResultValidationAgent(ChatModel chatModel) {
+    public CommitResultAgent(ChatModel chatModel) {
         this.chatModel = chatModel;
     }
 
-    public AnalysisTaskState validate(AnalysisTaskState state) {
-        String userQuery = state.getUserQuery();
-        String reportDraft = state.getReportDraft();
+    public CommitTaskState validate(CommitTaskState state) {
+        String userQuery = "";
+        String reportDraft = "";
 
         // 构建提示词：校验报告是否符合需求
         String prompt = String.format("""
@@ -45,12 +45,12 @@ public class ResultValidationAgent implements NodeAction<AnalysisTaskState> {
         if (needRetry) {
             return state.withNeedRetry(true);
         } else {
-            return state.withFinalReport(reportDraft).withNeedRetry(false);
+            return state.finalReport(reportDraft).withNeedRetry(false);
         }
     }
     @Override
-    public Map<String, Object> apply(AnalysisTaskState analysisTaskState) {
-        AnalysisTaskState result = this.validate(analysisTaskState);
+    public Map<String, Object> apply(CommitTaskState commitState) {
+        CommitTaskState result = this.validate(commitState);
         return result.toMap();
     }
 }

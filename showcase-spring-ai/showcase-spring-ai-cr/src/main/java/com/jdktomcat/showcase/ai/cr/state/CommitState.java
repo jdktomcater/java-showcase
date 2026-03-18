@@ -2,12 +2,13 @@ package com.jdktomcat.showcase.ai.cr.state;
 
 import com.jdktomcat.showcase.ai.cr.util.JSONUtils;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.bsc.langgraph4j.state.AgentState;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class CommitState extends AgentState {
     private String sha;
     private String author;
@@ -21,10 +22,6 @@ public class CommitState extends AgentState {
     private String businessReport;
     private boolean needRetry;
     private String finalReport;
-
-    public CommitState() {
-        super(new HashMap<>());
-    }
 
     public CommitState(Map<String, Object> data) {
         super(data);

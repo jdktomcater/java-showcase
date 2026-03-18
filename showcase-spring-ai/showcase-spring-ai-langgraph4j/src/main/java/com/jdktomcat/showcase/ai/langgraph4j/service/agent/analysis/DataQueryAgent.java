@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.ai.langgraph4j.service.agent;
+package com.jdktomcat.showcase.ai.langgraph4j.service.agent.analysis;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
 import com.jdktomcat.showcase.ai.langgraph4j.service.TestDataInitializer;

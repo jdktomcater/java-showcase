@@ -1,8 +1,11 @@
 package com.jdktomcat.showcase.ai.langgraph4j.service.config;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
-import com.jdktomcat.showcase.ai.langgraph4j.service.agent.*;
-import com.jdktomcat.showcase.ai.langgraph4j.service.edge.RetryEdgeAction;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
+import com.jdktomcat.showcase.ai.langgraph4j.service.agent.analysis.*;
+import com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit.*;
+import com.jdktomcat.showcase.ai.langgraph4j.service.edge.AnalysisRetryEdgeAction;
+import com.jdktomcat.showcase.ai.langgraph4j.service.edge.CommitRetryEdgeAction;
 import org.bsc.langgraph4j.CompiledGraph;
 import org.bsc.langgraph4j.GraphStateException;
 import org.bsc.langgraph4j.StateGraph;
@@ -29,7 +32,7 @@ public class AgentWorkflowConfig {
             DataAnalysisAgent dataAnalysisAgent,
             ReportGenerationAgent reportGenerationAgent,
             ResultValidationAgent validationAgent,
-            RetryEdgeAction retryEdgeAction,
+            AnalysisRetryEdgeAction retryEdgeAction,
             AnalysisTaskStateFactory stateFactory
     ) throws GraphStateException {
 
@@ -65,6 +68,56 @@ public class AgentWorkflowConfig {
                 // 映射：判断结果 → 目标节点（重试→任务拆解，结束→终止流程）
                 Map.of(
                         "retry", "decompose",
+                        "end", END
+                )
+        );
+        // 4. 构建并返回状态图
+        return graphBuilder.compile();
+    }
+
+    @Bean
+    public CompiledGraph<CommitTaskState> commitWorkflow(
+            BusinessAgent businessAgent,
+            ConventionAgent conventionAgent,
+            PerformanceAgent performanceAgent,
+            SecurityAgent securityAgent,
+            CommitResultAgent commitResultAgent,
+            CommitRetryEdgeAction commitRetryEdgeAction,
+            CommitTaskStateFactory stateFactory
+    ) throws GraphStateException {
+
+        // 1. 创建状态图构建器（指定状态类型）
+        StateGraph<CommitTaskState> graphBuilder = new StateGraph<>(stateFactory);
+
+        // 2. 添加节点（每个智能体对应一个节点）
+        // 任务拆解
+        graphBuilder.addNode("business", node_async(businessAgent));
+        // 数据查询
+        graphBuilder.addNode("convention", node_async(conventionAgent));
+        // 数据分析
+        graphBuilder.addNode("performance", node_async(performanceAgent));
+        // 报告生成
+        graphBuilder.addNode("security",node_async(securityAgent));
+        // 结果校验
+        graphBuilder.addNode("result", node_async(commitResultAgent));
+
+        // 3. 定义流程流转规则（边）
+        // 起始节点 → 任务拆解节点
+        graphBuilder.addEdge(START, "business");
+
+        // 任务拆解 → 数据查询 → 数据分析 → 报告生成 → 结果校验
+        graphBuilder.addEdge("business", "convention");
+        graphBuilder.addEdge("convention", "performance");
+        graphBuilder.addEdge("performance", "security");
+        graphBuilder.addEdge("security", "result");
+
+        // 结果校验 → 分支判断（符合则结束，不符合则重试任务拆解）
+        graphBuilder.addConditionalEdges("result",
+                // 分支判断逻辑：根据 needRetry 决定下一个节点
+                AsyncEdgeAction.edge_async(commitRetryEdgeAction),
+                // 映射：判断结果 → 目标节点（重试→任务拆解，结束→终止流程）
+                Map.of(
+                        "retry", "business",
                         "end", END
                 )
         );
