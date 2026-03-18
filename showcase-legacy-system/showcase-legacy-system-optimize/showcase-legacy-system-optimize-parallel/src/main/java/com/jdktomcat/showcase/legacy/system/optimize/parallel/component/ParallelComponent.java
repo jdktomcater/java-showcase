@@ -100,7 +100,6 @@ public class ParallelComponent {
                 results.add(Pair.of(result.getLeft(), res));
             }
         });
-        log.info("password:{}", parallelConfig.getPassword());
         // 保证原先顺序
         results.sort(Comparator.comparing(Pair::getLeft));
         return results.stream().map(Pair::getRight).collect(Collectors.toList());
