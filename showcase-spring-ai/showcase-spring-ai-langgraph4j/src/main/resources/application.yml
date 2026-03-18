@@ -40,5 +40,5 @@ spring:
 logging:
   level:
     org.langchain4j: DEBUG
-    com.example: DEBUG
+    com.jdktomcat.showcase.ai.langgraph4j: DEBUG
 
