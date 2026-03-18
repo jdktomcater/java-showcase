@@ -1,7 +1,6 @@
 package com.jdktomcat.showcase.ai.cr.agent;
 
 import com.jdktomcat.showcase.ai.cr.state.CommitState;
-import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
 import lombok.extern.slf4j.Slf4j;
 import org.bsc.langgraph4j.action.NodeAction;
 import org.springframework.ai.chat.model.ChatModel;
@@ -23,8 +22,8 @@ public class ResultValidationAgent implements NodeAction<CommitState> {
     }
 
     public CommitState validate(CommitState state) {
-        String userQuery = state.getUserQuery();
-        String reportDraft = state.getReportDraft();
+        String userQuery = "";
+        String reportDraft = "";
 
         // 构建提示词：校验报告是否符合需求
         String prompt = String.format("""
@@ -46,7 +45,7 @@ public class ResultValidationAgent implements NodeAction<CommitState> {
         if (needRetry) {
             return state.withNeedRetry(true);
         } else {
-            return state.withFinalReport(reportDraft).withNeedRetry(false);
+            return state.finalReport(reportDraft).withNeedRetry(false);
         }
     }
     @Override
