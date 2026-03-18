@@ -29,6 +29,7 @@ public class ParallelController {
     @GetMapping("/parallel")
     public List<String> parallel(@RequestParam(required = false) Integer count) {
         List<Long> ids = toIds(count);
+        log.info("parallel");
         return parallelService.pe(ids);
     }
 
