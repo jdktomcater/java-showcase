@@ -56,6 +56,7 @@ public class ParallelController {
     public TimedResponse parallelTimed(@RequestParam(required = false) Integer count) {
         List<Long> ids = toIds(count);
         long start = System.currentTimeMillis();
+        log.info("timed");
         List<String> result = parallelService.parallel(ids);
         long elapsedMs = System.currentTimeMillis() - start;
         return new TimedResponse("parallel", ids.size(), elapsedMs, result.size());
