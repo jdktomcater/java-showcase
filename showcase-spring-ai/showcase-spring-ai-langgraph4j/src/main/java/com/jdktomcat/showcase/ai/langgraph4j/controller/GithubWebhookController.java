@@ -1,33 +1,32 @@
 package com.jdktomcat.showcase.ai.langgraph4j.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jdktomcat.showcase.ai.langgraph4j.service.github.GithubWebhookService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/github")
+@RequiredArgsConstructor
 public class GithubWebhookController {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final GithubWebhookService githubWebhookService;
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> receiveWebhook(@RequestHeader(value = "X-GitHub-Event", required = false) String event, @RequestBody String payload) throws Exception {
+    public ResponseEntity<String> receiveWebhook(@RequestHeader(value = "X-GitHub-Event", required = false) String event,
+                                                 @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature,
+                                                 @RequestBody String payload) {
         if (!"push".equals(event)) {
             return ResponseEntity.ok("ignored");
         }
-        log.info("GithubWebhookController receiveWebhook,payload:{}", payload);
-        JsonNode root = objectMapper.readTree(payload);
-        String ref = root.path("ref").asText();
-        String repo = root.path("repository").path("full_name").asText();
-        for (JsonNode commit : root.path("commits")) {
-            String id = commit.path("id").asText();
-            String message = commit.path("message").asText();
-            String author = commit.path("author").path("name").asText();
-            log.info("repo={}, ref={} , commit={}, author={}, message={}", repo, ref, id, author, message);
+        boolean valid = githubWebhookService.verifySignature(payload, signature);
+        if (!valid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid signature");
         }
+        githubWebhookService.handlePushEvent(payload);
         return ResponseEntity.ok("success");
     }
 }
