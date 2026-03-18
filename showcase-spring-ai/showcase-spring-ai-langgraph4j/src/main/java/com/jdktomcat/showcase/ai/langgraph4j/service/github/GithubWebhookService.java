@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,6 +42,7 @@ public class GithubWebhookService {
         return expected.equals(signatureHeader);
     }
 
+    @Async("githubWebhookTaskExecutor")
     public void handlePushEvent(String payload) {
         try {
             GithubPushPayload pushPayload = objectMapper.readValue(payload, GithubPushPayload.class);
@@ -53,7 +55,7 @@ public class GithubWebhookService {
             log.info("GitHub push 处理完成 repository={} branch={} decision={}",
                     fullName, pushPayload.getRef(), finalState.getDecision());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to handle push event", e);
+            log.error("GitHub push 处理失败", e);
         }
     }
 

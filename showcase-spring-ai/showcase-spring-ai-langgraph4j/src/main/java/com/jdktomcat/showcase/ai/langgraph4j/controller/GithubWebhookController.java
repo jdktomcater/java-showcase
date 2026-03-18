@@ -27,6 +27,6 @@ public class GithubWebhookController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid signature");
         }
         githubWebhookService.handlePushEvent(payload);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("accepted");
     }
 }

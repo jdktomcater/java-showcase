@@ -71,7 +71,7 @@ public class CommitReviewService {
             if (StringUtils.isBlank(commit.getMessage())) {
                 continue;
             }
-            if (builder.length() > 0) {
+            if (!builder.isEmpty()) {
                 builder.append("\n---\n");
             }
             builder.append(commit.getMessage().trim());
