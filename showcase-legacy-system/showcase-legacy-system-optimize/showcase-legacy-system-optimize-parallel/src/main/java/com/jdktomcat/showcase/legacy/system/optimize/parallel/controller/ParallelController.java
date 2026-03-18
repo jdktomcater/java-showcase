@@ -35,6 +35,7 @@ public class ParallelController {
     @GetMapping("/pe")
     public List<String> pe(@RequestParam(required = false) Integer count) {
         List<Long> ids = toIds(count);
+        log.info("pe");
         return parallelService.pe(ids);
     }
 
