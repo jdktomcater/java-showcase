@@ -39,7 +39,7 @@ public class ParallelComponent {
 
     private final ParallelConfig parallelConfig;
 
-    public ParallelComponent(ExecutorService parallelExecutor,ParallelConfig parallelConfig) {
+    public ParallelComponent(ExecutorService parallelExecutor, ParallelConfig parallelConfig) {
         this.executor = parallelExecutor;
         this.parallelConfig = parallelConfig;
     }
@@ -52,10 +52,7 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
-        return items.stream()
-                .map(mapper)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return items.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -66,13 +63,8 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeParallel(List<T> items, Function<T, R> mapper) {
-        List<CompletableFuture<R>> futures = items.stream()
-                .map(item -> CompletableFuture.supplyAsync(SupplierWrapper.of(()-> mapper.apply(item)), executor))
-                .collect(Collectors.toList());
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<CompletableFuture<R>> futures = items.stream().map(item -> CompletableFuture.supplyAsync(SupplierWrapper.of(() -> mapper.apply(item)), executor)).collect(Collectors.toList());
+        return futures.stream().map(CompletableFuture::join).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     /**
@@ -92,7 +84,7 @@ public class ParallelComponent {
             final T it = items.get(i);
             futures.add(Triple.of(i, it, executor.submit(new CallableWrapper<>(() -> mapper.apply(it)))));
         }
-        List<Pair<Integer,R>> results = new ArrayList<>(items.size());
+        List<Pair<Integer, R>> results = new ArrayList<>(items.size());
         long timeoutMs = parallelConfig.getTaskTimeout();
         futures.stream().parallel().forEach(result -> {
             T item = result.getMiddle();
@@ -108,13 +100,11 @@ public class ParallelComponent {
                 results.add(Pair.of(result.getLeft(), res));
             }
         });
+        log.info("password:{}", parallelConfig.getPassword());
         // 保证原先顺序
         results.sort(Comparator.comparing(Pair::getLeft));
         return results.stream().map(Pair::getRight).collect(Collectors.toList());
     }
-
-
-
 
 
     @PreDestroy

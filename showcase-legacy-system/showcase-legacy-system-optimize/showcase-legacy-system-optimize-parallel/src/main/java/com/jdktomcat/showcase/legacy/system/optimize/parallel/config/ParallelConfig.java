@@ -28,6 +28,9 @@ public class ParallelConfig {
     @Value("${spring.task.pool.parallel.timeout:200}")
     private int taskTimeout;
 
+    @Value("${init.password:SSSSBBBB}")
+    private String password;
+
 
     /**
      * parallelExecutor
