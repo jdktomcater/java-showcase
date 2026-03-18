@@ -13,6 +13,7 @@ public class GithubPushPayload {
     private String ref;
     private String before;
     private String after;
+    private String compare;
     private Repository repository;
     private List<Commit> commits;
 
