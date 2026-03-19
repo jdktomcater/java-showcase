@@ -24,7 +24,7 @@ spring:
     ollama:
       init:
         timeout: 60m
-        max-retries: 3
+        max-retries: 10
         embedding:
           additional-models:
             - qwen3-vl:235b-cloud
