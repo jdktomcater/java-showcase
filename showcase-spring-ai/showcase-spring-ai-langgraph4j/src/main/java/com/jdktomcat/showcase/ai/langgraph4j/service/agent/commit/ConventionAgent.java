@@ -1,4 +1,5 @@
 package com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit;
+
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import lombok.extern.slf4j.Slf4j;
 import org.bsc.langgraph4j.action.NodeAction;
@@ -17,8 +18,10 @@ public class ConventionAgent implements NodeAction<CommitTaskState> {
         this.chatModel = chatModel;
     }
 
-    /** 根据 diff 生成规范审查报告 */
-    public CommitTaskState review(CommitTaskState state) {
+    /**
+     * 根据 diff 生成规范审查报告
+     */
+    public void review(CommitTaskState state) {
         String prompt = String.format("""
                 你是代码规范审查专家。请检查以下提交 diff，并用中文输出 Markdown 报告。
                 输出结构必须是：
@@ -42,12 +45,12 @@ public class ConventionAgent implements NodeAction<CommitTaskState> {
 
         String review = chatModel.call(prompt);
         log.info("规范审查完成，报告长度 {} 字", review.length());
-        return state.conventionReport(review);
+        state.setConventionReport(review);
     }
 
     @Override
     public Map<String, Object> apply(CommitTaskState commitState) {
-        CommitTaskState result = review(commitState);
-        return result.toMap();
+        review(commitState);
+        return commitState.toMap();
     }
 }

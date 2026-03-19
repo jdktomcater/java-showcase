@@ -1,6 +1,5 @@
 package com.jdktomcat.showcase.ai.langgraph4j.config;
 
-import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.AnalysisTaskState;
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import lombok.extern.slf4j.Slf4j;
 import org.bsc.langgraph4j.state.AgentStateFactory;

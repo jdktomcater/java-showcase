@@ -19,7 +19,7 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
     }
 
     /** 根据 diff 生成规范审查报告 */
-    public CommitTaskState review(CommitTaskState state) {
+    public void review(CommitTaskState state) {
         String prompt = String.format("""
         你是业务风险审查专家，请基于提交信息和代码 diff 识别业务逻辑层面的变更风险。
         请严格使用中文，并按照以下 Markdown 结构输出：
@@ -42,12 +42,12 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
         """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
         String review = chatModel.call(prompt);
         log.info("业务完整审查完成，报告长度 {} 字", review.length());
-        return state.businessReport(review);
+        state.setBusinessReport(review);
     }
 
     @Override
     public Map<String, Object> apply(CommitTaskState commitTaskState) throws Exception {
-        CommitTaskState result = this.review(commitTaskState);
-        return result.toMap();
+        this.review(commitTaskState);
+        return commitTaskState.toMap();
     }
 }

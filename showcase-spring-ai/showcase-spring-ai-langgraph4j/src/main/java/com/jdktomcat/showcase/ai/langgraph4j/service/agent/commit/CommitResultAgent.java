@@ -23,7 +23,7 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
         this.chatModel = chatModel;
     }
 
-    public CommitTaskState validate(CommitTaskState state) {
+    public void validate(CommitTaskState state) {
         String prompt = String.format("""
                 你是最终提交评审裁决专家。请综合 4 个专项审查报告，对本次提交是否允许通过给出最终结论。
                 判断原则：
@@ -73,35 +73,27 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
                 state.getBusinessReport(),
                 state.getConventionReport(),
                 state.getPerformanceReport(),
-                state.getSecurityReport());
-
+                state.getSecurityReport()
+        );
         String validationResult = chatModel.call(prompt);
         log.info("提交裁决原始结果：{}", validationResult);
-
         Map<String, Object> result;
         try {
             result = JSONUtils.parseMap(extractJson(validationResult));
         } catch (Exception ex) {
             log.warn("提交裁决结果解析失败，使用兜底逻辑 raw={}", validationResult, ex);
-            result = Map.of(
-                    "decision", "FAIL",
-                    "summary", "模型返回结果无法解析，已按高风险处理",
-                    "finalReport", "## 总体结论\nFAIL\n\n## 关键风险\n- 模型返回结果无法解析，请人工复核。\n\n## 建议动作\n- 检查模型输出格式并重新触发评审。",
-                    "telegramMessage", "结论: FAIL\n原因: 模型返回结果无法解析，请人工复核。"
-            );
+            result = Map.of("decision", "FAIL", "summary", "模型返回结果无法解析，已按高风险处理", "finalReport", "## 总体结论\nFAIL\n\n## 关键风险\n- 模型返回结果无法解析，请人工复核。\n\n## 建议动作\n- 检查模型输出格式并重新触发评审。", "telegramMessage", "结论: FAIL\n原因: 模型返回结果无法解析，请人工复核。");
         }
         String decision = Objects.toString(result.getOrDefault("decision", "FAIL")).trim().toUpperCase();
         String summary = Objects.toString(result.getOrDefault("summary", "模型未返回有效总结"));
         String finalReport = Objects.toString(result.getOrDefault("finalReport", summary));
         String telegramMessage = Objects.toString(result.getOrDefault("telegramMessage", finalReport));
         boolean passed = "PASS".equals(decision);
-
-        return state
-                .withDecision(decision)
-                .withPassed(passed)
-                .finalReport(finalReport)
-                .telegramMessage(telegramMessage)
-                .withNeedRetry(false);
+        state.setDecision(decision);
+        state.setPassed(passed);
+        state.setFinalReport(finalReport);
+        state.setTelegramMessage(telegramMessage);
+        state.setNeedRetry(false);
     }
 
     private String extractJson(String modelOutput) {
@@ -110,10 +102,7 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
         }
         String trimmed = modelOutput.trim();
         if (trimmed.startsWith("```")) {
-            trimmed = trimmed.replaceFirst("^```json\\s*", "")
-                    .replaceFirst("^```\\s*", "")
-                    .replaceFirst("\\s*```$", "")
-                    .trim();
+            trimmed = trimmed.replaceFirst("^```json\\s*", "").replaceFirst("^```\\s*", "").replaceFirst("\\s*```$", "").trim();
         }
         int start = trimmed.indexOf('{');
         int end = trimmed.lastIndexOf('}');
@@ -125,7 +114,7 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
 
     @Override
     public Map<String, Object> apply(CommitTaskState commitState) {
-        CommitTaskState result = this.validate(commitState);
-        return result.toMap();
+        this.validate(commitState);
+        return commitState.toMap();
     }
 }
