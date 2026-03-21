@@ -21,7 +21,7 @@ public class SecurityAgent implements NodeAction<CommitTaskState> {
     /**
      * 根据 diff 生成规范审查报告
      */
-    public CommitTaskState review(CommitTaskState state) {
+    public void review(CommitTaskState state) {
         String prompt = String.format("""
                 你是安全审计专家，请依据 OWASP Top 10 和常见服务端安全问题审查以下代码改动。
                 请用中文并按以下 Markdown 结构输出：
@@ -45,12 +45,12 @@ public class SecurityAgent implements NodeAction<CommitTaskState> {
 
         String review = chatModel.call(prompt);
         log.info("安全审查完成，报告长度 {} 字", review.length());
-        return state.securityReport(review);
+        state.setSecurityReport(review);
     }
 
     @Override
     public Map<String, Object> apply(CommitTaskState commitState) {
-        CommitTaskState result = review(commitState);
-        return result.toMap();
+        review(commitState);
+        return commitState.toMap();
     }
 }

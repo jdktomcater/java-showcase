@@ -19,7 +19,7 @@ public class PerformanceAgent implements NodeAction<CommitTaskState> {
     }
 
     /** 根据 diff 生成规范审查报告 */
-    public CommitTaskState review(CommitTaskState state) {
+    public void review(CommitTaskState state) {
         String prompt = String.format("""
         你是性能风险审查专家，请分析下面的代码改动，识别性能瓶颈、扩展性风险和资源消耗问题。
         请用中文并按以下 Markdown 结构输出：
@@ -42,12 +42,12 @@ public class PerformanceAgent implements NodeAction<CommitTaskState> {
         """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
         String review = chatModel.call(prompt);
         log.info("性能审查完成，报告长度 {} 字", review.length());
-        return state.performanceReport(review);
+        state.setPerformanceReport(review);
     }
 
     @Override
     public Map<String, Object> apply(CommitTaskState commitState) {
-        CommitTaskState result = review(commitState);
-        return result.toMap();
+        review(commitState);
+        return commitState.toMap();
     }
 }
