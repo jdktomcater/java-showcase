@@ -53,6 +53,7 @@ public class ParallelComponent {
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
         log.info("password:{}", parallelConfig.getPassword());
+        log.info("password:{}", parallelConfig.getPassword());
         return items.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
