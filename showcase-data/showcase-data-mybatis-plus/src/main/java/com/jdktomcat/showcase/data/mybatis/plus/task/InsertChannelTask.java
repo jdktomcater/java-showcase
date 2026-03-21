@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 
 @Slf4j
-public class InsertChannelTask implements Runnable{
+public class InsertChannelTask implements Runnable {
 
     private ChannelAccountRecordMapper channelAccountRecordMapper;
 
@@ -28,11 +28,13 @@ public class InsertChannelTask implements Runnable{
      */
     @Override
     public void run() {
-        ChannelAccountRecord channelAccountRecord = new ChannelAccountRecord();
-        channelAccountRecord.setPayChannelID(10L);
-        channelAccountRecord.setOrderID("12345678");
-        channelAccountRecord.setCreateTime(new Date());
-        int insert = channelAccountRecordMapper.insert(channelAccountRecord);
-        log.info("insert channelAccountRecord:{}", insert);
+        for (int i = 0; i < 100; i++) {
+            ChannelAccountRecord channelAccountRecord = new ChannelAccountRecord();
+            channelAccountRecord.setPayChannelID(10L + i);
+            channelAccountRecord.setOrderID("12345678" + i);
+            channelAccountRecord.setCreateTime(new Date());
+            int insert = channelAccountRecordMapper.insert(channelAccountRecord);
+            log.info("insert channelAccountRecord:{}", insert);
+        }
     }
 }
