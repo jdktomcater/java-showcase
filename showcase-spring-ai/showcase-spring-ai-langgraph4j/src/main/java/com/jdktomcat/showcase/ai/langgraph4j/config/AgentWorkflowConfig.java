@@ -90,24 +90,24 @@ public class AgentWorkflowConfig {
         StateGraph<CommitTaskState> graphBuilder = new StateGraph<>(stateFactory);
 
         // 2. 添加节点（每个智能体对应一个节点）
-        // 任务拆解
+        // 业务
         graphBuilder.addNode("business", node_async(businessAgent));
-        // 数据查询
+        // 编码
         graphBuilder.addNode("convention", node_async(conventionAgent));
-        // 数据分析
+        // 性能
         graphBuilder.addNode("performance", node_async(performanceAgent));
-        // 报告生成
+        // 安全
         graphBuilder.addNode("security",node_async(securityAgent));
-        // 结果校验
+        // 汇总
         graphBuilder.addNode("result", node_async(commitResultAgent));
 
         // 3. 定义流程流转规则（边）
-        // 起始节点 → 任务拆解节点
+        // 起始节点 → 审核节点（扇出）
         graphBuilder.addEdge(START, "business");
         graphBuilder.addEdge(START, "convention");
         graphBuilder.addEdge(START, "performance");
         graphBuilder.addEdge(START, "security");
-        // 任务拆解 → 数据查询 → 数据分析 → 报告生成 → 结果校验
+        // 审核节点 → 汇总（扇入）
         graphBuilder.addEdge("business", "result");
         graphBuilder.addEdge("convention", "result");
         graphBuilder.addEdge("performance", "result");
