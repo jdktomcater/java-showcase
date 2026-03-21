@@ -101,7 +101,7 @@ public class AgentWorkflowConfig {
         // 汇总
         graphBuilder.addNode("result", node_async(commitResultAgent));
         // 重试分发。LangGraph4j 允许从 START 出发，但不允许条件边映射回 START。
-        graphBuilder.addNode("dispatchReview", node_async(state -> state.toMap()));
+        graphBuilder.addNode("dispatchReview", node_async(CommitTaskState::toMap));
 
         // 3. 定义流程流转规则（边）
         // 起始节点 → 分发节点 → 审核节点（扇出）
