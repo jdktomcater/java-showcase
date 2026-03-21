@@ -52,6 +52,7 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
+        log.info("password:{}", parallelConfig.getPassword());
         return items.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
