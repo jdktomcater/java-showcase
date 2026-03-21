@@ -100,13 +100,16 @@ public class AgentWorkflowConfig {
         graphBuilder.addNode("security",node_async(securityAgent));
         // 汇总
         graphBuilder.addNode("result", node_async(commitResultAgent));
+        // 重试分发。LangGraph4j 允许从 START 出发，但不允许条件边映射回 START。
+        graphBuilder.addNode("dispatchReview", node_async(state -> state.toMap()));
 
         // 3. 定义流程流转规则（边）
-        // 起始节点 → 审核节点（扇出）
-        graphBuilder.addEdge(START, "business");
-        graphBuilder.addEdge(START, "convention");
-        graphBuilder.addEdge(START, "performance");
-        graphBuilder.addEdge(START, "security");
+        // 起始节点 → 分发节点 → 审核节点（扇出）
+        graphBuilder.addEdge(START, "dispatchReview");
+        graphBuilder.addEdge("dispatchReview", "business");
+        graphBuilder.addEdge("dispatchReview", "convention");
+        graphBuilder.addEdge("dispatchReview", "performance");
+        graphBuilder.addEdge("dispatchReview", "security");
         // 审核节点 → 汇总（扇入）
         graphBuilder.addEdge("business", "result");
         graphBuilder.addEdge("convention", "result");
@@ -119,7 +122,7 @@ public class AgentWorkflowConfig {
                 AsyncEdgeAction.edge_async(commitRetryEdgeAction),
                 // 映射：判断结果 → 目标节点（重试→任务拆解，结束→终止流程）
                 Map.of(
-                        "retry", START,
+                        "retry", "dispatchReview",
                         "end", END
                 )
         );
