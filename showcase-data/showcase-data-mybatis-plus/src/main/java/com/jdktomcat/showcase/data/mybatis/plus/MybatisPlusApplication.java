@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @SpringBootApplication
-@MapperScan("com.jdktomcat.showcase.mybatis.plus.mapper")
+@MapperScan("com.jdktomcat.showcase.data.mybatis.plus.mapper")
 public class MybatisPlusApplication {
 
     public static void main(String[] args) {
