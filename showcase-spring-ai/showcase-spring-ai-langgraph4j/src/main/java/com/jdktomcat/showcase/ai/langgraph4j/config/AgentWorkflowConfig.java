@@ -104,11 +104,13 @@ public class AgentWorkflowConfig {
         // 3. 定义流程流转规则（边）
         // 起始节点 → 任务拆解节点
         graphBuilder.addEdge(START, "business");
-
+        graphBuilder.addEdge(START, "convention");
+        graphBuilder.addEdge(START, "performance");
+        graphBuilder.addEdge(START, "security");
         // 任务拆解 → 数据查询 → 数据分析 → 报告生成 → 结果校验
-        graphBuilder.addEdge("business", "convention");
-        graphBuilder.addEdge("convention", "performance");
-        graphBuilder.addEdge("performance", "security");
+        graphBuilder.addEdge("business", "result");
+        graphBuilder.addEdge("convention", "result");
+        graphBuilder.addEdge("performance", "result");
         graphBuilder.addEdge("security", "result");
 
         // 结果校验 → 分支判断（符合则结束，不符合则重试任务拆解）
@@ -117,7 +119,7 @@ public class AgentWorkflowConfig {
                 AsyncEdgeAction.edge_async(commitRetryEdgeAction),
                 // 映射：判断结果 → 目标节点（重试→任务拆解，结束→终止流程）
                 Map.of(
-                        "retry", "business",
+                        "retry", START,
                         "end", END
                 )
         );
