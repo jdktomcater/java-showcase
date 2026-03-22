@@ -1,8 +1,8 @@
 package com.jdktomcat.showcase.ai.langgraph4j.service.github;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
-import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubCompareResponse;
-import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubPushPayload;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.entity.CompareResponse;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.entity.PushPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public class CommitReviewService {
     @Value("${github.review.max-diff-length:12000}")
     private int maxDiffLength;
 
-    public CommitTaskState reviewPush(GithubPushPayload pushPayload, GithubCompareResponse compareResponse) {
+    public CommitTaskState reviewPush(PushPayload pushPayload, CompareResponse compareResponse) {
         CommitTaskState initialState = buildInitialState(pushPayload, compareResponse);
         CommitTaskState finalState = commitWorkflow.invoke(initialState.toMap()).orElse(initialState);
         log.info("提交评审完成 repository={} sha={} decision={}",
@@ -33,10 +33,10 @@ public class CommitReviewService {
         return finalState;
     }
 
-    private CommitTaskState buildInitialState(GithubPushPayload pushPayload, GithubCompareResponse compareResponse) {
+    private CommitTaskState buildInitialState(PushPayload pushPayload, CompareResponse compareResponse) {
         CommitTaskState state = new CommitTaskState();
-        GithubPushPayload.Commit latestCommit = getLatestCommit(pushPayload.getCommits());
-        List<GithubCompareResponse.FileDiff> files = compareResponse == null ? List.of() : compareResponse.getFiles();
+        PushPayload.Commit latestCommit = getLatestCommit(pushPayload.getCommits());
+        List<CompareResponse.FileDiff> files = compareResponse == null ? List.of() : compareResponse.getFiles();
 
         state.setRepository(pushPayload.getRepository() == null ? "" : pushPayload.getRepository().getFullName());
         state.setBranch(extractBranch(pushPayload.getRef()));
@@ -55,19 +55,19 @@ public class CommitReviewService {
         return state;
     }
 
-    private GithubPushPayload.Commit getLatestCommit(List<GithubPushPayload.Commit> commits) {
+    private PushPayload.Commit getLatestCommit(List<PushPayload.Commit> commits) {
         if (commits == null || commits.isEmpty()) {
             return null;
         }
         return commits.get(commits.size() - 1);
     }
 
-    private String buildCommitMessage(List<GithubPushPayload.Commit> commits) {
+    private String buildCommitMessage(List<PushPayload.Commit> commits) {
         if (commits == null || commits.isEmpty()) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        for (GithubPushPayload.Commit commit : commits) {
+        for (PushPayload.Commit commit : commits) {
             if (StringUtils.isBlank(commit.getMessage())) {
                 continue;
             }
@@ -79,33 +79,33 @@ public class CommitReviewService {
         return builder.toString();
     }
 
-    private Integer sumAdditions(List<GithubCompareResponse.FileDiff> files) {
+    private Integer sumAdditions(List<CompareResponse.FileDiff> files) {
         if (files == null) {
             return 0;
         }
         return files.stream()
-                .map(GithubCompareResponse.FileDiff::getAdditions)
+                .map(CompareResponse.FileDiff::getAdditions)
                 .filter(Objects::nonNull)
                 .reduce(0, Integer::sum);
     }
 
-    private Integer sumDeletions(List<GithubCompareResponse.FileDiff> files) {
+    private Integer sumDeletions(List<CompareResponse.FileDiff> files) {
         if (files == null) {
             return 0;
         }
         return files.stream()
-                .map(GithubCompareResponse.FileDiff::getDeletions)
+                .map(CompareResponse.FileDiff::getDeletions)
                 .filter(Objects::nonNull)
                 .reduce(0, Integer::sum);
     }
 
-    private String buildDiff(GithubCompareResponse compareResponse) {
+    private String buildDiff(CompareResponse compareResponse) {
         if (compareResponse == null || compareResponse.getFiles() == null || compareResponse.getFiles().isEmpty()) {
             return "No file diff available.";
         }
 
         StringBuilder builder = new StringBuilder();
-        for (GithubCompareResponse.FileDiff file : compareResponse.getFiles()) {
+        for (CompareResponse.FileDiff file : compareResponse.getFiles()) {
             builder.append("File: ").append(file.getFilename()).append('\n')
                     .append("Status: ").append(file.getStatus()).append('\n')
                     .append("Additions: ").append(Objects.toString(file.getAdditions(), "0")).append('\n')
