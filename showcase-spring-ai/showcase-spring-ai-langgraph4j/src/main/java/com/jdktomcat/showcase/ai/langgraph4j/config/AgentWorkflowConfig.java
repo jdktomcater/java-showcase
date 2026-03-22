@@ -1,7 +1,7 @@
 package com.jdktomcat.showcase.ai.langgraph4j.config;
 
+import com.jdktomcat.showcase.ai.langgraph4j.agent.*;
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
-import com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit.*;
 import com.jdktomcat.showcase.ai.langgraph4j.service.edge.CommitRetryEdgeAction;
 import org.bsc.langgraph4j.CompiledGraph;
 import org.bsc.langgraph4j.GraphStateException;

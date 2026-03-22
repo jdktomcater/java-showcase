@@ -21,7 +21,7 @@ import java.util.Formatter;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GithubWebhookService {
+public class WebhookService {
 
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
@@ -42,7 +42,7 @@ public class GithubWebhookService {
         return expected.equals(signatureHeader);
     }
 
-    @Async("githubWebhookTaskExecutor")
+    @Async("webhookTaskExecutor")
     public void handlePushEvent(String payload) {
         try {
             PushPayload pushPayload = objectMapper.readValue(payload, PushPayload.class);
