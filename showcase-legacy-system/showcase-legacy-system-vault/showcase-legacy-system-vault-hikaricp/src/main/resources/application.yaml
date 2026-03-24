@@ -15,14 +15,10 @@ spring:
       fail-fast: true
       authentication: ${VAULT_AUTHENTICATION:APPROLE}
       app-role:
-        role: ${VAULT_AUTHENTICATION_ROLE:tx-tyadmin-role-v1}
-        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:bae0727d-27aa-57f4-dbb7-11572bb6f504}
-        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:183b6a1a-70b7-5a12-6d59-81d36cafce0c}
-      # authentication: ${VAULT_AUTHENTICATION:TOKEN}
-      # token: ${VAULT_TOKEN:hvs.pER0xhc85jcsKkVLr3oe0UxE}
+        role: ${VAULT_AUTHENTICATION_ROLE:tx-fat-role-v1}
+        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:a50e2030-f64f-7f76-07a9-1df661cf4b1a}
+        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:6dc37a71-e64f-be45-a9bb-6ea0139ecf8c}
       uri: ${VAULT_URI:https://txdev-vault.qwasn.com}
-#      uri: ${VAULT_URI:http://127.0.0.1:18200}
-#      namespace: tx-fat
       kv:
         enabled: false
       config:
