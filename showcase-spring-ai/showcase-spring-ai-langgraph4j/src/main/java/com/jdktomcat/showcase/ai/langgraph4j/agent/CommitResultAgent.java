@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit;
+package com.jdktomcat.showcase.ai.langgraph4j.agent;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import com.jdktomcat.showcase.ai.langgraph4j.utils.JSONUtils;

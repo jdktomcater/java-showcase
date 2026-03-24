@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.ai.langgraph4j.entry;
+package com.jdktomcat.showcase.ai.langgraph4j.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GithubCompareResponse {
+public class CompareResponse {
 
     @JsonProperty("total_commits")
     private Integer totalCommits;

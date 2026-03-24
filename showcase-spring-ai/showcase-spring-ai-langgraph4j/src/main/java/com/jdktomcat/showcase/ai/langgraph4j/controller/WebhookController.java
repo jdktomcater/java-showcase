@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.ai.langgraph4j.controller;
 
-import com.jdktomcat.showcase.ai.langgraph4j.service.github.GithubWebhookService;
+import com.jdktomcat.showcase.ai.langgraph4j.service.github.WebhookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/github")
 @RequiredArgsConstructor
-public class GithubWebhookController {
+public class WebhookController {
 
-    private final GithubWebhookService githubWebhookService;
+    private final WebhookService webhookService;
 
     @PostMapping("/webhook")
     public ResponseEntity<String> receiveWebhook(@RequestHeader(value = "X-GitHub-Event", required = false) String event,
@@ -22,11 +22,11 @@ public class GithubWebhookController {
         if (!"push".equals(event)) {
             return ResponseEntity.ok("ignored");
         }
-        boolean valid = githubWebhookService.verifySignature(payload, signature);
+        boolean valid = webhookService.verifySignature(payload, signature);
         if (!valid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid signature");
         }
-        githubWebhookService.handlePushEvent(payload);
+        webhookService.handlePushEvent(payload);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("accepted");
     }
 }

@@ -2,8 +2,8 @@ package com.jdktomcat.showcase.ai.langgraph4j.service.github;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
-import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubCompareResponse;
-import com.jdktomcat.showcase.ai.langgraph4j.entry.GithubPushPayload;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.entity.CompareResponse;
+import com.jdktomcat.showcase.ai.langgraph4j.domain.entity.PushPayload;
 import com.jdktomcat.showcase.ai.langgraph4j.service.telegram.TelegramNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.Formatter;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GithubWebhookService {
+public class WebhookService {
 
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
@@ -42,14 +42,14 @@ public class GithubWebhookService {
         return expected.equals(signatureHeader);
     }
 
-    @Async("githubWebhookTaskExecutor")
+    @Async("webhookTaskExecutor")
     public void handlePushEvent(String payload) {
         try {
-            GithubPushPayload pushPayload = objectMapper.readValue(payload, GithubPushPayload.class);
+            PushPayload pushPayload = objectMapper.readValue(payload, PushPayload.class);
             String fullName = pushPayload.getRepository().getFullName();
             String before = pushPayload.getBefore();
             String after = pushPayload.getAfter();
-            GithubCompareResponse compareResponse = fetchCompare(fullName, before, after);
+            CompareResponse compareResponse = fetchCompare(fullName, before, after);
             CommitTaskState finalState = commitReviewService.reviewPush(pushPayload, compareResponse);
             telegramNotificationService.sendCommitReview(finalState);
             log.info("GitHub push 处理完成 repository={} branch={} decision={}",
@@ -59,7 +59,7 @@ public class GithubWebhookService {
         }
     }
 
-    public GithubCompareResponse fetchCompare(String fullName, String before, String after) {
+    public CompareResponse fetchCompare(String fullName, String before, String after) {
         String url = "https://api.github.com/repos/" + fullName + "/compare/" + before + "..." + after;
 
         HttpHeaders headers = new HttpHeaders();
@@ -69,11 +69,11 @@ public class GithubWebhookService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<GithubCompareResponse> response = restTemplate.exchange(
+        ResponseEntity<CompareResponse> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                GithubCompareResponse.class
+                CompareResponse.class
         );
 
         return response.getBody();

@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.ai.langgraph4j.service.agent.commit;
+package com.jdktomcat.showcase.ai.langgraph4j.agent;
 
 import com.jdktomcat.showcase.ai.langgraph4j.domain.dto.CommitTaskState;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +10,11 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SecurityAgent implements NodeAction<CommitTaskState> {
+public class ConventionAgent implements NodeAction<CommitTaskState> {
 
     private final ChatModel chatModel;
 
-    public SecurityAgent(ChatModel chatModel) {
+    public ConventionAgent(ChatModel chatModel) {
         this.chatModel = chatModel;
     }
 
@@ -23,16 +23,16 @@ public class SecurityAgent implements NodeAction<CommitTaskState> {
      */
     public void review(CommitTaskState state) {
         String prompt = String.format("""
-                你是安全审计专家，请依据 OWASP Top 10 和常见服务端安全问题审查以下代码改动。
-                请用中文并按以下 Markdown 结构输出：
+                你是代码规范审查专家。请检查以下提交 diff，并用中文输出 Markdown 报告。
+                输出结构必须是：
                 ## 结论
                 风险等级：低风险 / 中风险 / 高风险
                 
                 ## 发现
-                - 最多 3 条，重点关注注入、鉴权、敏感信息泄露、越权、反序列化、资源泄露
+                - 最多 3 条，聚焦命名、可读性、异常处理、可维护性、风格一致性
                 
                 ## 建议
-                - 最多 3 条；如果没有明显问题，明确写“未发现阻断发布的安全风险”
+                - 最多 3 条；如果没有明显问题，明确写“规范层面可接受”
                 
                 提交上下文：
                 - 仓库：%s
@@ -44,8 +44,8 @@ public class SecurityAgent implements NodeAction<CommitTaskState> {
                 """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
 
         String review = chatModel.call(prompt);
-        log.info("安全审查完成，报告长度 {} 字", review.length());
-        state.setSecurityReport(review);
+        log.info("规范审查完成，报告长度 {} 字", review.length());
+        state.setConventionReport(review);
     }
 
     @Override
