@@ -45,6 +45,12 @@ public class MultiDbLeaseListener implements LeaseListener {
     @Value("${vault.datasource.close-warn-after-ms:10000}")
     private long closeWarnAfterMs;
 
+    @Value("${spring.datasource.url:${spring.datasource.hikari.jdbc-url:}}")
+    private String configuredJdbcUrl;
+
+    @Value("${spring.datasource.driver-class-name:${spring.datasource.driverClassName:}}")
+    private String configuredDriverClassName;
+
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
 
@@ -97,33 +103,82 @@ public class MultiDbLeaseListener implements LeaseListener {
 
     private HikariDataSource createReplacementDataSource(HikariDataSource old, String user, String pwd) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(old.getDriverClassName());
-        config.setJdbcUrl(old.getJdbcUrl());
+        String jdbcUrl = firstNonBlank(old.getJdbcUrl(), old.getDataSourceProperties().getProperty("jdbcUrl"),
+                old.getDataSourceProperties().getProperty("url"), configuredJdbcUrl);
+        String driverClassName = firstNonBlank(old.getDriverClassName(), configuredDriverClassName);
+
+        if (hasText(driverClassName)) {
+            config.setDriverClassName(driverClassName);
+        }
+        if (!hasText(jdbcUrl)) {
+            throw new IllegalStateException("Unable to determine jdbcUrl for rotated HikariDataSource.");
+        }
+        config.setJdbcUrl(jdbcUrl);
         config.setUsername(user);
         config.setPassword(pwd);
         config.setAutoCommit(old.isAutoCommit());
         config.setReadOnly(old.isReadOnly());
-        config.setConnectionTimeout(old.getConnectionTimeout());
-        config.setValidationTimeout(old.getValidationTimeout());
-        config.setIdleTimeout(old.getIdleTimeout());
-        config.setLeakDetectionThreshold(old.getLeakDetectionThreshold());
-        config.setMaxLifetime(old.getMaxLifetime());
-        config.setMaximumPoolSize(old.getMaximumPoolSize());
-        config.setMinimumIdle(old.getMinimumIdle());
+        if (old.getConnectionTimeout() > 0) {
+            config.setConnectionTimeout(old.getConnectionTimeout());
+        }
+        if (old.getValidationTimeout() > 0) {
+            config.setValidationTimeout(old.getValidationTimeout());
+        }
+        if (old.getIdleTimeout() >= 0) {
+            config.setIdleTimeout(old.getIdleTimeout());
+        }
+        if (old.getLeakDetectionThreshold() >= 0) {
+            config.setLeakDetectionThreshold(old.getLeakDetectionThreshold());
+        }
+        if (old.getMaxLifetime() > 0) {
+            config.setMaxLifetime(old.getMaxLifetime());
+        }
+        if (old.getMaximumPoolSize() > 0) {
+            config.setMaximumPoolSize(old.getMaximumPoolSize());
+        }
+        if (old.getMinimumIdle() >= 0) {
+            config.setMinimumIdle(old.getMinimumIdle());
+        }
         config.setInitializationFailTimeout(old.getInitializationFailTimeout());
         config.setIsolateInternalQueries(old.isIsolateInternalQueries());
         config.setAllowPoolSuspension(old.isAllowPoolSuspension());
         config.setRegisterMbeans(old.isRegisterMbeans());
-        config.setConnectionTestQuery(old.getConnectionTestQuery());
-        config.setConnectionInitSql(old.getConnectionInitSql());
-        config.setCatalog(old.getCatalog());
-        config.setSchema(old.getSchema());
-        config.setTransactionIsolation(old.getTransactionIsolation());
+        if (hasText(old.getConnectionTestQuery())) {
+            config.setConnectionTestQuery(old.getConnectionTestQuery());
+        }
+        if (hasText(old.getConnectionInitSql())) {
+            config.setConnectionInitSql(old.getConnectionInitSql());
+        }
+        if (hasText(old.getCatalog())) {
+            config.setCatalog(old.getCatalog());
+        }
+        if (hasText(old.getSchema())) {
+            config.setSchema(old.getSchema());
+        }
+        if (hasText(old.getTransactionIsolation())) {
+            config.setTransactionIsolation(old.getTransactionIsolation());
+        }
         config.setPoolName(buildRotatedPoolName(old.getPoolName()));
         Properties dataSourceProperties = new Properties();
         dataSourceProperties.putAll(old.getDataSourceProperties());
         config.setDataSourceProperties(dataSourceProperties);
         return new HikariDataSource(config);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private String firstNonBlank(String... candidates) {
+        if (candidates == null) {
+            return null;
+        }
+        for (String candidate : candidates) {
+            if (hasText(candidate)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     private String buildRotatedPoolName(String oldPoolName) {

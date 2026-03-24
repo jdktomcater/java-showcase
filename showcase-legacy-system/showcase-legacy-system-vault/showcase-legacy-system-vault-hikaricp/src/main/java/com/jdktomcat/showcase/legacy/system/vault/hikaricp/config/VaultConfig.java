@@ -23,8 +23,8 @@ public class VaultConfig {
     @Autowired
     private MultiDbLeaseListener multiDbLeaseListener;
 
-    @Value("${spring.cloud.vault.database.role:${spring.cloud.vault.databases.typayv2slave.role:}}")
-    private String typayv2slaveRole;
+    @Value("${spring.cloud.vault.database.role:}")
+    private String role;
 
     @Bean(name = "vaultLeaseTaskScheduler")
     public TaskScheduler vaultLeaseTaskScheduler() {
@@ -38,13 +38,13 @@ public class VaultConfig {
     @Bean(destroyMethod = "destroy")
     public SecretLeaseContainer leaseContainer(VaultOperations operations,
                                                @Qualifier("vaultLeaseTaskScheduler") TaskScheduler vaultLeaseTaskScheduler) {
-        if (typayv2slaveRole == null || typayv2slaveRole.trim().isEmpty()) {
+        if (role == null || role.trim().isEmpty()) {
             throw new IllegalStateException("Missing Vault database role configuration.");
         }
         SecretLeaseContainer container = new SecretLeaseContainer(operations, vaultLeaseTaskScheduler);
         container.addLeaseListener(multiDbLeaseListener);
         // 必须添加 RequestedSecret，否则容器不会向 Vault 请求凭证，也就不会触发任何事件
-        container.requestRotatingSecret("database/creds/" + typayv2slaveRole);
+        container.requestRotatingSecret("database/creds/" + role);
         // 设置网络相关策略 网络/I/O 错误时保留租约并继续重试，网络恢复后自动恢复续期
         container.setLeaseStrategy(LeaseStrategy.retainOnError());
         container.afterPropertiesSet();
