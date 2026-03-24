@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.legacy.system.vault.hikaricp.controller;
 
-import com.jdktomcat.showcase.legacy.system.vault.simple.mapper.HealthMapper;
+import com.jdktomcat.showcase.legacy.system.vault.hikaricp.mapper.HealthMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
