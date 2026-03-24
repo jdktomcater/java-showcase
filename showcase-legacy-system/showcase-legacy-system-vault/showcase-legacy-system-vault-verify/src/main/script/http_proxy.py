@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import requests
 
-UPSTREAM = "https://txdev-vault.qwasn.com"
+UPSTREAM = "https://txfat-vault.fbnma.com"
 BLOCK = False  # True=模拟分区, False=正常转发
 
 class H(BaseHTTPRequestHandler):

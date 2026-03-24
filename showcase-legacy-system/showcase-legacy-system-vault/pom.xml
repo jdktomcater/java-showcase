@@ -16,5 +16,6 @@
         <module>showcase-legacy-system-vault-tidb</module>
         <module>showcase-legacy-system-vault-ob</module>
         <module>showcase-legacy-system-vault-verify</module>
+        <module>showcase-legacy-system-vault-hikaricp</module>
     </modules>
 </project>

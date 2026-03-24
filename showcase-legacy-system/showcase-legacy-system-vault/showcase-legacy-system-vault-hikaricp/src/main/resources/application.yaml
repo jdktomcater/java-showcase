@@ -1,0 +1,45 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: showcase-vault-hikaricp
+  config:
+    import: optional:vault://
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://172.30.3.16:3366/tyadmin?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8
+  cloud:
+    vault:
+      enabled: true
+      fail-fast: true
+      authentication: ${VAULT_AUTHENTICATION:APPROLE}
+      app-role:
+        role: ${VAULT_AUTHENTICATION_ROLE:tx-tyadmin-role-v1}
+        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:bae0727d-27aa-57f4-dbb7-11572bb6f504}
+        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:183b6a1a-70b7-5a12-6d59-81d36cafce0c}
+      # authentication: ${VAULT_AUTHENTICATION:TOKEN}
+      # token: ${VAULT_TOKEN:hvs.pER0xhc85jcsKkVLr3oe0UxE}
+      uri: ${VAULT_URI:https://txdev-vault.qwasn.com}
+#      uri: ${VAULT_URI:http://127.0.0.1:18200}
+#      namespace: tx-fat
+      kv:
+        enabled: false
+      config:
+        lifecycle:
+          enabled: true
+          min-renewal: 10s
+          lease-endpoints: leases
+      database:
+        enabled: true
+        backend: database
+        role: tx-tyadmin-role-v1
+        username-property: spring.datasource.username
+        password-property: spring.datasource.password
+logging:
+  level:
+    org.springframework.cloud.vault: debug
+    org.springframework.vault: debug
+  config: classpath:logback.xml
+  file:
+    name: /data/logs/showcase/showcase-vault-simple.log
