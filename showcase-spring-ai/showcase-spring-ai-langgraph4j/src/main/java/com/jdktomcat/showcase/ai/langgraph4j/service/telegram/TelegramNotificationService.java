@@ -54,6 +54,7 @@ public class TelegramNotificationService {
                 .append("仓库: ").append(state.getRepository()).append('\n')
                 .append("分支: ").append(state.getBranch()).append('\n')
                 .append("提交: ").append(state.getSha()).append('\n')
+                .append("描述: ").append(state.getMessage()).append('\n')
                 .append("作者: ").append(state.getAuthor()).append('\n')
                 .append("结论: ").append(state.getDecision()).append('\n');
 
