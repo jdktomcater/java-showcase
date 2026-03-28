@@ -27,11 +27,11 @@ spring:
         max-retries: 10
         embedding:
           additional-models:
-            - qwen3-vl:235b-cloud
+            - qwen3-coder:480b-cloud
         pull-model-strategy: when_missing
       baseUrl: ${OLLAMA_BASE_URL:http://localhost:11434}
       embedding:
-        model: qwen3-vl:235b-cloud
+        model: qwen3-coder:480b-cloud
       chat:
         model: gpt-oss:120b-cloud
 
