@@ -40,14 +40,17 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
                 }
                 
                 提交上下文：
+                - 事件类型：%s
                 - 仓库：%s
                 - 分支：%s
                 - 提交：%s
+                - PR 号：%s
+                - PR 标题：%s
                 - 作者：%s <%s>
                 - 变更文件数：%s
                 - 新增行数：%s
                 - 删除行数：%s
-                - Compare URL：%s
+                - Review URL：%s
                 
                 BusinessAgent 报告：
                 %s
@@ -61,15 +64,18 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
                 SecurityAgent 报告：
                 %s
                 """,
+                state.getEventType(),
                 state.getRepository(),
                 state.getBranch(),
                 state.getSha(),
+                Objects.toString(state.getPullRequestNumber(), "-"),
+                Objects.toString(state.getPullRequestTitle(), "-"),
                 state.getAuthor(),
                 state.getEmail(),
                 Objects.toString(state.getChangedFiles(), "0"),
                 Objects.toString(state.getAdditions(), "0"),
                 Objects.toString(state.getDeletions(), "0"),
-                state.getCompareUrl(),
+                Objects.toString(state.getReviewUrl(), state.getCompareUrl()),
                 state.getBusinessReport(),
                 state.getConventionReport(),
                 state.getPerformanceReport(),
@@ -91,6 +97,7 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
         boolean passed = "PASS".equals(decision);
         state.setDecision(decision);
         state.setPassed(passed);
+        state.setSummary(summary);
         state.setFinalReport(finalReport);
         state.setTelegramMessage(telegramMessage);
         state.setNeedRetry(false);

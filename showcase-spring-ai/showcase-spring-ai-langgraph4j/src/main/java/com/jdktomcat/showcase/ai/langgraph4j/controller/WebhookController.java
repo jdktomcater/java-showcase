@@ -19,14 +19,14 @@ public class WebhookController {
     public ResponseEntity<String> receiveWebhook(@RequestHeader(value = "X-GitHub-Event", required = false) String event,
                                                  @RequestHeader(value = "X-Hub-Signature-256", required = false) String signature,
                                                  @RequestBody String payload) {
-        if (!"push".equals(event)) {
+        if (!"push".equals(event) && !"pull_request".equals(event)) {
             return ResponseEntity.ok("ignored");
         }
         boolean valid = webhookService.verifySignature(payload, signature);
         if (!valid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid signature");
         }
-        webhookService.handlePushEvent(payload);
+        webhookService.handleWebhookEvent(event, payload);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("accepted");
     }
 }

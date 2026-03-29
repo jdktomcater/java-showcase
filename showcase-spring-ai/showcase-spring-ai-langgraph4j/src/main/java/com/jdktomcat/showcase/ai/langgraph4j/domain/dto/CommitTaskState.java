@@ -11,14 +11,18 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CommitTaskState extends AgentState {
+    private String eventType;
     private String repository;
     private String branch;
     private String sha;
     private String author;
     private String email;
+    private Integer pullRequestNumber;
+    private String pullRequestTitle;
     private String message;
     private String diff;
     private String compareUrl;
+    private String reviewUrl;
     private Integer changedFiles;
     private Integer additions;
     private Integer deletions;
@@ -30,6 +34,7 @@ public class CommitTaskState extends AgentState {
     private boolean needRetry;
     private boolean passed;
     private String decision;
+    private String summary;
     private String finalReport;
     private String telegramMessage;
 
@@ -43,14 +48,18 @@ public class CommitTaskState extends AgentState {
         if (oldState == null) {
             return;
         }
+        this.eventType = oldState.getEventType();
         this.repository = oldState.getRepository();
         this.branch = oldState.getBranch();
         this.sha = oldState.getSha();
         this.author = oldState.getAuthor();
         this.email = oldState.getEmail();
+        this.pullRequestNumber = oldState.getPullRequestNumber();
+        this.pullRequestTitle = oldState.getPullRequestTitle();
         this.message = oldState.getMessage();
         this.diff = oldState.getDiff();
         this.compareUrl = oldState.getCompareUrl();
+        this.reviewUrl = oldState.getReviewUrl();
         this.changedFiles = oldState.getChangedFiles();
         this.additions = oldState.getAdditions();
         this.deletions = oldState.getDeletions();
@@ -61,6 +70,7 @@ public class CommitTaskState extends AgentState {
         this.needRetry = oldState.isNeedRetry();
         this.passed = oldState.isPassed();
         this.decision = oldState.getDecision();
+        this.summary = oldState.getSummary();
         this.finalReport = oldState.getFinalReport();
         this.telegramMessage = oldState.getTelegramMessage();
     }

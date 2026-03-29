@@ -51,11 +51,21 @@ public class TelegramNotificationService {
     private String buildMessage(CommitTaskState state) {
         StringBuilder builder = new StringBuilder();
         builder.append("GitHub 提交评审结果").append('\n')
+                .append("事件: ").append(state.getEventType()).append('\n')
                 .append("仓库: ").append(state.getRepository()).append('\n')
                 .append("分支: ").append(state.getBranch()).append('\n')
                 .append("提交: ").append(state.getSha()).append('\n')
-                .append("描述: ").append(state.getMessage()).append('\n')
-                .append("作者: ").append(state.getAuthor()).append('\n')
+                .append("描述: ").append(state.getMessage()).append('\n');
+
+        if (state.getPullRequestNumber() != null) {
+            builder.append("PR: #").append(state.getPullRequestNumber());
+            if (StringUtils.isNotBlank(state.getPullRequestTitle())) {
+                builder.append(" ").append(state.getPullRequestTitle());
+            }
+            builder.append('\n');
+        }
+
+        builder.append("作者: ").append(state.getAuthor()).append('\n')
                 .append("结论: ").append(state.getDecision()).append('\n');
 
         if (StringUtils.isNotBlank(state.getTelegramMessage())) {
@@ -64,8 +74,9 @@ public class TelegramNotificationService {
             builder.append('\n').append(state.getFinalReport()).append('\n');
         }
 
-        if (StringUtils.isNotBlank(state.getCompareUrl())) {
-            builder.append('\n').append("Compare: ").append(state.getCompareUrl());
+        String reviewUrl = StringUtils.defaultIfBlank(state.getReviewUrl(), state.getCompareUrl());
+        if (StringUtils.isNotBlank(reviewUrl)) {
+            builder.append('\n').append("Review: ").append(reviewUrl);
         }
 
         return builder.toString();
