@@ -79,7 +79,7 @@ public class GitHubReviewPublisher {
         body.put("details_url", StringUtils.defaultIfBlank(state.getReviewUrl(), state.getCompareUrl()));
         body.put("external_id", buildExternalId(state));
         body.put("output", output);
-        exchange(url, HttpMethod.POST, body);
+        exchange(url, body);
         log.info("GitHub check run 已回写 repository={} sha={} decision={}",
                 state.getRepository(), state.getSha(), state.getDecision());
     }
@@ -95,7 +95,7 @@ public class GitHubReviewPublisher {
         body.put("context", "langgraph4j/code-review");
         body.put("description", abbreviateDescription(state.getSummary()));
         body.put("target_url", StringUtils.defaultIfBlank(state.getReviewUrl(), state.getCompareUrl()));
-        exchange(url, HttpMethod.POST, body);
+        exchange(url, body);
         log.info("GitHub commit status 已回写 repository={} sha={} decision={}",
                 state.getRepository(), state.getSha(), state.getDecision());
     }
@@ -105,7 +105,7 @@ public class GitHubReviewPublisher {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("body", buildReviewBody(state));
         body.put("event", state.isPassed() ? "COMMENT" : "REQUEST_CHANGES");
-        exchange(url, HttpMethod.POST, body);
+        exchange(url, body);
         log.info("GitHub PR review 已回写 repository={} pr={} decision={}",
                 state.getRepository(), state.getPullRequestNumber(), state.getDecision());
     }
@@ -113,24 +113,23 @@ public class GitHubReviewPublisher {
     private void publishPullRequestComment(CommitTaskState state) {
         String url = "https://api.github.com/repos/" + state.getRepository() + "/issues/" + state.getPullRequestNumber() + "/comments";
         Map<String, Object> body = Map.of("body", buildCommentBody(state));
-        exchange(url, HttpMethod.POST, body);
+        exchange(url, body);
         log.info("GitHub PR 评论已回写 repository={} pr={} decision={}",
                 state.getRepository(), state.getPullRequestNumber(), state.getDecision());
     }
 
-    private void exchange(String url, HttpMethod method, Map<String, Object> body) {
+    private void exchange(String url, Map<String, Object> body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(githubToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(java.util.List.of(MediaType.APPLICATION_JSON));
         headers.add("X-GitHub-Api-Version", "2022-11-28");
-        restTemplate.exchange(url, method, new HttpEntity<>(body, headers), String.class);
+        restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(body, headers), String.class);
     }
 
     private String buildCommentBody(CommitTaskState state) {
         StringBuilder builder = new StringBuilder();
-        builder.append("## AI 自动代码审查结果").append('\n')
-                .append("- 结论：").append(state.getDecision()).append('\n');
+        builder.append("## AI 自动代码审查结果").append('\n').append("- 结论：").append(state.getDecision()).append('\n');
         if (StringUtils.isNotBlank(state.getSummary())) {
             builder.append("- 摘要：").append(state.getSummary()).append('\n');
         }
