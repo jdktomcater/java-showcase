@@ -3,9 +3,9 @@ server:
 
 github:
   webhook:
-    secret: ${GITHUB_WEBHOOK_SECRET:}
+    secret: ${GITHUB_WEBHOOK_SECRET:yuhata2308}
   api:
-    token: ${GITHUB_API_TOKEN:}
+    token: ${GITHUB_API_TOKEN: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}
   review:
     max-diff-length: 12000
     publish-check-run: ${GITHUB_REVIEW_PUBLISH_CHECK_RUN:false}
@@ -15,8 +15,8 @@ github:
 
 telegram:
   bot:
-    token: ${TELEGRAM_BOT_TOKEN:}
-    chat-id: ${TELEGRAM_CHAT_ID:}
+    token: ${TELEGRAM_BOT_TOKEN:8447064016:AAEs1GaaBb6ByEVJa9OpfzvD695Z38z_XPQ}
+    chat-id: ${TELEGRAM_CHAT_ID:-5036565176}
 
 spring:
   jackson:
@@ -31,13 +31,13 @@ spring:
         max-retries: 10
         embedding:
           additional-models:
-            - ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
+            - ${OLLAMA_EMBEDDING_MODEL:gpt-oss:120b-cloud}
         pull-model-strategy: when_missing
       baseUrl: ${OLLAMA_BASE_URL:http://localhost:11434}
       embedding:
-        model: ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
+        model: ${OLLAMA_EMBEDDING_MODEL:gpt-oss:120b-cloud}
       chat:
-        model: ${OLLAMA_CHAT_MODEL:qwen2.5-coder:7b}
+        model: ${OLLAMA_CHAT_MODEL:qwen3-coder:480b-cloud}
 
 
 # 日志配置（便于调试流程）

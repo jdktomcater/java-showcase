@@ -38,8 +38,7 @@ public class CommitReviewService {
 
     public CommitTaskState review(CommitTaskState initialState) {
         CommitTaskState finalState = commitWorkflow.invoke(initialState.toMap()).orElse(initialState);
-        log.info("提交评审完成 repository={} sha={} decision={}",
-                finalState.getRepository(), finalState.getSha(), finalState.getDecision());
+        log.info("提交评审完成 repository={} sha={} decision={}", finalState.getRepository(), finalState.getSha(), finalState.getDecision());
         return finalState;
     }
 
@@ -47,7 +46,6 @@ public class CommitReviewService {
         CommitTaskState state = new CommitTaskState();
         PushPayload.Commit latestCommit = getLatestCommit(pushPayload.getCommits());
         List<CompareResponse.FileDiff> files = compareResponse == null ? List.of() : compareResponse.getFiles();
-
         state.setEventType("push");
         state.setRepository(pushPayload.getRepository() == null ? "" : pushPayload.getRepository().getFullName());
         state.setBranch(extractBranch(pushPayload.getRef()));

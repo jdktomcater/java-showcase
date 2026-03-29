@@ -79,8 +79,7 @@ public class WebhookService {
         CompareResponse compareResponse = fetchCompare(fullName, before, after);
         CommitTaskState finalState = commitReviewService.reviewPush(pushPayload, compareResponse);
         publishReviewResult(finalState);
-        log.info("GitHub push 处理完成 repository={} branch={} decision={}",
-                fullName, pushPayload.getRef(), finalState.getDecision());
+        log.info("GitHub push 处理完成 repository={} branch={} decision={}", fullName, pushPayload.getRef(), finalState.getDecision());
     }
 
     private void handlePullRequestEvent(String payload) throws Exception {
