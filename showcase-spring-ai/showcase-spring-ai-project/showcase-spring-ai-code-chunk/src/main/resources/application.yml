@@ -20,16 +20,18 @@ spring:
     password: ${DB_PASSWORD:postgres}
 
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      init:
+        pull-model-strategy: when_missing
       embedding:
         options:
-          model: text-embedding-3-small
+          model: nomic-embed-text
 
     vectorstore:
       pgvector:
         initialize-schema: true
-        dimensions: 1536
+        dimensions: 768
         index-type: hnsw
         distance-type: cosine_distance
 
