@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+app:
+  code-rag:
+    repo-name: java-showcase
+    repo-root: /Users/yuhata/workspace/github/jdktomcater/java-showcase
+    include-globs:
+      - "**/*.java"
+      - "**/*.xml"
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "**/*.md"
+      - "**/*.sql"
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/code_rag
+    username: postgres
+    password: ${DB_PASSWORD:postgres}
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
+
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        dimensions: 1536
+        index-type: hnsw
+        distance-type: cosine_distance
+
+logging:
+  level:
+    org.springframework.ai: INFO
+    com.jdktomcat.showcase.ai.code.chunk: DEBUG
