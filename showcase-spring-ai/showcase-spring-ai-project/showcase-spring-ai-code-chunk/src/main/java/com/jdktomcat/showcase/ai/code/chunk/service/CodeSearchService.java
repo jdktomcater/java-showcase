@@ -31,9 +31,7 @@ public class CodeSearchService {
     }
 
     private CodeSearchHit toHit(Document document) {
-        Map<String, Object> meta = document.getMetadata() == null
-                ? Map.of()
-                : new LinkedHashMap<>(document.getMetadata());
+        Map<String, Object> meta = new LinkedHashMap<>(document.getMetadata());
 
         String text = document.getText() == null ? "" : document.getText();
         String preview = text.length() <= TEXT_PREVIEW_MAX
