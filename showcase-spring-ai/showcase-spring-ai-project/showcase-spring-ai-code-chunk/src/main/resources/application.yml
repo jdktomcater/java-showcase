@@ -39,3 +39,8 @@ logging:
   level:
     org.springframework.ai: INFO
     com.jdktomcat.showcase.ai.code.chunk: DEBUG
+
+neo4j:
+  uri: ${NEO4J_URI:bolt://localhost:7687}
+  username: ${NEO4J_USERNAME:neo4j}
+  password: ${NEO4J_PASSWORD:password}

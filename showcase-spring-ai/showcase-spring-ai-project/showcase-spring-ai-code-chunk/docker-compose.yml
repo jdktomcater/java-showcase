@@ -17,5 +17,23 @@ services:
       timeout: 5s
       retries: 10
 
+  neo4j:
+    image: neo4j:5
+    container_name: code-rag-neo4j
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/password
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+
 volumes:
   pgvector_data:
+  neo4j_data:
