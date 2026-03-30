@@ -1,9 +1,11 @@
 package com.jdktomcat.showcase.ai.code.chunk.service;
 
 import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.javadoc.Javadoc;
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeChunk;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class JavaCodeChunker {
+
+    static {
+        StaticJavaParser.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+    }
 
     @Value("${app.code-rag.repo-name}")
     private String repoName;
@@ -41,7 +47,7 @@ public class JavaCodeChunker {
 
             int classStart = clazz.getBegin().map(p -> p.line).orElse(-1);
             int classEnd = clazz.getEnd().map(p -> p.line).orElse(-1);
-            String classDoc = clazz.getJavadoc().map(j -> j.toText()).orElse("");
+            String classDoc = clazz.getJavadoc().map(Javadoc::toText).orElse("");
             String classContent = buildClassSignature(clazz);
 
             chunks.add(buildChunk(
@@ -59,7 +65,7 @@ public class JavaCodeChunker {
             for (MethodDeclaration method : clazz.getMethods()) {
                 int start = method.getBegin().map(p -> p.line).orElse(-1);
                 int end = method.getEnd().map(p -> p.line).orElse(-1);
-                String doc = method.getJavadoc().map(j -> j.toText()).orElse("");
+                String doc = method.getJavadoc().map(Javadoc::toText).orElse("");
                 String content = method.toString();
 
                 chunks.add(buildChunk(

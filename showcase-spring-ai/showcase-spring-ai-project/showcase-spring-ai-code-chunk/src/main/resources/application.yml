@@ -15,7 +15,7 @@ app:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/code_rag
+    url: jdbc:postgresql://localhost:6432/code_rag
     username: postgres
     password: ${DB_PASSWORD:postgres}
 
