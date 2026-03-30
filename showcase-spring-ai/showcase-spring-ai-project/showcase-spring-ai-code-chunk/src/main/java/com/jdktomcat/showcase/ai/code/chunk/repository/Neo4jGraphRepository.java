@@ -5,6 +5,7 @@ import com.jdktomcat.showcase.ai.code.chunk.domain.CodeGraphRelation;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
+import org.neo4j.driver.types.MapAccessor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public class Neo4jGraphRepository {
                     """, Values.parameters(
                     "nodeId", nodeId,
                     "depth", depth
-            )).list(record -> record.asMap()));
+            )).list(MapAccessor::asMap));
         }
     }
 
@@ -104,7 +105,7 @@ public class Neo4jGraphRepository {
                     """, Values.parameters(
                     "methodId", methodId,
                     "depth", depth
-            )).list(record -> record.asMap()));
+            )).list(MapAccessor::asMap));
         }
     }
 }
