@@ -32,12 +32,8 @@ public class CodeSearchService {
 
     private CodeSearchHit toHit(Document document) {
         Map<String, Object> meta = new LinkedHashMap<>(document.getMetadata());
-
         String text = document.getText() == null ? "" : document.getText();
-        String preview = text.length() <= TEXT_PREVIEW_MAX
-                ? text
-                : text.substring(0, TEXT_PREVIEW_MAX) + "…";
-
+        String preview = text.length() <= TEXT_PREVIEW_MAX ? text : text.substring(0, TEXT_PREVIEW_MAX) + "…";
         return new CodeSearchHit(
                 document.getScore(),
                 stringMeta(meta, "chunkId"),
