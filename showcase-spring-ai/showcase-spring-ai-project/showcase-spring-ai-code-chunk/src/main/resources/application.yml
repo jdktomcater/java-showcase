@@ -3,8 +3,8 @@ server:
 
 app:
   code-rag:
-    repo-name: java-showcase
-    repo-root: /Users/yuhata/workspace/github/jdktomcater/java-showcase
+    repo-name: ruoyi
+    repo-root: /Users/yuhata/workspace/gitee/RuoYi-Cloud
     include-globs:
       - "**/*.java"
       - "**/*.xml"
