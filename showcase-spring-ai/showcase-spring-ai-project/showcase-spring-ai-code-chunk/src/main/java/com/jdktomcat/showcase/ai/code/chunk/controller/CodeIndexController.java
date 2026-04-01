@@ -94,6 +94,7 @@ public class CodeIndexController {
                         request.requiredFqn(),
                         request.resolvedDepth()
                 );
+                case "classgraph" -> impactAnalysisService.fullTypeDependencyGraph();
                 default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported mode: " + request.mode());
             };
         } catch (IllegalArgumentException ex) {

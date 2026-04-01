@@ -51,4 +51,18 @@ public class ImpactAnalysisService {
                 graphData.edges()
         );
     }
+
+    public GraphViewResponse fullTypeDependencyGraph() {
+        Neo4jGraphRepository.GraphData graphData = graphRepository.findFullTypeDependencyGraph();
+        return new GraphViewResponse(
+                true,
+                "classgraph",
+                "TYPE:*",
+                0,
+                graphData.nodes().size(),
+                graphData.edges().size(),
+                graphData.nodes(),
+                graphData.edges()
+        );
+    }
 }

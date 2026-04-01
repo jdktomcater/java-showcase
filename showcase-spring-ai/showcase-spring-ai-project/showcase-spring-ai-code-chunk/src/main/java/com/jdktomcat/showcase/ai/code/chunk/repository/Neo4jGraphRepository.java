@@ -210,6 +210,45 @@ public class Neo4jGraphRepository {
         }
     }
 
+    public GraphData findFullTypeDependencyGraph() {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                Record record = tx.run("""
+                    OPTIONAL MATCH (source:CodeNode {type: 'TYPE'})
+                    OPTIONAL MATCH (source)-[rel:RELATES]->(target:CodeNode {type: 'TYPE'})
+                    WHERE rel IS NULL OR rel.type IN ['DEPENDS_ON', 'EXTENDS', 'IMPLEMENTS', 'INJECTS']
+                    WITH [node IN collect(DISTINCT source) + collect(DISTINCT target)
+                          WHERE node IS NOT NULL] AS rawNodes,
+                         [relation IN collect(DISTINCT rel)
+                          WHERE relation IS NOT NULL] AS graphRels
+                    UNWIND CASE WHEN size(rawNodes) = 0 THEN [NULL] ELSE rawNodes END AS node
+                    WITH collect(DISTINCT node) AS graphNodes, graphRels
+                    RETURN [node IN graphNodes WHERE node IS NOT NULL | {
+                                id: node.id,
+                                name: node.name,
+                                type: node.type,
+                                fqn: node.fqn,
+                                filePath: node.filePath,
+                                module: node.module,
+                                startLine: node.startLine,
+                                endLine: node.endLine
+                            }] AS nodes,
+                           [rel IN graphRels | {
+                                id: elementId(rel),
+                                fromId: startNode(rel).id,
+                                toId: endNode(rel).id,
+                                type: rel.type
+                            }] AS relationships
+                    """).single();
+                return mapGraphData(
+                        record.get("nodes").asList(MapAccessor::asMap),
+                        record.get("relationships").asList(MapAccessor::asMap),
+                        null
+                );
+            });
+        }
+    }
+
     private GraphData mapGraphData(List<Map<String, Object>> nodeMaps, List<Map<String, Object>> relationMaps, String focusId) {
         List<GraphViewNode> nodes = new ArrayList<>();
         for (Map<String, Object> node : nodeMaps) {
