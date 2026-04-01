@@ -1,13 +1,14 @@
 package com.jdktomcat.showcase.ai.code.chunk.service;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.javadoc.Javadoc;
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeChunk;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class JavaCodeChunker {
 
-    static {
-        StaticJavaParser.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
-    }
-
     @Value("${app.code-rag.repo-name}")
     private String repoName;
 
@@ -33,52 +30,49 @@ public class JavaCodeChunker {
 
     public List<CodeChunk> chunk(Path file) throws IOException {
         String source = Files.readString(file);
-        CompilationUnit cu = StaticJavaParser.parse(source);
+        CompilationUnit cu = JdtAstSupport.parse(source);
 
-        String packageName = cu.getPackageDeclaration()
-                .map(pd -> pd.getName().asString())
-                .orElse("");
+        String packageName = cu.getPackage() == null
+                ? ""
+                : cu.getPackage().getName().getFullyQualifiedName();
 
         String relativePath = Path.of(repoRoot).relativize(file).toString().replace('\\', '/');
         List<CodeChunk> chunks = new ArrayList<>();
 
-        cu.findAll(ClassOrInterfaceDeclaration.class).forEach(clazz -> {
-            String className = clazz.getNameAsString();
-
-            int classStart = clazz.getBegin().map(p -> p.line).orElse(-1);
-            int classEnd = clazz.getEnd().map(p -> p.line).orElse(-1);
-            String classDoc = clazz.getJavadoc().map(Javadoc::toText).orElse("");
-            String classContent = buildClassSignature(clazz);
-
-            chunks.add(buildChunk(
-                    relativePath,
-                    packageName,
-                    className,
-                    null,
-                    "class",
-                    classStart,
-                    classEnd,
-                    classDoc,
-                    classContent
-            ));
-
-            for (MethodDeclaration method : clazz.getMethods()) {
-                int start = method.getBegin().map(p -> p.line).orElse(-1);
-                int end = method.getEnd().map(p -> p.line).orElse(-1);
-                String doc = method.getJavadoc().map(Javadoc::toText).orElse("");
-                String content = method.toString();
+        cu.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(TypeDeclaration type) {
+                String className = type.getName().getIdentifier();
 
                 chunks.add(buildChunk(
                         relativePath,
                         packageName,
                         className,
-                        method.getNameAsString(),
-                        "method",
-                        start,
-                        end,
-                        doc,
-                        content
+                        null,
+                        "class",
+                        JdtAstSupport.startLine(cu, type),
+                        JdtAstSupport.endLine(cu, type),
+                        JdtAstSupport.extractJavadocText(source, type.getJavadoc()),
+                        buildClassSignature(type)
                 ));
+
+                for (MethodDeclaration method : type.getMethods()) {
+                    if (method.isConstructor()) {
+                        continue;
+                    }
+                    chunks.add(buildChunk(
+                            relativePath,
+                            packageName,
+                            className,
+                            method.getName().getIdentifier(),
+                            "method",
+                            JdtAstSupport.startLine(cu, method),
+                            JdtAstSupport.endLine(cu, method),
+                            JdtAstSupport.extractJavadocText(source, method.getJavadoc()),
+                            JdtAstSupport.extractSource(source, method)
+                    ));
+                }
+                return true;
             }
         });
 
@@ -122,29 +116,34 @@ public class JavaCodeChunker {
         );
     }
 
-    private String buildClassSignature(ClassOrInterfaceDeclaration clazz) {
-        String modifiers = clazz.getModifiers().stream()
-                .map(modifier -> modifier.getKeyword().asString())
+    private String buildClassSignature(TypeDeclaration type) {
+        String modifiers = ((List<IExtendedModifier>) type.modifiers()).stream()
+                .filter(IExtendedModifier::isModifier)
+                .map(Modifier.class::cast)
+                .map(Modifier::getKeyword)
+                .map(Modifier.ModifierKeyword::toString)
                 .collect(Collectors.joining(" "));
-        String typeParameters = clazz.getTypeParameters().isEmpty()
+
+        String typeParameters = type.typeParameters().isEmpty()
                 ? ""
-                : clazz.getTypeParameters().stream()
+                : ((List<Type>) type.typeParameters()).stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", ", "<", ">"));
-        String extendsClause = clazz.getExtendedTypes().isEmpty()
+
+        String extendsClause = type.isInterface() || type.getSuperclassType() == null
                 ? ""
-                : clazz.getExtendedTypes().stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(", ", " extends ", ""));
-        String implementsClause = clazz.getImplementedTypes().isEmpty()
+                : " extends " + type.getSuperclassType();
+
+        String superTypesKeyword = type.isInterface() ? " extends " : " implements ";
+        String implementsClause = type.superInterfaceTypes().isEmpty()
                 ? ""
-                : clazz.getImplementedTypes().stream()
+                : ((List<Type>) type.superInterfaceTypes()).stream()
                 .map(Object::toString)
-                .collect(Collectors.joining(", ", " implements ", ""));
+                .collect(Collectors.joining(", ", superTypesKeyword, ""));
 
         return (modifiers.isBlank() ? "" : modifiers + " ")
-                + (clazz.isInterface() ? "interface " : "class ")
-                + clazz.getNameAsString()
+                + (type.isInterface() ? "interface " : "class ")
+                + type.getName().getIdentifier()
                 + typeParameters
                 + extendsClause
                 + implementsClause;
