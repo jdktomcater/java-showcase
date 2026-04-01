@@ -1,12 +1,16 @@
 package com.jdktomcat.showcase.ai.code.chunk.service;
 
 import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewResponse;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewEdge;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewNode;
 import com.jdktomcat.showcase.ai.code.chunk.repository.Neo4jGraphRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +28,7 @@ public class ImpactAnalysisService {
 
     public GraphViewResponse dependencyGraph(String nodeType, String fqn, int depth) {
         String nodeId = nodeType.toUpperCase() + ":" + fqn;
-        Neo4jGraphRepository.GraphData graphData = graphRepository.findDependencyGraph(nodeId, depth);
+        Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findDependencyGraph(nodeId, depth));
         return new GraphViewResponse(
                 true,
                 "dependencies",
@@ -39,7 +43,7 @@ public class ImpactAnalysisService {
 
     public GraphViewResponse impactGraph(String methodFqn, int depth) {
         String methodId = "METHOD:" + methodFqn;
-        Neo4jGraphRepository.GraphData graphData = graphRepository.findImpactGraph(methodId, depth);
+        Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findImpactGraph(methodId, depth));
         return new GraphViewResponse(
                 true,
                 "impact",
@@ -53,7 +57,7 @@ public class ImpactAnalysisService {
     }
 
     public GraphViewResponse fullTypeDependencyGraph() {
-        Neo4jGraphRepository.GraphData graphData = graphRepository.findFullTypeDependencyGraph();
+        Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findFullTypeDependencyGraph());
         return new GraphViewResponse(
                 true,
                 "classgraph",
@@ -64,5 +68,22 @@ public class ImpactAnalysisService {
                 graphData.nodes(),
                 graphData.edges()
         );
+    }
+
+    private Neo4jGraphRepository.GraphData internalOnly(Neo4jGraphRepository.GraphData graphData) {
+        List<GraphViewNode> nodes = graphData.nodes().stream()
+                .filter(node -> node.filePath() != null && !node.filePath().isBlank())
+                .toList();
+
+        Set<String> nodeIds = new LinkedHashSet<>();
+        for (GraphViewNode node : nodes) {
+            nodeIds.add(node.id());
+        }
+
+        List<GraphViewEdge> edges = graphData.edges().stream()
+                .filter(edge -> nodeIds.contains(edge.from()) && nodeIds.contains(edge.to()))
+                .toList();
+
+        return new Neo4jGraphRepository.GraphData(nodes, edges);
     }
 }
