@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@SuppressWarnings("unchecked")
 public class JavaDependencyAnalyzer {
 
     private static final Logger log = LoggerFactory.getLogger(JavaDependencyAnalyzer.class);
@@ -47,16 +46,11 @@ public class JavaDependencyAnalyzer {
     public AnalysisResult analyze(Path file) throws IOException {
         String source = Files.readString(file);
         CompilationUnit cu = JdtAstSupport.parse(file, source, repoRoot);
-
         String relativePath = JdtAstSupport.normalize(repoRoot.relativize(file));
         String module = extractModule(relativePath);
-        String packageName = cu.getPackage() == null
-                ? ""
-                : cu.getPackage().getName().getFullyQualifiedName();
-
+        String packageName = cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName();
         Set<CodeGraphNode> nodes = new LinkedHashSet<>();
         Set<CodeGraphRelation> relations = new LinkedHashSet<>();
-
         cu.accept(new ASTVisitor() {
             @Override
             public boolean visit(TypeDeclaration type) {
@@ -82,7 +76,6 @@ public class JavaDependencyAnalyzer {
                 return true;
             }
         });
-
         return new AnalysisResult(new ArrayList<>(nodes), new ArrayList<>(relations));
     }
 

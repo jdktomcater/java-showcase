@@ -136,10 +136,7 @@ final class JdtAstSupport {
     }
 
     private static void validate(CompilationUnit unit, String sourceName) throws IOException {
-        List<String> errors = Arrays.stream(unit.getProblems())
-                .filter(IProblem::isError)
-                .map(IProblem::getMessage)
-                .toList();
+        List<String> errors = Arrays.stream(unit.getProblems()).filter(IProblem::isError).map(IProblem::getMessage).toList();
         if (!errors.isEmpty()) {
             throw new IOException("Parse failed for " + sourceName + ": " + errors);
         }
