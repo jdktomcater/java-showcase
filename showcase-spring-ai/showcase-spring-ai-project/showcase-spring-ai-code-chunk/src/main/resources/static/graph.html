@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Graph Viewer</title>
+    <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vis-network@9.1.9/styles/vis-network.min.css">
+    <style>
+        :root {
+            color-scheme: light dark;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            background: #111827;
+            color: #e5e7eb;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            height: 100vh;
+        }
+        .sidebar {
+            padding: 16px;
+            border-right: 1px solid #374151;
+            background: #0f172a;
+            overflow: auto;
+        }
+        .panel-title {
+            margin: 0 0 16px;
+            font-size: 18px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .field label {
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+        .field input,
+        .field select,
+        .field button,
+        .field textarea {
+            border: 1px solid #475569;
+            background: #111827;
+            color: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+        .field textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+        .field button {
+            background: #2563eb;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .field button:hover {
+            background: #1d4ed8;
+        }
+        .hint,
+        .summary,
+        .details {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #111827;
+            border: 1px solid #334155;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .graph {
+            position: relative;
+        }
+        #network {
+            width: 100%;
+            height: 100%;
+            background: #020617;
+        }
+        .status {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            font-size: 12px;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1 class="panel-title">依赖图可视化</h1>
+        <div class="field">
+            <label for="mode">模式</label>
+            <select id="mode">
+                <option value="dependencies">Dependencies</option>
+                <option value="impact">Impact</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="nodeType">节点类型</label>
+            <select id="nodeType">
+                <option value="TYPE">TYPE</option>
+                <option value="METHOD">METHOD</option>
+                <option value="ANNOTATION">ANNOTATION</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="fqn">FQN</label>
+            <textarea id="fqn" placeholder="例如：com.ruoyi.file.config.MinioConfig"></textarea>
+        </div>
+        <div class="field">
+            <label for="methodFqn">方法 FQN</label>
+            <textarea id="methodFqn" placeholder="例如：com.ruoyi.file.service.SysFileService#upload(MultipartFile)"></textarea>
+        </div>
+        <div class="field">
+            <label for="depth">深度</label>
+            <input id="depth" type="number" min="1" max="10" value="2">
+        </div>
+        <div class="field">
+            <button id="loadButton" type="button">加载图谱</button>
+        </div>
+        <div class="hint">`dependencies` 使用 `nodeType + fqn` 查询。`impact` 使用 `methodFqn` 查询调用影响链。</div>
+        <div id="summary" class="summary">尚未加载图数据。</div>
+        <div id="details" class="details">点击图中的节点或边查看详情。</div>
+    </aside>
+    <main class="graph">
+        <div id="status" class="status">Ready</div>
+        <div id="network"></div>
+    </main>
+</div>
+
+<script>
+    const modeInput = document.getElementById("mode");
+    const nodeTypeInput = document.getElementById("nodeType");
+    const fqnInput = document.getElementById("fqn");
+    const methodFqnInput = document.getElementById("methodFqn");
+    const depthInput = document.getElementById("depth");
+    const summaryEl = document.getElementById("summary");
+    const detailsEl = document.getElementById("details");
+    const statusEl = document.getElementById("status");
+    const loadButton = document.getElementById("loadButton");
+
+    const network = new vis.Network(
+        document.getElementById("network"),
+        {nodes: new vis.DataSet([]), edges: new vis.DataSet([])},
+        {
+            autoResize: true,
+            physics: {
+                stabilization: false,
+                barnesHut: {
+                    gravitationalConstant: -3000,
+                    springLength: 180,
+                    springConstant: 0.03
+                }
+            },
+            interaction: {
+                hover: true,
+                navigationButtons: true,
+                keyboard: true
+            },
+            nodes: {
+                shape: "dot",
+                size: 18,
+                font: {
+                    color: "#e5e7eb",
+                    face: "Arial"
+                },
+                borderWidth: 1.5
+            },
+            edges: {
+                arrows: "to",
+                smooth: {
+                    type: "dynamic"
+                },
+                font: {
+                    color: "#cbd5e1",
+                    strokeWidth: 0,
+                    size: 11,
+                    align: "middle"
+                }
+            }
+        }
+    );
+
+    const currentGraph = {
+        nodes: [],
+        edges: []
+    };
+
+    function setStatus(text) {
+        statusEl.textContent = text;
+    }
+
+    function nodeColor(type, focus) {
+        if (focus) {
+            return {background: "#f59e0b", border: "#fbbf24"};
+        }
+        switch (type) {
+            case "METHOD":
+                return {background: "#38bdf8", border: "#0ea5e9"};
+            case "ANNOTATION":
+                return {background: "#c084fc", border: "#a855f7"};
+            case "TYPE":
+                return {background: "#34d399", border: "#10b981"};
+            default:
+                return {background: "#94a3b8", border: "#64748b"};
+        }
+    }
+
+    function edgeColor(type) {
+        switch (type) {
+            case "CALLS":
+                return "#f97316";
+            case "DECLARES":
+                return "#22c55e";
+            case "EXTENDS":
+            case "IMPLEMENTS":
+                return "#a78bfa";
+            case "ANNOTATED_BY":
+                return "#e879f9";
+            case "RETURNS":
+            case "HAS_PARAM_TYPE":
+                return "#60a5fa";
+            case "INJECTS":
+                return "#f43f5e";
+            default:
+                return "#94a3b8";
+        }
+    }
+
+    function buildPayload() {
+        return {
+            mode: modeInput.value,
+            nodeType: nodeTypeInput.value,
+            fqn: fqnInput.value.trim(),
+            methodFqn: methodFqnInput.value.trim(),
+            depth: Number(depthInput.value)
+        };
+    }
+
+    async function loadGraph() {
+        const payload = buildPayload();
+        setStatus("Loading...");
+        summaryEl.textContent = "正在加载图数据...";
+        detailsEl.textContent = "点击图中的节点或边查看详情。";
+
+        try {
+            const response = await fetch("/api/code/graph/view", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Request failed");
+            }
+
+            const result = await response.json();
+            currentGraph.nodes = result.nodes || [];
+            currentGraph.edges = result.edges || [];
+
+            network.setData({
+                nodes: currentGraph.nodes.map(node => ({
+                    id: node.id,
+                    label: node.label,
+                    title: node.fqn || node.id,
+                    color: nodeColor(node.type, node.focus),
+                    size: node.focus ? 28 : 18
+                })),
+                edges: currentGraph.edges.map(edge => ({
+                    id: edge.id,
+                    from: edge.from,
+                    to: edge.to,
+                    label: edge.type,
+                    color: {
+                        color: edgeColor(edge.type)
+                    }
+                }))
+            });
+
+            summaryEl.textContent =
+                `mode: ${result.mode}\n` +
+                `target: ${result.target}\n` +
+                `depth: ${result.depth}\n` +
+                `nodes: ${result.nodeCount}\n` +
+                `edges: ${result.edgeCount}`;
+            setStatus("Loaded");
+
+            if (currentGraph.nodes.length > 0) {
+                network.fit({
+                    animation: {
+                        duration: 500
+                    }
+                });
+            }
+        } catch (error) {
+            setStatus("Error");
+            summaryEl.textContent = `加载失败: ${error.message}`;
+        }
+    }
+
+    network.on("selectNode", params => {
+        const node = currentGraph.nodes.find(item => item.id === params.nodes[0]);
+        if (!node) {
+            return;
+        }
+        detailsEl.textContent =
+            `Node\n` +
+            `id: ${node.id}\n` +
+            `label: ${node.label}\n` +
+            `type: ${node.type}\n` +
+            `fqn: ${node.fqn || ""}\n` +
+            `module: ${node.module || ""}\n` +
+            `file: ${node.filePath || ""}\n` +
+            `lines: ${node.startLine || ""}-${node.endLine || ""}`;
+    });
+
+    network.on("selectEdge", params => {
+        const edge = currentGraph.edges.find(item => item.id === params.edges[0]);
+        if (!edge) {
+            return;
+        }
+        detailsEl.textContent =
+            `Edge\n` +
+            `id: ${edge.id}\n` +
+            `from: ${edge.from}\n` +
+            `to: ${edge.to}\n` +
+            `type: ${edge.type}`;
+    });
+
+    loadButton.addEventListener("click", loadGraph);
+
+    modeInput.addEventListener("change", () => {
+        const impactMode = modeInput.value === "impact";
+        nodeTypeInput.disabled = impactMode;
+        fqnInput.disabled = impactMode;
+        methodFqnInput.disabled = !impactMode;
+    });
+
+    modeInput.dispatchEvent(new Event("change"));
+</script>
+</body>
+</html>
