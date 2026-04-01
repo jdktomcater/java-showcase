@@ -46,27 +46,17 @@ final class JdtAstSupport {
         configureCommon(parser, source);
         parser.setResolveBindings(true);
         parser.setBindingsRecovery(true);
-
         List<Path> sourceRoots = collectSourceRoots(repoRoot);
-        String[] sourcePathEntries = sourceRoots.stream()
-                .map(Path::toString)
-                .toArray(String[]::new);
-        String[] encodings = sourceRoots.stream()
-                .map(path -> StandardCharsets.UTF_8.name())
-                .toArray(String[]::new);
-
+        String[] sourcePathEntries = sourceRoots.stream().map(Path::toString).toArray(String[]::new);
+        String[] encodings = sourceRoots.stream().map(path -> StandardCharsets.UTF_8.name()).toArray(String[]::new);
         parser.setEnvironment(currentClasspathEntries(), sourcePathEntries, encodings, true);
         parser.setUnitName(resolveUnitName(file, sourceRoots));
-
-        CompilationUnit unit = (CompilationUnit) parser.createAST(null);
-        return unit;
+        return (CompilationUnit) parser.createAST(null);
     }
 
     static List<Path> collectSourceRoots(Path root) {
         try (Stream<Path> paths = Files.walk(root)) {
-            return paths.filter(Files::isDirectory)
-                    .filter(JdtAstSupport::isJavaSourceRoot)
-                    .toList();
+            return paths.filter(Files::isDirectory).filter(JdtAstSupport::isJavaSourceRoot).toList();
         } catch (IOException ex) {
             return List.of();
         }
