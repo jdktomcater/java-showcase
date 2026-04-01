@@ -70,6 +70,20 @@ public class CodeIndexController {
         );
     }
 
+    @PostMapping("/api/code/type-dependencies")
+    public Map<String, Object> typeDependencies(@Valid @RequestBody DependencyQueryRequest request) {
+        List<Map<String, Object>> dependencies = impactAnalysisService.typeDependencies(
+                request.fqn(),
+                request.resolvedDepth()
+        );
+        return Map.of(
+                "success", true,
+                "target", "TYPE:" + request.fqn(),
+                "count", dependencies.size(),
+                "dependencies", dependencies
+        );
+    }
+
     @PostMapping("/api/code/impact")
     public Map<String, Object> impact(@Valid @RequestBody ImpactQueryRequest request) {
         List<Map<String, Object>> impacts = impactAnalysisService.impact(
@@ -79,6 +93,20 @@ public class CodeIndexController {
         return Map.of(
                 "success", true,
                 "target", request.methodFqn(),
+                "count", impacts.size(),
+                "impacts", impacts
+        );
+    }
+
+    @PostMapping("/api/code/type-impact")
+    public Map<String, Object> typeImpact(@Valid @RequestBody DependencyQueryRequest request) {
+        List<Map<String, Object>> impacts = impactAnalysisService.typeImpact(
+                request.fqn(),
+                request.resolvedDepth()
+        );
+        return Map.of(
+                "success", true,
+                "target", "TYPE:" + request.fqn(),
                 "count", impacts.size(),
                 "impacts", impacts
         );

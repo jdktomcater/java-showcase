@@ -3,6 +3,7 @@ package com.jdktomcat.showcase.ai.code.assistant.service.github;
 import com.jdktomcat.showcase.ai.code.assistant.domain.dto.CommitTaskState;
 import com.jdktomcat.showcase.ai.code.assistant.domain.entity.CompareResponse;
 import com.jdktomcat.showcase.ai.code.assistant.domain.entity.PushPayload;
+import com.jdktomcat.showcase.ai.code.assistant.service.impact.CodeImpactAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ public class CommitReviewService {
 
     @Qualifier("commitWorkflow")
     private final CompiledGraph<CommitTaskState> commitWorkflow;
+    private final CodeImpactAnalysisService codeImpactAnalysisService;
 
     @Value("${github.review.max-diff-length:12000}")
     private int maxDiffLength;
@@ -49,6 +51,7 @@ public class CommitReviewService {
         state.setAdditions(sumAdditions(files));
         state.setDeletions(sumDeletions(files));
         state.setDiff(buildDiff(compareResponse));
+        state.setCodeImpactSummary(codeImpactAnalysisService.buildImpactSummary(state.getRepository(), compareResponse));
         state.setNeedRetry(false);
         state.setPassed(false);
         state.setDecision("PENDING");

@@ -22,6 +22,7 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
     public void review(CommitTaskState state) {
         String prompt = String.format("""
         你是业务风险审查专家，请基于提交信息和代码 diff 识别业务逻辑层面的变更风险。
+        结合“依赖图影响面摘要”分析哪些模块、实现类、继承体系、接口调用方可能被波及，尤其关注接口/抽象类变更带来的实现类兼容性。
         请严格使用中文，并按照以下 Markdown 结构输出：
         ## 结论
         风险等级：低风险 / 中风险 / 高风险
@@ -37,9 +38,12 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
         - 分支：%s
         - 提交说明：%s
         
+        依赖图影响面摘要：
+        %s
+        
         Diff:
         %s
-        """, state.getRepository(), state.getBranch(), state.getMessage(), state.getDiff());
+        """, state.getRepository(), state.getBranch(), state.getMessage(), state.getCodeImpactSummary(), state.getDiff());
         String review = chatModel.call(prompt);
         log.info("业务完整审查完成，报告长度 {} 字", review.length());
         state.setBusinessReport(review);

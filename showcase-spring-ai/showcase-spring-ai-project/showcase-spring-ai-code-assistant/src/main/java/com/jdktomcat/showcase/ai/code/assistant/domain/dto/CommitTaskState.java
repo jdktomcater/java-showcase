@@ -22,6 +22,7 @@ public class CommitTaskState extends AgentState {
     private Integer changedFiles;
     private Integer additions;
     private Integer deletions;
+    private String codeImpactSummary;
     // 下面的字段会在各 Agent 中填充
     private String conventionReport;
     private String securityReport;
@@ -54,6 +55,7 @@ public class CommitTaskState extends AgentState {
         this.changedFiles = oldState.getChangedFiles();
         this.additions = oldState.getAdditions();
         this.deletions = oldState.getDeletions();
+        this.codeImpactSummary = oldState.getCodeImpactSummary();
         this.conventionReport = oldState.getConventionReport();
         this.securityReport = oldState.getSecurityReport();
         this.performanceReport = oldState.getPerformanceReport();

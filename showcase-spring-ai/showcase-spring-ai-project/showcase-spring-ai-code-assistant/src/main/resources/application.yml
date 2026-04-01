@@ -9,6 +9,14 @@ github:
   review:
     max-diff-length: 12000
 
+code-chunk:
+  base-url: ${CODE_CHUNK_BASE_URL:http://localhost:8081}
+  impact:
+    enabled: ${CODE_CHUNK_IMPACT_ENABLED:true}
+    depth: ${CODE_CHUNK_IMPACT_DEPTH:2}
+    max-types: ${CODE_CHUNK_IMPACT_MAX_TYPES:5}
+    max-items-per-type: ${CODE_CHUNK_IMPACT_MAX_ITEMS_PER_TYPE:5}
+
 telegram:
   bot:
     token: ${TELEGRAM_BOT_TOKEN:8447064016:AAEs1GaaBb6ByEVJa9OpfzvD695Z38z_XPQ}

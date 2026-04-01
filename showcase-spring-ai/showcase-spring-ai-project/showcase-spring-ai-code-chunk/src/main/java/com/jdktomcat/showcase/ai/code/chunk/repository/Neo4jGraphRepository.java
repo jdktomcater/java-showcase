@@ -91,6 +91,32 @@ public class Neo4jGraphRepository {
         }
     }
 
+    public List<Map<String, Object>> findTypeDependencies(String typeId, int depth) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> tx.run("""
+                    MATCH (start:CodeNode {id: $typeId, type: 'TYPE'})
+                    MATCH p = (start)-[:RELATES*1..10]->(target:CodeNode {type: 'TYPE'})
+                    WHERE length(p) <= $depth
+                      AND target.id <> $typeId
+                      AND target.filePath IS NOT NULL
+                      AND ALL(r IN relationships(p) WHERE r.type IN ['DEPENDS_ON', 'EXTENDS', 'IMPLEMENTS', 'INJECTS'])
+                    RETURN DISTINCT target.id AS id,
+                                    target.type AS type,
+                                    target.name AS name,
+                                    target.fqn AS fqn,
+                                    target.kind AS kind,
+                                    target.filePath AS filePath,
+                                    target.module AS module,
+                                    length(p) AS hops,
+                                    [r IN relationships(p) | r.type] AS relationTypes
+                    ORDER BY hops, fqn
+                    """, Values.parameters(
+                    "typeId", typeId,
+                    "depth", depth
+            )).list(MapAccessor::asMap));
+        }
+    }
+
     public List<Map<String, Object>> findImpact(String methodId, int depth) {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> tx.run("""
@@ -111,6 +137,32 @@ public class Neo4jGraphRepository {
                     ORDER BY hops, fqn
                     """, Values.parameters(
                     "methodId", methodId,
+                    "depth", depth
+            )).list(MapAccessor::asMap));
+        }
+    }
+
+    public List<Map<String, Object>> findTypeImpact(String typeId, int depth) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> tx.run("""
+                    MATCH (target:CodeNode {id: $typeId, type: 'TYPE'})
+                    MATCH p = (caller:CodeNode {type: 'TYPE'})-[:RELATES*1..10]->(target)
+                    WHERE length(p) <= $depth
+                      AND caller.id <> $typeId
+                      AND caller.filePath IS NOT NULL
+                      AND ALL(r IN relationships(p) WHERE r.type IN ['DEPENDS_ON', 'EXTENDS', 'IMPLEMENTS', 'INJECTS'])
+                    RETURN DISTINCT caller.id AS id,
+                                    caller.type AS type,
+                                    caller.name AS name,
+                                    caller.fqn AS fqn,
+                                    caller.kind AS kind,
+                                    caller.filePath AS filePath,
+                                    caller.module AS module,
+                                    length(p) AS hops,
+                                    [r IN relationships(p) | r.type] AS relationTypes
+                    ORDER BY hops, fqn
+                    """, Values.parameters(
+                    "typeId", typeId,
                     "depth", depth
             )).list(MapAccessor::asMap));
         }

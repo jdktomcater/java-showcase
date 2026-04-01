@@ -49,6 +49,9 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
                 - 删除行数：%s
                 - Compare URL：%s
                 
+                依赖图影响面摘要：
+                %s
+                
                 BusinessAgent 报告：
                 %s
                 
@@ -70,6 +73,7 @@ public class CommitResultAgent implements NodeAction<CommitTaskState> {
                 Objects.toString(state.getAdditions(), "0"),
                 Objects.toString(state.getDeletions(), "0"),
                 state.getCompareUrl(),
+                state.getCodeImpactSummary(),
                 state.getBusinessReport(),
                 state.getConventionReport(),
                 state.getPerformanceReport(),

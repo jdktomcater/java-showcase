@@ -22,8 +22,16 @@ public class ImpactAnalysisService {
         return graphRepository.findDependencies(nodeType.toUpperCase() + ":" + fqn, depth);
     }
 
+    public List<Map<String, Object>> typeDependencies(String fqn, int depth) {
+        return graphRepository.findTypeDependencies("TYPE:" + fqn, depth);
+    }
+
     public List<Map<String, Object>> impact(String methodFqn, int depth) {
         return graphRepository.findImpact("METHOD:" + methodFqn, depth);
+    }
+
+    public List<Map<String, Object>> typeImpact(String fqn, int depth) {
+        return graphRepository.findTypeImpact("TYPE:" + fqn, depth);
     }
 
     public GraphViewResponse dependencyGraph(String nodeType, String fqn, int depth) {
