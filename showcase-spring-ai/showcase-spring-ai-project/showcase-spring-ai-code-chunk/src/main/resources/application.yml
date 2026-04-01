@@ -3,8 +3,8 @@ server:
 
 app:
   code-rag:
-    repo-name: ruoyi
-    repo-root: /Users/yuhata/workspace/gitee/RuoYi-Cloud
+    repo-name: mall-swarm
+    repo-root: /Users/yuhata/workspace/github/jdktomcater/mall-swarm
     include-globs:
       - "**/*.java"
       - "**/*.xml"
