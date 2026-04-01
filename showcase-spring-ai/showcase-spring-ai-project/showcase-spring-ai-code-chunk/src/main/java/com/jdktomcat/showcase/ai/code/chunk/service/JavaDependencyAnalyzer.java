@@ -67,6 +67,7 @@ public class JavaDependencyAnalyzer {
                         NodeType.TYPE,
                         type.getName().getIdentifier(),
                         typeFqn,
+                        typeKind(type),
                         relativePath,
                         module,
                         JdtAstSupport.startLine(cu, type),
@@ -110,7 +111,7 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphRelation> relations
     ) {
         if (!type.isInterface() && type.getSuperclassType() != null) {
-            String target = type.getSuperclassType().toString();
+            String target = resolveTypeName(type.getSuperclassType());
             String targetId = nodeId(NodeType.TYPE, target);
             nodes.add(externalNode(NodeType.TYPE, target));
             relations.add(new CodeGraphRelation(typeId, targetId, RelationType.EXTENDS));
@@ -118,7 +119,7 @@ public class JavaDependencyAnalyzer {
 
         for (Object item : type.superInterfaceTypes()) {
             Type superInterface = (Type) item;
-            String target = superInterface.toString();
+            String target = resolveTypeName(superInterface);
             String targetId = nodeId(NodeType.TYPE, target);
             nodes.add(externalNode(NodeType.TYPE, target));
             relations.add(new CodeGraphRelation(typeId, targetId, RelationType.IMPLEMENTS));
@@ -146,7 +147,7 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphRelation> relations
     ) {
         for (FieldDeclaration field : type.getFields()) {
-            String targetType = field.getType().toString();
+            String targetType = resolveTypeName(field.getType());
             String targetTypeId = nodeId(NodeType.TYPE, targetType);
             nodes.add(externalNode(NodeType.TYPE, targetType));
 
@@ -180,6 +181,7 @@ public class JavaDependencyAnalyzer {
                     NodeType.METHOD,
                     method.getName().getIdentifier(),
                     methodFqn,
+                    "METHOD",
                     relativePath,
                     module,
                     JdtAstSupport.startLine(cu, method),
@@ -213,14 +215,14 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        String returnType = method.getReturnType2() == null ? "void" : method.getReturnType2().toString();
+        String returnType = method.getReturnType2() == null ? "void" : resolveTypeName(method.getReturnType2());
         String returnTypeId = nodeId(NodeType.TYPE, returnType);
         nodes.add(externalNode(NodeType.TYPE, returnType));
         relations.add(new CodeGraphRelation(methodId, returnTypeId, RelationType.RETURNS));
 
         for (Object item : method.parameters()) {
             SingleVariableDeclaration parameter = (SingleVariableDeclaration) item;
-            String parameterType = parameter.getType().toString() + (parameter.isVarargs() ? "..." : "");
+            String parameterType = resolveTypeName(parameter.getType()) + (parameter.isVarargs() ? "..." : "");
             String parameterTypeId = nodeId(NodeType.TYPE, parameterType);
             nodes.add(externalNode(NodeType.TYPE, parameterType));
             relations.add(new CodeGraphRelation(methodId, parameterTypeId, RelationType.HAS_PARAM_TYPE));
@@ -280,7 +282,7 @@ public class JavaDependencyAnalyzer {
 
     private String buildMethodFqn(String typeFqn, MethodDeclaration method) {
         String parameters = ((List<SingleVariableDeclaration>) method.parameters()).stream()
-                .map(parameter -> parameter.getType().toString() + (parameter.isVarargs() ? "..." : ""))
+                .map(parameter -> resolveTypeName(parameter.getType()) + (parameter.isVarargs() ? "..." : ""))
                 .collect(Collectors.joining(", "));
         return typeFqn + "#" + method.getName().getIdentifier() + "(" + parameters + ")";
     }
@@ -304,6 +306,21 @@ public class JavaDependencyAnalyzer {
         return qualifiedName.isBlank() ? typeBinding.getErasure().getName() : qualifiedName;
     }
 
+    private String resolveTypeName(Type type) {
+        ITypeBinding binding = type.resolveBinding();
+        if (binding == null) {
+            return type.toString();
+        }
+        return qualifiedTypeName(binding);
+    }
+
+    private String typeKind(TypeDeclaration type) {
+        if (type.isInterface()) {
+            return "INTERFACE";
+        }
+        return org.eclipse.jdt.core.dom.Modifier.isAbstract(type.getModifiers()) ? "ABSTRACT_CLASS" : "CLASS";
+    }
+
     private String extractModule(String relativePath) {
         int index = relativePath.indexOf('/');
         return index < 0 ? relativePath : relativePath.substring(0, index);
@@ -319,7 +336,7 @@ public class JavaDependencyAnalyzer {
         if (index >= 0 && index + 1 < fqn.length()) {
             name = fqn.substring(index + 1);
         }
-        return new CodeGraphNode(nodeId(type, fqn), type, name, fqn, null, null, null, null);
+        return new CodeGraphNode(nodeId(type, fqn), type, name, fqn, null, null, null, null, null);
     }
 
     public record AnalysisResult(

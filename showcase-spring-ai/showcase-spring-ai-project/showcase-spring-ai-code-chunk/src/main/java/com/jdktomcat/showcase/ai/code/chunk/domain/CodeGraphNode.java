@@ -5,6 +5,7 @@ public record CodeGraphNode(
         NodeType type,
         String name,
         String fqn,
+        String kind,
         String filePath,
         String module,
         Integer startLine,

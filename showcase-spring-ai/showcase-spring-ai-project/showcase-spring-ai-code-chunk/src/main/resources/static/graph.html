@@ -126,6 +126,13 @@
             height: 10px;
             border-radius: 999px;
         }
+        .swatch-square {
+            border-radius: 2px;
+        }
+        .swatch-diamond {
+            border-radius: 0;
+            transform: rotate(45deg);
+        }
         .link-label {
             fill: #94a3b8;
             font-size: 9px;
@@ -178,7 +185,9 @@
         <div class="hint">`dependencies` 使用 `nodeType + fqn` 查询。`impact` 使用 `methodFqn` 查询调用影响链。`classgraph` 会全量加载 Neo4j 中所有类节点及类间依赖关系。</div>
         <div class="legend">
             <div class="legend-row"><span class="swatch" style="background:#f59e0b;"></span> 焦点节点</div>
-            <div class="legend-row"><span class="swatch" style="background:#34d399;"></span> TYPE</div>
+            <div class="legend-row"><span class="swatch" style="background:#34d399;"></span> 普通类</div>
+            <div class="legend-row"><span class="swatch swatch-square" style="background:#22c55e;"></span> 抽象类</div>
+            <div class="legend-row"><span class="swatch swatch-diamond" style="background:#14b8a6;"></span> 接口</div>
             <div class="legend-row"><span class="swatch" style="background:#38bdf8;"></span> METHOD</div>
             <div class="legend-row"><span class="swatch" style="background:#c084fc;"></span> ANNOTATION</div>
         </div>
@@ -233,6 +242,12 @@
         if (node.focus) {
             return "#f59e0b";
         }
+        if (node.kind === "INTERFACE") {
+            return "#14b8a6";
+        }
+        if (node.kind === "ABSTRACT_CLASS") {
+            return "#22c55e";
+        }
         switch (node.type) {
             case "METHOD":
                 return "#38bdf8";
@@ -243,6 +258,19 @@
             default:
                 return "#94a3b8";
         }
+    }
+
+    function nodeSymbol(node) {
+        if (node.kind === "INTERFACE") {
+            return d3.symbolDiamond;
+        }
+        if (node.kind === "ABSTRACT_CLASS") {
+            return d3.symbolSquare;
+        }
+        if (node.type === "METHOD") {
+            return d3.symbolCircle;
+        }
+        return d3.symbolCircle;
     }
 
     function edgeColor(type) {
@@ -321,6 +349,7 @@
             `id: ${node.id}`,
             `label: ${node.label}`,
             `type: ${node.type}`,
+            `kind: ${node.kind || ""}`,
             `fqn: ${node.fqn || ""}`,
             `module: ${node.module || ""}`,
             `file: ${node.filePath || ""}`,
@@ -410,11 +439,13 @@
             .attr("class", "link-label")
             .text(d => d.type);
 
-        const node = nodeGroup.selectAll("circle")
+        const node = nodeGroup.selectAll("path")
             .data(nodes, d => d.id)
-            .join("circle")
+            .join("path")
             .attr("class", "node-circle")
-            .attr("r", d => nodeRadius(d, largeGraphMode))
+            .attr("d", d => d3.symbol()
+                .type(nodeSymbol(d))
+                .size(Math.PI * Math.pow(nodeRadius(d, largeGraphMode), 2) * 3.6)())
             .attr("fill", d => nodeColor(d))
             .attr("stroke", "#0f172a")
             .attr("stroke-width", 1.2)
@@ -461,8 +492,7 @@
                 .attr("y2", d => d.target.y);
 
             node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
+                .attr("transform", d => `translate(${d.x},${d.y})`);
 
             nodeLabel
                 .attr("x", d => d.x + 8)

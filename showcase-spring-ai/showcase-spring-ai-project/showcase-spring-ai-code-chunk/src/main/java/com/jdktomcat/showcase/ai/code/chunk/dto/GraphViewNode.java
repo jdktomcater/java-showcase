@@ -5,6 +5,7 @@ public record GraphViewNode(
         String label,
         String type,
         String fqn,
+        String kind,
         String filePath,
         String module,
         Integer startLine,

@@ -24,7 +24,7 @@ class JavaDependencyAnalyzerTest {
         Files.writeString(sourceRoot.resolve("BaseService.java"), """
                 package com.example;
 
-                public class BaseService {
+                public abstract class BaseService {
                 }
                 """);
 
@@ -70,33 +70,35 @@ class JavaDependencyAnalyzerTest {
 
         assertThat(result.nodes())
                 .anyMatch(node -> "TYPE:com.example.HelloService".equals(node.id()))
-                .anyMatch(node -> "METHOD:com.example.HelloService#hello(String)".equals(node.id()))
+                .anyMatch(node -> "TYPE:com.example.BaseService".equals(node.id()))
+                .anyMatch(node -> "TYPE:com.example.GreetingPort".equals(node.id()))
+                .anyMatch(node -> "METHOD:com.example.HelloService#hello(java.lang.String)".equals(node.id()))
                 .anyMatch(node -> "METHOD:com.example.SupportClient.load(java.lang.String)".equals(node.id()));
 
         String helloTypeId = "TYPE:com.example.HelloService";
-        String helloMethodId = "METHOD:com.example.HelloService#hello(String)";
+        String helloMethodId = "METHOD:com.example.HelloService#hello(java.lang.String)";
 
         assertThat(result.relations())
                 .anyMatch(relation -> relation.fromId().equals(helloTypeId)
                         && relation.toId().equals("ANNOTATION:Service")
                         && relation.type() == RelationType.ANNOTATED_BY)
                 .anyMatch(relation -> relation.fromId().equals(helloTypeId)
-                        && relation.toId().equals("TYPE:BaseService")
+                        && relation.toId().equals("TYPE:com.example.BaseService")
                         && relation.type() == RelationType.EXTENDS)
                 .anyMatch(relation -> relation.fromId().equals(helloTypeId)
-                        && relation.toId().equals("TYPE:GreetingPort")
+                        && relation.toId().equals("TYPE:com.example.GreetingPort")
                         && relation.type() == RelationType.IMPLEMENTS)
                 .anyMatch(relation -> relation.fromId().equals(helloTypeId)
-                        && relation.toId().equals("TYPE:SupportClient")
+                        && relation.toId().equals("TYPE:com.example.SupportClient")
                         && relation.type() == RelationType.INJECTS)
                 .anyMatch(relation -> relation.fromId().equals(helloTypeId)
                         && relation.toId().equals(helloMethodId)
                         && relation.type() == RelationType.DECLARES)
                 .anyMatch(relation -> relation.fromId().equals(helloMethodId)
-                        && relation.toId().equals("TYPE:String")
+                        && relation.toId().equals("TYPE:java.lang.String")
                         && relation.type() == RelationType.RETURNS)
                 .anyMatch(relation -> relation.fromId().equals(helloMethodId)
-                        && relation.toId().equals("TYPE:String")
+                        && relation.toId().equals("TYPE:java.lang.String")
                         && relation.type() == RelationType.HAS_PARAM_TYPE)
                 .anyMatch(relation -> relation.fromId().equals(helloMethodId)
                         && relation.toId().equals("METHOD:com.example.SupportClient.load(java.lang.String)")
@@ -140,7 +142,7 @@ class JavaDependencyAnalyzerTest {
                         && relation.toId().equals("TYPE:io.minio.MinioClient")
                         && relation.type() == RelationType.DEPENDS_ON)
                 .anyMatch(relation -> relation.fromId().equals("METHOD:com.example.MinioConfig#minioClient()")
-                        && relation.toId().equals("TYPE:MinioClient")
+                        && relation.toId().equals("TYPE:com.example.MinioClient")
                         && relation.type() == RelationType.RETURNS);
     }
 }
