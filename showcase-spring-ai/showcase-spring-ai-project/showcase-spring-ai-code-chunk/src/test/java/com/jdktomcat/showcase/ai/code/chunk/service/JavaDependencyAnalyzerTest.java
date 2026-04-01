@@ -102,4 +102,45 @@ class JavaDependencyAnalyzerTest {
                         && relation.toId().equals("METHOD:com.example.SupportClient.load(java.lang.String)")
                         && relation.type() == RelationType.CALLS);
     }
+
+    @Test
+    void shouldTolerateMissingExternalTypes() throws IOException {
+        Path repoRoot = tempDir.resolve("missing-deps-repo");
+        Path sourceRoot = repoRoot.resolve("src/main/java/com/example");
+        Files.createDirectories(sourceRoot);
+
+        Path file = sourceRoot.resolve("MinioConfig.java");
+        Files.writeString(file, """
+                package com.example;
+
+                import io.minio.MinioClient;
+                import org.springframework.context.annotation.Bean;
+                import org.springframework.context.annotation.Configuration;
+
+                @Configuration
+                public class MinioConfig {
+
+                    @Bean
+                    public MinioClient minioClient() {
+                        return null;
+                    }
+                }
+                """);
+
+        JavaDependencyAnalyzer analyzer = new JavaDependencyAnalyzer(repoRoot.toString());
+        JavaDependencyAnalyzer.AnalysisResult result = analyzer.analyze(file);
+
+        assertThat(result.nodes())
+                .anyMatch(node -> "TYPE:com.example.MinioConfig".equals(node.id()))
+                .anyMatch(node -> "METHOD:com.example.MinioConfig#minioClient()".equals(node.id()))
+                .anyMatch(node -> "TYPE:io.minio.MinioClient".equals(node.id()));
+
+        assertThat(result.relations())
+                .anyMatch(relation -> relation.fromId().equals("TYPE:com.example.MinioConfig")
+                        && relation.toId().equals("TYPE:io.minio.MinioClient")
+                        && relation.type() == RelationType.DEPENDS_ON)
+                .anyMatch(relation -> relation.fromId().equals("METHOD:com.example.MinioConfig#minioClient()")
+                        && relation.toId().equals("TYPE:MinioClient")
+                        && relation.type() == RelationType.RETURNS);
+    }
 }

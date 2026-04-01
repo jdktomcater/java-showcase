@@ -59,7 +59,6 @@ final class JdtAstSupport {
         parser.setUnitName(resolveUnitName(file, sourceRoots));
 
         CompilationUnit unit = (CompilationUnit) parser.createAST(null);
-        validate(unit, file.toString());
         return unit;
     }
 
