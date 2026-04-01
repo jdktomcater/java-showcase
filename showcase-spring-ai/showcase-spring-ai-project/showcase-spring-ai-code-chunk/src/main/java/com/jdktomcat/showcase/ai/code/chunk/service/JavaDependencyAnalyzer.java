@@ -1,26 +1,22 @@
 package com.jdktomcat.showcase.ai.code.chunk.service;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.resolution.UnsolvedSymbolException;
-import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.github.javaparser.symbolsolver.JavaSymbolSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
-import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeGraphNode;
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeGraphRelation;
 import com.jdktomcat.showcase.ai.code.chunk.domain.NodeType;
 import com.jdktomcat.showcase.ai.code.chunk.domain.RelationType;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,62 +30,57 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@SuppressWarnings("unchecked")
 public class JavaDependencyAnalyzer {
 
     private static final Logger log = LoggerFactory.getLogger(JavaDependencyAnalyzer.class);
 
-    private final JavaParser javaParser;
     private final Path repoRoot;
 
     public JavaDependencyAnalyzer(@Value("${app.code-rag.repo-root}") String repoRoot) {
         this.repoRoot = Path.of(repoRoot);
-        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
-        typeSolver.add(new ReflectionTypeSolver());
-        registerSourceRoots(typeSolver, this.repoRoot);
-
-        ParserConfiguration configuration = new ParserConfiguration()
-                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17)
-                .setSymbolResolver(new JavaSymbolSolver(typeSolver));
-        this.javaParser = new JavaParser(configuration);
     }
 
     public AnalysisResult analyze(Path file) throws IOException {
         String source = Files.readString(file);
-        ParseResult<CompilationUnit> parseResult = javaParser.parse(source);
-        CompilationUnit cu = parseResult.getResult()
-                .orElseThrow(() -> new IOException("Parse failed for " + file + ": " + parseResult.getProblems()));
+        CompilationUnit cu = JdtAstSupport.parse(file, source, repoRoot);
 
-        String relativePath = normalize(repoRoot.relativize(file));
+        String relativePath = JdtAstSupport.normalize(repoRoot.relativize(file));
         String module = extractModule(relativePath);
-        String packageName = cu.getPackageDeclaration()
-                .map(pd -> pd.getNameAsString())
-                .orElse("");
+        String packageName = cu.getPackage() == null
+                ? ""
+                : cu.getPackage().getName().getFullyQualifiedName();
 
         Set<CodeGraphNode> nodes = new LinkedHashSet<>();
         Set<CodeGraphRelation> relations = new LinkedHashSet<>();
 
-        for (ClassOrInterfaceDeclaration type : cu.findAll(ClassOrInterfaceDeclaration.class)) {
-            String typeFqn = buildTypeFqn(packageName, type);
-            String typeId = nodeId(NodeType.TYPE, typeFqn);
-            nodes.add(new CodeGraphNode(
-                    typeId,
-                    NodeType.TYPE,
-                    type.getNameAsString(),
-                    typeFqn,
-                    relativePath,
-                    module,
-                    type.getBegin().map(p -> p.line).orElse(-1),
-                    type.getEnd().map(p -> p.line).orElse(-1)
-            ));
+        cu.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(TypeDeclaration type) {
+                String typeFqn = buildTypeFqn(packageName, type);
+                String typeId = nodeId(NodeType.TYPE, typeFqn);
+                nodes.add(new CodeGraphNode(
+                        typeId,
+                        NodeType.TYPE,
+                        type.getName().getIdentifier(),
+                        typeFqn,
+                        relativePath,
+                        module,
+                        JdtAstSupport.startLine(cu, type),
+                        JdtAstSupport.endLine(cu, type)
+                ));
 
-            collectTypeAnnotations(type, typeId, nodes, relations);
-            collectImports(cu, typeId, nodes, relations);
-            collectInheritance(type, typeId, nodes, relations);
-            collectFieldDependencies(type, typeId, nodes, relations);
-            collectMethods(type, typeId, typeFqn, relativePath, module, nodes, relations);
-        }
+                collectTypeAnnotations(type, typeId, nodes, relations);
+                collectImports(cu, typeId, nodes, relations);
+                collectInheritance(type, typeId, nodes, relations);
+                collectFieldDependencies(type, typeId, nodes, relations);
+                collectMethods(cu, type, typeId, typeFqn, relativePath, module, nodes, relations);
+                return true;
+            }
+        });
 
         return new AnalysisResult(new ArrayList<>(nodes), new ArrayList<>(relations));
     }
@@ -100,11 +91,12 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        for (ImportDeclaration importDeclaration : cu.getImports()) {
-            if (importDeclaration.isAsterisk()) {
+        for (Object item : cu.imports()) {
+            ImportDeclaration importDeclaration = (ImportDeclaration) item;
+            if (importDeclaration.isOnDemand()) {
                 continue;
             }
-            String importedType = importDeclaration.getNameAsString();
+            String importedType = importDeclaration.getName().getFullyQualifiedName();
             String importedTypeId = nodeId(NodeType.TYPE, importedType);
             nodes.add(externalNode(NodeType.TYPE, importedType));
             relations.add(new CodeGraphRelation(typeId, importedTypeId, RelationType.DEPENDS_ON));
@@ -112,20 +104,21 @@ public class JavaDependencyAnalyzer {
     }
 
     private void collectInheritance(
-            ClassOrInterfaceDeclaration type,
+            TypeDeclaration type,
             String typeId,
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        for (ClassOrInterfaceType extendedType : type.getExtendedTypes()) {
-            String target = extendedType.getNameAsString();
+        if (!type.isInterface() && type.getSuperclassType() != null) {
+            String target = type.getSuperclassType().toString();
             String targetId = nodeId(NodeType.TYPE, target);
             nodes.add(externalNode(NodeType.TYPE, target));
             relations.add(new CodeGraphRelation(typeId, targetId, RelationType.EXTENDS));
         }
 
-        for (ClassOrInterfaceType implementedType : type.getImplementedTypes()) {
-            String target = implementedType.getNameAsString();
+        for (Object item : type.superInterfaceTypes()) {
+            Type superInterface = (Type) item;
+            String target = superInterface.toString();
             String targetId = nodeId(NodeType.TYPE, target);
             nodes.add(externalNode(NodeType.TYPE, target));
             relations.add(new CodeGraphRelation(typeId, targetId, RelationType.IMPLEMENTS));
@@ -133,13 +126,13 @@ public class JavaDependencyAnalyzer {
     }
 
     private void collectTypeAnnotations(
-            ClassOrInterfaceDeclaration type,
+            TypeDeclaration type,
             String typeId,
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        for (AnnotationExpr annotation : type.getAnnotations()) {
-            String annotationName = annotation.getNameAsString();
+        for (Annotation annotation : JdtAstSupport.annotations(type)) {
+            String annotationName = annotation.getTypeName().getFullyQualifiedName();
             String annotationId = nodeId(NodeType.ANNOTATION, annotationName);
             nodes.add(externalNode(NodeType.ANNOTATION, annotationName));
             relations.add(new CodeGraphRelation(typeId, annotationId, RelationType.ANNOTATED_BY));
@@ -147,17 +140,17 @@ public class JavaDependencyAnalyzer {
     }
 
     private void collectFieldDependencies(
-            ClassOrInterfaceDeclaration type,
+            TypeDeclaration type,
             String typeId,
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
         for (FieldDeclaration field : type.getFields()) {
-            String targetType = field.getElementType().asString();
+            String targetType = field.getType().toString();
             String targetTypeId = nodeId(NodeType.TYPE, targetType);
             nodes.add(externalNode(NodeType.TYPE, targetType));
 
-            RelationType relationType = hasInjectionAnnotation(field.getAnnotations())
+            RelationType relationType = hasInjectionAnnotation(field)
                     ? RelationType.INJECTS
                     : RelationType.DEPENDS_ON;
             relations.add(new CodeGraphRelation(typeId, targetTypeId, relationType));
@@ -165,7 +158,8 @@ public class JavaDependencyAnalyzer {
     }
 
     private void collectMethods(
-            ClassOrInterfaceDeclaration type,
+            CompilationUnit cu,
+            TypeDeclaration type,
             String typeId,
             String typeFqn,
             String relativePath,
@@ -174,18 +168,22 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphRelation> relations
     ) {
         for (MethodDeclaration method : type.getMethods()) {
+            if (method.isConstructor()) {
+                continue;
+            }
+
             String methodFqn = buildMethodFqn(typeFqn, method);
             String methodId = nodeId(NodeType.METHOD, methodFqn);
 
             nodes.add(new CodeGraphNode(
                     methodId,
                     NodeType.METHOD,
-                    method.getNameAsString(),
+                    method.getName().getIdentifier(),
                     methodFqn,
                     relativePath,
                     module,
-                    method.getBegin().map(p -> p.line).orElse(-1),
-                    method.getEnd().map(p -> p.line).orElse(-1)
+                    JdtAstSupport.startLine(cu, method),
+                    JdtAstSupport.endLine(cu, method)
             ));
             relations.add(new CodeGraphRelation(typeId, methodId, RelationType.DECLARES));
 
@@ -201,8 +199,8 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        for (AnnotationExpr annotation : method.getAnnotations()) {
-            String annotationName = annotation.getNameAsString();
+        for (Annotation annotation : JdtAstSupport.annotations(method)) {
+            String annotationName = annotation.getTypeName().getFullyQualifiedName();
             String annotationId = nodeId(NodeType.ANNOTATION, annotationName);
             nodes.add(externalNode(NodeType.ANNOTATION, annotationName));
             relations.add(new CodeGraphRelation(methodId, annotationId, RelationType.ANNOTATED_BY));
@@ -215,17 +213,18 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        String returnType = method.getType().asString();
+        String returnType = method.getReturnType2() == null ? "void" : method.getReturnType2().toString();
         String returnTypeId = nodeId(NodeType.TYPE, returnType);
         nodes.add(externalNode(NodeType.TYPE, returnType));
         relations.add(new CodeGraphRelation(methodId, returnTypeId, RelationType.RETURNS));
 
-        method.getParameters().forEach(parameter -> {
-            String parameterType = parameter.getType().asString();
+        for (Object item : method.parameters()) {
+            SingleVariableDeclaration parameter = (SingleVariableDeclaration) item;
+            String parameterType = parameter.getType().toString() + (parameter.isVarargs() ? "..." : "");
             String parameterTypeId = nodeId(NodeType.TYPE, parameterType);
             nodes.add(externalNode(NodeType.TYPE, parameterType));
             relations.add(new CodeGraphRelation(methodId, parameterTypeId, RelationType.HAS_PARAM_TYPE));
-        });
+        }
     }
 
     private void collectMethodCalls(
@@ -234,68 +233,80 @@ public class JavaDependencyAnalyzer {
             Set<CodeGraphNode> nodes,
             Set<CodeGraphRelation> relations
     ) {
-        for (MethodCallExpr call : method.findAll(MethodCallExpr.class)) {
-            Optional<String> resolvedTarget = resolveMethodCall(call);
-            if (resolvedTarget.isEmpty()) {
-                continue;
-            }
+        method.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(MethodInvocation invocation) {
+                Optional<String> resolvedTarget = resolveMethodCall(invocation);
+                if (resolvedTarget.isEmpty()) {
+                    return true;
+                }
 
-            String calleeFqn = resolvedTarget.get();
-            String calleeId = nodeId(NodeType.METHOD, calleeFqn);
-            nodes.add(externalNode(NodeType.METHOD, calleeFqn));
-            relations.add(new CodeGraphRelation(callerMethodId, calleeId, RelationType.CALLS));
-        }
+                String calleeFqn = resolvedTarget.get();
+                String calleeId = nodeId(NodeType.METHOD, calleeFqn);
+                nodes.add(externalNode(NodeType.METHOD, calleeFqn));
+                relations.add(new CodeGraphRelation(callerMethodId, calleeId, RelationType.CALLS));
+                return true;
+            }
+        });
     }
 
-    private Optional<String> resolveMethodCall(MethodCallExpr call) {
+    private Optional<String> resolveMethodCall(MethodInvocation call) {
         try {
-            ResolvedMethodDeclaration resolved = call.resolve();
-            return Optional.of(resolved.getQualifiedSignature());
-        } catch (UnsolvedSymbolException ex) {
-            log.debug("Unresolved method call: {}", call, ex);
-            return Optional.empty();
+            IMethodBinding binding = call.resolveMethodBinding();
+            if (binding == null) {
+                return Optional.empty();
+            }
+            IMethodBinding methodBinding = binding.getMethodDeclaration();
+            ITypeBinding owner = methodBinding.getDeclaringClass();
+            if (owner == null) {
+                return Optional.empty();
+            }
+            return Optional.of(formatQualifiedSignature(owner, methodBinding));
         } catch (RuntimeException ex) {
             log.debug("Failed to resolve method call: {}", call, ex);
             return Optional.empty();
         }
     }
 
-    private boolean hasInjectionAnnotation(List<AnnotationExpr> annotations) {
-        return annotations.stream()
-                .map(AnnotationExpr::getNameAsString)
+    private boolean hasInjectionAnnotation(BodyDeclaration declaration) {
+        return JdtAstSupport.annotations(declaration).stream()
+                .map(annotation -> annotation.getTypeName().getFullyQualifiedName())
                 .anyMatch(name -> name.equals("Autowired") || name.equals("Inject") || name.equals("Resource"));
     }
 
-    private void registerSourceRoots(CombinedTypeSolver typeSolver, Path root) {
-        try (var paths = Files.walk(root)) {
-            paths.filter(Files::isDirectory)
-                    .filter(this::isJavaSourceRoot)
-                    .forEach(path -> typeSolver.add(new JavaParserTypeSolver(path.toFile())));
-        } catch (IOException ex) {
-            log.warn("Failed to scan Java source roots from {}", root, ex);
-        }
-    }
-
-    private boolean isJavaSourceRoot(Path path) {
-        String normalized = normalize(path);
-        return normalized.endsWith("/src/main/java") || normalized.endsWith("/src/test/java");
-    }
-
-    private String buildTypeFqn(String packageName, ClassOrInterfaceDeclaration type) {
-        return packageName.isBlank() ? type.getNameAsString() : packageName + "." + type.getNameAsString();
+    private String buildTypeFqn(String packageName, TypeDeclaration type) {
+        return packageName.isBlank() ? type.getName().getIdentifier() : packageName + "." + type.getName().getIdentifier();
     }
 
     private String buildMethodFqn(String typeFqn, MethodDeclaration method) {
-        return typeFqn + "#" + method.getSignature().asString();
+        String parameters = ((List<SingleVariableDeclaration>) method.parameters()).stream()
+                .map(parameter -> parameter.getType().toString() + (parameter.isVarargs() ? "..." : ""))
+                .collect(Collectors.joining(", "));
+        return typeFqn + "#" + method.getName().getIdentifier() + "(" + parameters + ")";
+    }
+
+    private String formatQualifiedSignature(ITypeBinding owner, IMethodBinding methodBinding) {
+        String ownerName = qualifiedTypeName(owner);
+        String parameters = java.util.Arrays.stream(methodBinding.getParameterTypes())
+                .map(this::qualifiedTypeName)
+                .collect(Collectors.joining(","));
+        return ownerName + "." + methodBinding.getName() + "(" + parameters + ")";
+    }
+
+    private String qualifiedTypeName(ITypeBinding typeBinding) {
+        if (typeBinding == null) {
+            return "unknown";
+        }
+        if (typeBinding.isArray()) {
+            return qualifiedTypeName(typeBinding.getElementType()) + "[]".repeat(typeBinding.getDimensions());
+        }
+        String qualifiedName = typeBinding.getErasure().getQualifiedName();
+        return qualifiedName.isBlank() ? typeBinding.getErasure().getName() : qualifiedName;
     }
 
     private String extractModule(String relativePath) {
         int index = relativePath.indexOf('/');
         return index < 0 ? relativePath : relativePath.substring(0, index);
-    }
-
-    private String normalize(Path path) {
-        return path.toString().replace('\\', '/');
     }
 
     private String nodeId(NodeType type, String fqn) {

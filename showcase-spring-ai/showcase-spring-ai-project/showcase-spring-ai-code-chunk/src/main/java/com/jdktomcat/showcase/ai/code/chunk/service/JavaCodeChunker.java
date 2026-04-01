@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.TypeParameter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -116,6 +117,7 @@ public class JavaCodeChunker {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private String buildClassSignature(TypeDeclaration type) {
         String modifiers = ((List<IExtendedModifier>) type.modifiers()).stream()
                 .filter(IExtendedModifier::isModifier)
@@ -126,7 +128,7 @@ public class JavaCodeChunker {
 
         String typeParameters = type.typeParameters().isEmpty()
                 ? ""
-                : ((List<Type>) type.typeParameters()).stream()
+                : ((List<TypeParameter>) type.typeParameters()).stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", ", "<", ">"));
 

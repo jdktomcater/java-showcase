@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings("deprecation")
 final class JdtAstSupport {
 
     private static final Map<String, String> COMPILER_OPTIONS = createCompilerOptions();
