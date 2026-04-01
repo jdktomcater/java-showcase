@@ -157,43 +157,7 @@
     const network = new vis.Network(
         document.getElementById("network"),
         {nodes: new vis.DataSet([]), edges: new vis.DataSet([])},
-        {
-            autoResize: true,
-            physics: {
-                stabilization: false,
-                barnesHut: {
-                    gravitationalConstant: -3000,
-                    springLength: 180,
-                    springConstant: 0.03
-                }
-            },
-            interaction: {
-                hover: true,
-                navigationButtons: true,
-                keyboard: true
-            },
-            nodes: {
-                shape: "dot",
-                size: 18,
-                font: {
-                    color: "#e5e7eb",
-                    face: "Arial"
-                },
-                borderWidth: 1.5
-            },
-            edges: {
-                arrows: "to",
-                smooth: {
-                    type: "dynamic"
-                },
-                font: {
-                    color: "#cbd5e1",
-                    strokeWidth: 0,
-                    size: 11,
-                    align: "middle"
-                }
-            }
-        }
+        buildGraphOptions(false)
     );
 
     const currentGraph = {
@@ -242,6 +206,61 @@
         }
     }
 
+    function buildGraphOptions(largeGraphMode) {
+        return {
+            autoResize: true,
+            layout: largeGraphMode ? {
+                hierarchical: {
+                    enabled: true,
+                    direction: "LR",
+                    sortMethod: "directed",
+                    levelSeparation: 220,
+                    nodeSpacing: 180,
+                    treeSpacing: 220
+                }
+            } : {},
+            physics: largeGraphMode ? false : {
+                stabilization: {
+                    enabled: true,
+                    iterations: 300
+                },
+                barnesHut: {
+                    gravitationalConstant: -3000,
+                    springLength: 180,
+                    springConstant: 0.03
+                }
+            },
+            interaction: {
+                hover: true,
+                navigationButtons: true,
+                keyboard: true
+            },
+            nodes: {
+                shape: "dot",
+                size: largeGraphMode ? 14 : 18,
+                font: {
+                    color: "#e5e7eb",
+                    face: "Arial",
+                    size: largeGraphMode ? 10 : 14
+                },
+                borderWidth: 1.5
+            },
+            edges: {
+                arrows: "to",
+                smooth: largeGraphMode ? false : {
+                    type: "dynamic"
+                },
+                width: largeGraphMode ? 1 : 1.5,
+                font: {
+                    color: "#cbd5e1",
+                    strokeWidth: 0,
+                    size: largeGraphMode ? 9 : 11,
+                    align: "middle"
+                }
+            }
+        };
+    }
+
     function buildPayload() {
         return {
             mode: modeInput.value,
@@ -275,6 +294,9 @@
             const result = await response.json();
             currentGraph.nodes = result.nodes || [];
             currentGraph.edges = result.edges || [];
+            const largeGraphMode = result.mode === "classgraph" || currentGraph.nodes.length > 300;
+
+            network.setOptions(buildGraphOptions(largeGraphMode));
 
             network.setData({
                 nodes: currentGraph.nodes.map(node => ({
@@ -300,15 +322,25 @@
                 `target: ${result.target}\n` +
                 `depth: ${result.depth}\n` +
                 `nodes: ${result.nodeCount}\n` +
-                `edges: ${result.edgeCount}`;
+                `edges: ${result.edgeCount}` +
+                (largeGraphMode ? `\nview: large graph mode, 可滚轮放大查看细节` : "");
             setStatus("Loaded");
 
             if (currentGraph.nodes.length > 0) {
-                network.fit({
-                    animation: {
-                        duration: 500
-                    }
-                });
+                if (largeGraphMode) {
+                    network.moveTo({
+                        scale: 0.2,
+                        animation: {
+                            duration: 500
+                        }
+                    });
+                } else {
+                    network.fit({
+                        animation: {
+                            duration: 500
+                        }
+                    });
+                }
             }
         } catch (error) {
             setStatus("Error");

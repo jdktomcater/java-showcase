@@ -122,14 +122,13 @@ public class Neo4jGraphRepository {
                     OPTIONAL MATCH p = (start)-[:RELATES*1..10]->(target:CodeNode)
                     WHERE length(p) <= $depth
                     WITH start, collect(DISTINCT p) AS paths
-                    WITH start,
-                         [node IN collect(DISTINCT start) + reduce(allNodes = [], path IN paths |
-                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END)
-                          WHERE node IS NOT NULL] AS rawNodes,
+                    WITH start, paths,
+                         reduce(allNodes = [start], path IN paths |
+                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END) AS rawNodes,
                          reduce(allRels = [], path IN paths |
                              allRels + CASE WHEN path IS NULL THEN [] ELSE relationships(path) END) AS rawRels
                     UNWIND rawNodes AS node
-                    WITH start, collect(DISTINCT node) AS graphNodes, rawRels
+                    WITH start, rawRels, collect(DISTINCT node) AS graphNodes
                     UNWIND CASE WHEN size(rawRels) = 0 THEN [NULL] ELSE rawRels END AS rel
                     WITH start, graphNodes, collect(DISTINCT rel) AS graphRels
                     RETURN [node IN graphNodes | {
@@ -171,14 +170,13 @@ public class Neo4jGraphRepository {
                       AND length(p) <= $depth
                       AND ALL(r IN relationships(p) WHERE r.type = 'CALLS')
                     WITH target, collect(DISTINCT p) AS paths
-                    WITH target,
-                         [node IN collect(DISTINCT target) + reduce(allNodes = [], path IN paths |
-                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END)
-                          WHERE node IS NOT NULL] AS rawNodes,
+                    WITH target, paths,
+                         reduce(allNodes = [target], path IN paths |
+                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END) AS rawNodes,
                          reduce(allRels = [], path IN paths |
                              allRels + CASE WHEN path IS NULL THEN [] ELSE relationships(path) END) AS rawRels
                     UNWIND rawNodes AS node
-                    WITH target, collect(DISTINCT node) AS graphNodes, rawRels
+                    WITH target, rawRels, collect(DISTINCT node) AS graphNodes
                     UNWIND CASE WHEN size(rawRels) = 0 THEN [NULL] ELSE rawRels END AS rel
                     WITH target, graphNodes, collect(DISTINCT rel) AS graphRels
                     RETURN [node IN graphNodes | {
