@@ -107,6 +107,7 @@
             <select id="mode">
                 <option value="dependencies">Dependencies</option>
                 <option value="impact">Impact</option>
+                <option value="classgraph">Full Class Graph</option>
             </select>
         </div>
         <div class="field">
@@ -132,7 +133,7 @@
         <div class="field">
             <button id="loadButton" type="button">加载图谱</button>
         </div>
-        <div class="hint">`dependencies` 使用 `nodeType + fqn` 查询。`impact` 使用 `methodFqn` 查询调用影响链。</div>
+        <div class="hint">`dependencies` 使用 `nodeType + fqn` 查询。`impact` 使用 `methodFqn` 查询调用影响链。`classgraph` 会全量加载 Neo4j 中所有类节点及类间依赖关系。</div>
         <div id="summary" class="summary">尚未加载图数据。</div>
         <div id="details" class="details">点击图中的节点或边查看详情。</div>
     </aside>
@@ -348,9 +349,11 @@
 
     modeInput.addEventListener("change", () => {
         const impactMode = modeInput.value === "impact";
-        nodeTypeInput.disabled = impactMode;
-        fqnInput.disabled = impactMode;
+        const classGraphMode = modeInput.value === "classgraph";
+        nodeTypeInput.disabled = impactMode || classGraphMode;
+        fqnInput.disabled = impactMode || classGraphMode;
         methodFqnInput.disabled = !impactMode;
+        depthInput.disabled = classGraphMode;
     });
 
     modeInput.dispatchEvent(new Event("change"));
