@@ -3,6 +3,8 @@ package com.jdktomcat.showcase.ai.code.chunk.controller;
 import com.jdktomcat.showcase.ai.code.chunk.dto.CodeSearchHit;
 import com.jdktomcat.showcase.ai.code.chunk.dto.CodeSearchRequest;
 import com.jdktomcat.showcase.ai.code.chunk.dto.DependencyQueryRequest;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewRequest;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewResponse;
 import com.jdktomcat.showcase.ai.code.chunk.dto.ImpactQueryRequest;
 import com.jdktomcat.showcase.ai.code.chunk.service.CodeIndexService;
 import com.jdktomcat.showcase.ai.code.chunk.service.CodeSearchService;
@@ -10,9 +12,11 @@ import com.jdktomcat.showcase.ai.code.chunk.service.DependencyIndexService;
 import com.jdktomcat.showcase.ai.code.chunk.service.ImpactAnalysisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,5 +82,22 @@ public class CodeIndexController {
                 "count", impacts.size(),
                 "impacts", impacts
         );
+    }
+
+    @PostMapping("/api/code/graph/view")
+    public GraphViewResponse graphView(@Valid @RequestBody GraphViewRequest request) {
+        try {
+            return switch (request.resolvedMode()) {
+                case "impact" -> impactAnalysisService.impactGraph(request.requiredMethodFqn(), request.resolvedDepth());
+                case "dependencies" -> impactAnalysisService.dependencyGraph(
+                        request.requiredNodeType(),
+                        request.requiredFqn(),
+                        request.resolvedDepth()
+                );
+                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported mode: " + request.mode());
+            };
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
 }

@@ -2,14 +2,19 @@ package com.jdktomcat.showcase.ai.code.chunk.repository;
 
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeGraphNode;
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeGraphRelation;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewEdge;
+import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewNode;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Values;
 import org.neo4j.driver.types.MapAccessor;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class Neo4jGraphRepository {
@@ -107,5 +112,149 @@ public class Neo4jGraphRepository {
                     "depth", depth
             )).list(MapAccessor::asMap));
         }
+    }
+
+    public GraphData findDependencyGraph(String nodeId, int depth) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                Record record = tx.run("""
+                    MATCH (start:CodeNode {id: $nodeId})
+                    OPTIONAL MATCH p = (start)-[:RELATES*1..10]->(target:CodeNode)
+                    WHERE length(p) <= $depth
+                    WITH start, collect(DISTINCT p) AS paths
+                    WITH start,
+                         [node IN collect(DISTINCT start) + reduce(allNodes = [], path IN paths |
+                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END)
+                          WHERE node IS NOT NULL] AS rawNodes,
+                         reduce(allRels = [], path IN paths |
+                             allRels + CASE WHEN path IS NULL THEN [] ELSE relationships(path) END) AS rawRels
+                    UNWIND rawNodes AS node
+                    WITH start, collect(DISTINCT node) AS graphNodes, rawRels
+                    UNWIND CASE WHEN size(rawRels) = 0 THEN [NULL] ELSE rawRels END AS rel
+                    WITH start, graphNodes, collect(DISTINCT rel) AS graphRels
+                    RETURN [node IN graphNodes | {
+                                id: node.id,
+                                name: node.name,
+                                type: node.type,
+                                fqn: node.fqn,
+                                filePath: node.filePath,
+                                module: node.module,
+                                startLine: node.startLine,
+                                endLine: node.endLine
+                            }] AS nodes,
+                           [rel IN graphRels WHERE rel IS NOT NULL | {
+                                id: elementId(rel),
+                                fromId: startNode(rel).id,
+                                toId: endNode(rel).id,
+                                type: rel.type
+                            }] AS relationships
+                    """, Values.parameters(
+                    "nodeId", nodeId,
+                    "depth", depth
+                )).single();
+                return mapGraphData(
+                        record.get("nodes").asList(MapAccessor::asMap),
+                        record.get("relationships").asList(MapAccessor::asMap),
+                        nodeId
+                );
+            });
+        }
+    }
+
+    public GraphData findImpactGraph(String methodId, int depth) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                Record record = tx.run("""
+                    MATCH (target:CodeNode {id: $methodId})
+                    OPTIONAL MATCH p = (caller:CodeNode)-[:RELATES*1..10]->(target)
+                    WHERE caller.type = 'METHOD'
+                      AND length(p) <= $depth
+                      AND ALL(r IN relationships(p) WHERE r.type = 'CALLS')
+                    WITH target, collect(DISTINCT p) AS paths
+                    WITH target,
+                         [node IN collect(DISTINCT target) + reduce(allNodes = [], path IN paths |
+                             allNodes + CASE WHEN path IS NULL THEN [] ELSE nodes(path) END)
+                          WHERE node IS NOT NULL] AS rawNodes,
+                         reduce(allRels = [], path IN paths |
+                             allRels + CASE WHEN path IS NULL THEN [] ELSE relationships(path) END) AS rawRels
+                    UNWIND rawNodes AS node
+                    WITH target, collect(DISTINCT node) AS graphNodes, rawRels
+                    UNWIND CASE WHEN size(rawRels) = 0 THEN [NULL] ELSE rawRels END AS rel
+                    WITH target, graphNodes, collect(DISTINCT rel) AS graphRels
+                    RETURN [node IN graphNodes | {
+                                id: node.id,
+                                name: node.name,
+                                type: node.type,
+                                fqn: node.fqn,
+                                filePath: node.filePath,
+                                module: node.module,
+                                startLine: node.startLine,
+                                endLine: node.endLine
+                            }] AS nodes,
+                           [rel IN graphRels WHERE rel IS NOT NULL | {
+                                id: elementId(rel),
+                                fromId: startNode(rel).id,
+                                toId: endNode(rel).id,
+                                type: rel.type
+                            }] AS relationships
+                    """, Values.parameters(
+                    "methodId", methodId,
+                    "depth", depth
+                )).single();
+                return mapGraphData(
+                        record.get("nodes").asList(MapAccessor::asMap),
+                        record.get("relationships").asList(MapAccessor::asMap),
+                        methodId
+                );
+            });
+        }
+    }
+
+    private GraphData mapGraphData(List<Map<String, Object>> nodeMaps, List<Map<String, Object>> relationMaps, String focusId) {
+        List<GraphViewNode> nodes = new ArrayList<>();
+        for (Map<String, Object> node : nodeMaps) {
+            String id = asString(node.get("id"));
+            nodes.add(new GraphViewNode(
+                    id,
+                    firstNonBlank(asString(node.get("name")), id),
+                    asString(node.get("type")),
+                    asString(node.get("fqn")),
+                    asString(node.get("filePath")),
+                    asString(node.get("module")),
+                    asInteger(node.get("startLine")),
+                    asInteger(node.get("endLine")),
+                    Objects.equals(focusId, id)
+            ));
+        }
+
+        List<GraphViewEdge> edges = new ArrayList<>();
+        for (Map<String, Object> relation : relationMaps) {
+            edges.add(new GraphViewEdge(
+                    asString(relation.get("id")),
+                    asString(relation.get("fromId")),
+                    asString(relation.get("toId")),
+                    asString(relation.get("type"))
+            ));
+        }
+
+        return new GraphData(nodes, edges);
+    }
+
+    private String asString(Object value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
+    private Integer asInteger(Object value) {
+        return value instanceof Number number ? number.intValue() : null;
+    }
+
+    private String firstNonBlank(String first, String fallback) {
+        return first == null || first.isBlank() ? fallback : first;
+    }
+
+    public record GraphData(
+            List<GraphViewNode> nodes,
+            List<GraphViewEdge> edges
+    ) {
     }
 }
