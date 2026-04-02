@@ -3,258 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impact Chain Visualization - 影响链路可视化</title>
+    <title>Impact Chain Visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <style>
         :root {
-            color-scheme: dark;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-red: #ef4444;
         }
-        body {
+
+        * {
             margin: 0;
-            background: #0f172a;
-            color: #e2e8f0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
         .container {
             display: flex;
             height: 100vh;
         }
+
+        /* Sidebar */
         .sidebar {
-            width: 360px;
-            background: #1e293b;
-            border-right: 1px solid #334155;
+            width: 340px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
             padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title-icon {
+            font-size: 22px;
+        }
+
+        .sidebar-content {
+            flex: 1;
             overflow-y: auto;
+            padding: 16px;
         }
-        .sidebar h1 {
-            font-size: 20px;
-            margin: 0 0 20px;
-            color: #f1f5f9;
+
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
         }
-        .sidebar h2 {
-            font-size: 14px;
-            color: #94a3b8;
-            margin: 16px 0 8px;
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
         }
+
+        /* Entry Point List */
+        .entry-point-list {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .entry-point-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .entry-point-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .entry-point-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entry-point-item:hover {
+            background: var(--bg-primary);
+        }
+
+        .entry-point-item:last-child {
+            border-bottom: none;
+        }
+
+        .entry-point-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .entry-point-type.HTTP { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .entry-point-type.RPC { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .entry-point-type.MQ { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .entry-point-type.SCHEDULED { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .entry-point-type.EVENT { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+
+        .entry-point-name {
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Type Filter */
+        .type-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .type-filter-btn {
+            padding: 4px 10px;
+            font-size: 11px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+
+        .type-filter-btn:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .type-filter-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* Form Elements */
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
+
         .form-group label {
             display: block;
-            font-size: 13px;
-            color: #cbd5e1;
+            font-size: 12px;
+            color: var(--text-secondary);
             margin-bottom: 6px;
+            font-weight: 500;
         }
+
         .form-group input,
-        .form-group select,
-        .form-group button {
+        .form-group select {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #475569;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            background: #0f172a;
-            color: #f1f5f9;
-            font-size: 14px;
-            box-sizing: border-box;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: border-color 0.15s;
         }
-        .form-group button {
-            background: #3b82f6;
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
             border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
+            transition: all 0.15s;
         }
-        .form-group button:hover {
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
             background: #2563eb;
         }
-        .form-group button.secondary {
-            background: #475569;
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
-        .form-group button.secondary:hover {
-            background: #64748b;
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
         }
+
         .btn-group {
             display: flex;
             gap: 8px;
         }
-        .btn-group button {
+
+        .btn-group .btn {
             flex: 1;
         }
-        .stats {
-            background: #0f172a;
-            border: 1px solid #334155;
+
+        /* Stats Panel */
+        .stats-panel {
+            background: var(--bg-tertiary);
             border-radius: 8px;
             padding: 12px;
-            font-size: 13px;
-            line-height: 1.6;
         }
+
         .stats-row {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px solid #1e293b;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
         }
+
         .stats-row:last-child {
             border-bottom: none;
         }
+
         .stats-label {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
+
         .stats-value {
-            color: #f1f5f9;
+            color: var(--text-primary);
             font-weight: 600;
         }
+
+        /* Legend */
         .legend {
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: var(--bg-tertiary);
             border-radius: 8px;
             padding: 12px;
         }
+
         .legend-item {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
             font-size: 12px;
+            color: var(--text-secondary);
         }
+
         .legend-item:last-child {
             margin-bottom: 0;
         }
+
         .legend-color {
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             border-radius: 3px;
             flex-shrink: 0;
         }
+
         .legend-color.circle {
             border-radius: 50%;
         }
-        .legend-color.diamond {
-            transform: rotate(45deg);
-        }
-        .entry-point-list {
-            background: #0f172a;
-            border: 1px solid #334155;
+
+        /* Details Panel */
+        .details-panel {
+            background: var(--bg-tertiary);
             border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .entry-point-item {
-            padding: 10px 12px;
-            border-bottom: 1px solid #1e293b;
-            cursor: pointer;
-            transition: background 0.15s;
+            padding: 12px;
             font-size: 12px;
+            line-height: 1.6;
         }
-        .entry-point-item:hover {
-            background: #1e293b;
-        }
-        .entry-point-item:last-child {
-            border-bottom: none;
-        }
-        .entry-point-type {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
+
+        .details-title {
             font-weight: 600;
-            margin-right: 6px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
-        .entry-point-type.HTTP { background: #3b82f6; }
-        .entry-point-type.RPC { background: #8b5cf6; }
-        .entry-point-type.MQ { background: #f59e0b; }
-        .entry-point-type.SCHEDULED { background: #10b981; }
-        .entry-point-type.EVENT { background: #ec4899; }
+
+        .details-row {
+            display: flex;
+            padding: 4px 0;
+        }
+
+        .details-label {
+            color: var(--text-muted);
+            min-width: 80px;
+        }
+
+        .details-value {
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        /* Main Content */
         .main-content {
             flex: 1;
             position: relative;
+            background: var(--bg-primary);
             overflow: hidden;
-            background: #020617;
         }
+
         #graph-svg {
             width: 100%;
             height: 100%;
         }
+
+        /* Status Bar */
         .status-bar {
             position: absolute;
             top: 16px;
             left: 16px;
-            padding: 8px 14px;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid #334155;
+            padding: 6px 14px;
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             font-size: 12px;
+            color: var(--text-secondary);
             z-index: 10;
+            backdrop-filter: blur(8px);
         }
+
+        /* Tooltip */
         .tooltip {
             position: absolute;
             pointer-events: none;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid #475569;
+            background: rgba(17, 24, 39, 0.98);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 10px 12px;
+            padding: 12px;
             font-size: 12px;
             max-width: 320px;
             z-index: 100;
             opacity: 0;
             transition: opacity 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
+
         .tooltip-title {
             font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 6px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 13px;
         }
+
         .tooltip-row {
-            color: #94a3b8;
+            color: var(--text-muted);
             margin: 3px 0;
-        }
-        .tooltip-row span {
-            color: #e2e8f0;
-        }
-        .node-label {
-            fill: #e2e8f0;
-            font-size: 10px;
-            pointer-events: none;
-            user-select: none;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
-        .link-label {
-            fill: #64748b;
-            font-size: 8px;
-            pointer-events: none;
-            user-select: none;
-        }
-        .type-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
-        .type-filter button {
-            padding: 4px 10px;
             font-size: 11px;
-            border-radius: 12px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #cbd5e1;
-            cursor: pointer;
-            transition: all 0.15s;
         }
-        .type-filter button.active {
-            background: #3b82f6;
-            border-color: #3b82f6;
-            color: #fff;
+
+        .tooltip-row span {
+            color: var(--text-secondary);
         }
+
+        /* Loading Overlay */
         .loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(2, 6, 23, 0.8);
+            background: rgba(11, 15, 25, 0.8);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 50;
@@ -262,128 +432,215 @@
             pointer-events: none;
             transition: opacity 0.3s;
         }
+
         .loading-overlay.show {
             opacity: 1;
             pointer-events: auto;
         }
+
         .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #334155;
-            border-top-color: #3b82f6;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Node and Link Labels */
+        .node-label {
+            fill: var(--text-primary);
+            font-size: 10px;
+            pointer-events: none;
+            user-select: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .header-actions .btn {
+            flex: none;
+            padding: 6px 12px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <aside class="sidebar">
-        <h1>🔗 Impact Chain Visualization</h1>
-        
-        <h2>Entry Points</h2>
-        <div class="type-filter" id="typeFilter">
-            <button data-type="ALL" class="active">ALL</button>
-            <button data-type="HTTP">HTTP</button>
-            <button data-type="RPC">RPC</button>
-            <button data-type="MQ">MQ</button>
-            <button data-type="SCHEDULED">SCHEDULED</button>
-            <button data-type="EVENT">EVENT</button>
-        </div>
-        <div class="entry-point-list" id="entryPointList" style="margin-top: 10px;">
-            <div class="entry-point-item" style="color: #64748b;">Click "Load Entry Points" to load</div>
-        </div>
-        <div class="btn-group" style="margin-top: 10px;">
-            <button class="secondary" id="loadEntryPointsBtn">Load Entry Points</button>
-            <button class="secondary" id="analyzeBtn">Analyze</button>
-        </div>
-
-        <h2>Graph Query</h2>
-        <div class="form-group">
-            <label for="graphMode">Mode</label>
-            <select id="graphMode">
-                <option value="single">Single Entry Point</option>
-                <option value="full">Full Graph</option>
-            </select>
-        </div>
-        <div class="form-group" id="entryPointIdGroup">
-            <label for="entryPointId">Entry Point ID</label>
-            <input type="text" id="entryPointId" placeholder="e.g., HTTP:com.example.Controller#method()">
-        </div>
-        <div class="form-group">
-            <label for="graphDepth">Depth</label>
-            <input type="number" id="graphDepth" min="1" max="10" value="5">
-        </div>
-        <div class="btn-group">
-            <button id="loadGraphBtn">Load Graph</button>
-            <button class="secondary" id="refreshBtn">Refresh</button>
-        </div>
-
-        <h2>Statistics</h2>
-        <div class="stats" id="statsPanel">
-            <div class="stats-row">
-                <span class="stats-label">Mode</span>
-                <span class="stats-value" id="statMode">-</span>
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <span class="sidebar-title-icon">🔗</span>
+                Impact Chain
             </div>
-            <div class="stats-row">
-                <span class="stats-label">Nodes</span>
-                <span class="stats-value" id="statNodes">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Edges</span>
-                <span class="stats-value" id="statEdges">0</span>
-            </div>
-            <div class="stats-row">
-                <span class="stats-label">Entry Points</span>
-                <span class="stats-value" id="statEntryPoints">0</span>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="loadEntryPointsBtn">Load Points</button>
+                <button class="btn btn-primary" id="analyzeBtn">Analyze</button>
             </div>
         </div>
 
-        <h2>Legend</h2>
-        <div class="legend">
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #ef4444;"></div>
-                <span>Entry Point (HTTP)</span>
+        <div class="sidebar-content">
+            <!-- Entry Points Section -->
+            <div class="section">
+                <div class="section-title">Entry Points</div>
+                <div class="type-filter" id="typeFilter">
+                    <button class="type-filter-btn active" data-type="ALL">ALL</button>
+                    <button class="type-filter-btn" data-type="HTTP">HTTP</button>
+                    <button class="type-filter-btn" data-type="RPC">RPC</button>
+                    <button class="type-filter-btn" data-type="MQ">MQ</button>
+                    <button class="type-filter-btn" data-type="SCHEDULED">SCHED</button>
+                    <button class="type-filter-btn" data-type="EVENT">EVENT</button>
+                </div>
+                <div class="entry-point-list" id="entryPointList">
+                    <div class="entry-point-item" style="justify-content: center; color: var(--text-muted);">
+                        Click "Load Points" to load
+                    </div>
+                </div>
             </div>
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #8b5cf6;"></div>
-                <span>Entry Point (RPC)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #f59e0b;"></div>
-                <span>Entry Point (MQ)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #10b981;"></div>
-                <span>Entry Point (SCHEDULED)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #ec4899;"></div>
-                <span>Entry Point (EVENT)</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color" style="background: #3b82f6;"></div>
-                <span>Type/Class Node</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color circle" style="background: #06b6d4;"></div>
-                <span>Method Node</span>
-            </div>
-        </div>
 
-        <h2>Details</h2>
-        <div class="stats" id="detailsPanel">
-            Click a node or edge to see details.
-        </div>
+            <!-- Graph Query Section -->
+            <div class="section">
+                <div class="section-title">Graph Query</div>
+                <div class="form-group">
+                    <label for="graphMode">Mode</label>
+                    <select id="graphMode">
+                        <option value="single">Single Entry Point</option>
+                        <option value="full">Full Graph</option>
+                    </select>
+                </div>
+                <div class="form-group" id="entryPointIdGroup">
+                    <label for="entryPointId">Entry Point ID</label>
+                    <input type="text" id="entryPointId" placeholder="HTTP:com.example.Controller#method()">
+                </div>
+                <div class="form-group">
+                    <label for="graphDepth">Depth</label>
+                    <input type="number" id="graphDepth" min="1" max="10" value="5">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="loadGraphBtn" style="flex: 2;">Load Graph</button>
+                    <button class="btn btn-secondary" id="refreshBtn" style="flex: 1;">↻</button>
+                </div>
+            </div>
 
-        <h2>Export</h2>
-        <div class="btn-group">
-            <button class="secondary" id="exportDotBtn">DOT</button>
-            <button class="secondary" id="exportJsonBtn">JSON</button>
-            <button class="secondary" id="exportMermaidBtn">Mermaid</button>
+            <!-- Statistics Section -->
+            <div class="section">
+                <div class="section-title">Statistics</div>
+                <div class="stats-panel" id="statsPanel">
+                    <div class="stats-row">
+                        <span class="stats-label">Mode</span>
+                        <span class="stats-value" id="statMode">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Nodes</span>
+                        <span class="stats-value" id="statNodes">0</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Edges</span>
+                        <span class="stats-value" id="statEdges">0</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">Entry Points</span>
+                        <span class="stats-value" id="statEntryPoints">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend Section -->
+            <div class="section">
+                <div class="section-title">Legend</div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #ef4444;"></div>
+                        <span>HTTP Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #8b5cf6;"></div>
+                        <span>RPC Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #f59e0b;"></div>
+                        <span>MQ Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #10b981;"></div>
+                        <span>Scheduled Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #ec4899;"></div>
+                        <span>Event Entry Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <span>Type/Class Node</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color circle" style="background: #06b6d4;"></div>
+                        <span>Method Node</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="section">
+                <div class="section-title">Details</div>
+                <div class="details-panel" id="detailsPanel">
+                    <div style="color: var(--text-muted); text-align: center; padding: 20px 0;">
+                        Click a node or edge to see details
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="section">
+                <div class="section-title">Export</div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="exportDotBtn">DOT</button>
+                    <button class="btn btn-secondary" id="exportJsonBtn">JSON</button>
+                    <button class="btn btn-secondary" id="exportMermaidBtn">Mermaid</button>
+                </div>
+            </div>
         </div>
     </aside>
 
@@ -393,6 +650,7 @@
         <div class="tooltip" id="tooltip"></div>
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Loading...</div>
         </div>
     </main>
 </div>
@@ -415,6 +673,7 @@ const els = {
     statusBar: document.getElementById('statusBar'),
     tooltip: document.getElementById('tooltip'),
     loadingOverlay: document.getElementById('loadingOverlay'),
+    loadingText: document.getElementById('loadingText'),
     entryPointList: document.getElementById('entryPointList'),
     typeFilter: document.getElementById('typeFilter'),
     graphMode: document.getElementById('graphMode'),
@@ -439,7 +698,8 @@ function setStatus(text) {
     els.statusBar.textContent = text;
 }
 
-function showLoading() {
+function showLoading(text = 'Loading...') {
+    els.loadingText.textContent = text;
     els.loadingOverlay.classList.add('show');
 }
 
@@ -479,7 +739,7 @@ function nodeColor(node) {
     if (node.type === 'TYPE') {
         return '#3b82f6';
     }
-    return '#64748b';
+    return '#4b5563';
 }
 
 function edgeColor(type) {
@@ -496,12 +756,12 @@ function edgeColor(type) {
         'CONSUMES': '#fbbf24',
         'PUBLISHES': '#f472b6'
     };
-    return colors[type] || '#64748b';
+    return colors[type] || '#6b7280';
 }
 
 // ==================== Entry Points ====================
 async function loadEntryPoints() {
-    showLoading();
+    showLoading('Loading entry points...');
     setStatus('Loading entry points...');
     
     try {
@@ -516,7 +776,7 @@ async function loadEntryPoints() {
         setStatus(`Loaded ${state.entryPoints.length} entry points`);
     } catch (error) {
         setStatus('Error: ' + error.message);
-        els.entryPointList.innerHTML = `<div class="entry-point-item" style="color: #ef4444;">Error: ${error.message}</div>`;
+        els.entryPointList.innerHTML = `<div class="entry-point-item" style="justify-content: center; color: #ef4444;">Error: ${error.message}</div>`;
     } finally {
         hideLoading();
     }
@@ -524,14 +784,14 @@ async function loadEntryPoints() {
 
 function renderEntryPointList() {
     if (state.filteredEntryPoints.length === 0) {
-        els.entryPointList.innerHTML = '<div class="entry-point-item" style="color: #64748b;">No entry points found</div>';
+        els.entryPointList.innerHTML = '<div class="entry-point-item" style="justify-content: center; color: var(--text-muted);">No entry points found</div>';
         return;
     }
     
     els.entryPointList.innerHTML = state.filteredEntryPoints.map(ep => `
         <div class="entry-point-item" data-id="${ep.id}">
             <span class="entry-point-type ${ep.type}">${ep.type}</span>
-            <span style="color: #e2e8f0;">${ep.className}#${ep.methodName}</span>
+            <span class="entry-point-name">${ep.className}#${ep.methodName}</span>
         </div>
     `).join('');
     
@@ -565,7 +825,7 @@ async function loadGraph() {
         return;
     }
     
-    showLoading();
+    showLoading('Loading graph...');
     setStatus('Loading graph...');
     
     try {
@@ -596,7 +856,7 @@ async function loadGraph() {
 }
 
 async function analyze() {
-    showLoading();
+    showLoading('Running analysis...');
     setStatus('Running analysis...');
     
     try {
@@ -604,7 +864,7 @@ async function analyze() {
         if (!response.ok) throw new Error('Analysis failed');
         
         const result = await response.json();
-        alert(`Analysis completed!\nEntry Points: ${result.entryPointCount}\nNodes: ${result.nodeCount}\nRelations: ${result.relationCount}`);
+        alert(`Analysis completed!\n\nEntry Points: ${result.entryPointCount}\nNodes: ${result.nodeCount}\nRelations: ${result.relationCount}`);
         
         loadEntryPoints();
     } catch (error) {
@@ -617,14 +877,12 @@ async function analyze() {
 
 // ==================== Graph Rendering ====================
 function renderGraph(result) {
-    // Clear existing graph
     d3.select('#graph-svg').selectAll('*').remove();
     
     const svg = d3.select('#graph-svg');
     const width = svg.node().clientWidth;
     const height = svg.node().clientHeight;
     
-    // Transform data
     state.nodes = result.nodes.map(n => ({...n}));
     state.edges = result.edges.map(e => ({
         ...e,
@@ -632,22 +890,18 @@ function renderGraph(result) {
         target: e.to
     }));
     
-    // Count entry points
     const entryPointCount = state.nodes.filter(n => n.isEntryPoint).length;
     
-    // Update stats
     els.statMode.textContent = result.mode || 'single';
     els.statNodes.textContent = result.nodeCount || state.nodes.length;
     els.statEdges.textContent = result.edgeCount || state.edges.length;
     els.statEntryPoints.textContent = entryPointCount;
     
-    // Create zoom layer
     const zoomLayer = svg.append('g');
     const linkGroup = zoomLayer.append('g');
     const nodeGroup = zoomLayer.append('g');
     const labelGroup = zoomLayer.append('g');
     
-    // Add arrow marker
     svg.append('defs')
         .append('marker')
         .attr('id', 'arrow')
@@ -658,10 +912,9 @@ function renderGraph(result) {
         .attr('markerHeight', 6)
         .attr('orient', 'auto')
         .append('path')
-        .attr('fill', '#64748b')
+        .attr('fill', '#6b7280')
         .attr('d', 'M0,-5L10,0L0,5');
     
-    // Setup zoom
     const zoom = d3.zoom()
         .scaleExtent([0.1, 4])
         .on('zoom', (event) => {
@@ -671,12 +924,11 @@ function renderGraph(result) {
     svg.call(zoom);
     state.zoom = zoom;
     
-    // Draw links
     const links = linkGroup.selectAll('line')
         .data(state.edges)
         .join('line')
         .attr('stroke', d => edgeColor(d.type))
-        .attr('stroke-opacity', 0.6)
+        .attr('stroke-opacity', 0.5)
         .attr('stroke-width', 1.5)
         .attr('marker-end', 'url(#arrow)')
         .on('click', (event, d) => selectEdge(d))
@@ -689,15 +941,15 @@ function renderGraph(result) {
         })
         .on('mouseleave', hideTooltip);
     
-    // Draw nodes
     const nodes = nodeGroup.selectAll('circle')
         .data(state.nodes)
         .join('circle')
-        .attr('r', d => d.isEntryPoint ? 12 : 8)
+        .attr('r', d => d.isEntryPoint ? 14 : 9)
         .attr('fill', d => nodeColor(d))
-        .attr('stroke', '#1e293b')
+        .attr('stroke', '#1f2937')
         .attr('stroke-width', 2)
         .attr('cursor', 'pointer')
+        .attr('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))')
         .on('click', (event, d) => selectNode(d))
         .on('mousemove', (event, d) => {
             showTooltip(event, `
@@ -705,7 +957,7 @@ function renderGraph(result) {
                 <div class="tooltip-row">Type: <span>${d.type}</span></div>
                 <div class="tooltip-row">FQN: <span>${d.fqn || '-'}</span></div>
                 <div class="tooltip-row">Module: <span>${d.module || '-'}</span></div>
-                ${d.isEntryPoint ? '<div class="tooltip-row">Entry Point: <span>Yes</span></div>' : ''}
+                ${d.isEntryPoint ? '<div class="tooltip-row" style="color: #f59e0b;">★ Entry Point</div>' : ''}
             `);
         })
         .on('mouseleave', hideTooltip)
@@ -714,24 +966,22 @@ function renderGraph(result) {
             .on('drag', dragged)
             .on('end', dragEnded));
     
-    // Draw labels
     const labels = labelGroup.selectAll('text')
         .data(state.nodes)
         .join('text')
         .attr('class', 'node-label')
-        .attr('dx', 14)
+        .attr('dx', 16)
         .attr('dy', 4)
         .text(d => d.name);
     
-    // Setup simulation
     const simulation = d3.forceSimulation(state.nodes)
         .force('link', d3.forceLink(state.edges)
             .id(d => d.id)
-            .distance(100)
-            .strength(0.1))
-        .force('charge', d3.forceManyBody().strength(-300))
+            .distance(120)
+            .strength(0.08))
+        .force('charge', d3.forceManyBody().strength(-400))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => d.isEntryPoint ? 16 : 12));
+        .force('collision', d3.forceCollide().radius(d => d.isEntryPoint ? 18 : 13));
     
     simulation.on('tick', () => {
         links
@@ -751,14 +1001,16 @@ function renderGraph(result) {
     
     state.simulation = simulation;
     
-    // Auto-fit view
     setTimeout(() => {
-        const scale = Math.min(width, height) / Math.max(width, height) * 0.8;
+        const scale = Math.min(width, height) / Math.max(width, height) * 0.7;
         svg.transition().duration(500)
-            .call(zoom.transform, d3.zoomIdentity
-                .translate(width / 2, height / 2)
-                .scale(Math.min(scale, 1))
-                .translate(-width / 2, -height / 2));
+            .call(
+                zoom.transform,
+                d3.zoomIdentity
+                    .translate(width / 2, height / 2)
+                    .scale(Math.min(scale, 1))
+                    .translate(-width / 2, -height / 2)
+            );
     }, 100);
 }
 
@@ -767,13 +1019,13 @@ function selectNode(node) {
     state.selectedEdge = null;
     
     els.detailsPanel.innerHTML = `
-        <div class="stats-row"><span class="stats-label">Name</span><span class="stats-value">${node.name}</span></div>
-        <div class="stats-row"><span class="stats-label">Type</span><span class="stats-value">${node.type}</span></div>
-        <div class="stats-row"><span class="stats-label">FQN</span><span class="stats-value" style="font-size: 11px;">${node.fqn || '-'}</span></div>
-        <div class="stats-row"><span class="stats-label">Kind</span><span class="stats-value">${node.kind || '-'}</span></div>
-        <div class="stats-row"><span class="stats-label">Module</span><span class="stats-value">${node.module || '-'}</span></div>
-        <div class="stats-row"><span class="stats-label">File</span><span class="stats-value" style="font-size: 11px;">${node.filePath || '-'}</span></div>
-        <div class="stats-row"><span class="stats-label">Entry Point</span><span class="stats-value">${node.isEntryPoint ? 'Yes' : 'No'}</span></div>
+        <div class="details-title">${node.name}</div>
+        <div class="details-row"><span class="details-label">Type:</span><span class="details-value">${node.type}</span></div>
+        <div class="details-row"><span class="details-label">FQN:</span><span class="details-value">${node.fqn || '-'}</span></div>
+        <div class="details-row"><span class="details-label">Kind:</span><span class="details-value">${node.kind || '-'}</span></div>
+        <div class="details-row"><span class="details-label">Module:</span><span class="details-value">${node.module || '-'}</span></div>
+        <div class="details-row"><span class="details-label">File:</span><span class="details-value">${node.filePath || '-'}</span></div>
+        <div class="details-row"><span class="details-label">Entry Point:</span><span class="details-value">${node.isEntryPoint ? '<span style="color: #f59e0b;">★ Yes</span>' : 'No'}</span></div>
     `;
 }
 
@@ -782,9 +1034,9 @@ function selectEdge(edge) {
     state.selectedNode = null;
     
     els.detailsPanel.innerHTML = `
-        <div class="stats-row"><span class="stats-label">Type</span><span class="stats-value">${edge.type}</span></div>
-        <div class="stats-row"><span class="stats-label">From</span><span class="stats-value" style="font-size: 11px;">${typeof edge.source === 'object' ? edge.source.id : edge.from}</span></div>
-        <div class="stats-row"><span class="stats-label">To</span><span class="stats-value" style="font-size: 11px;">${typeof edge.target === 'object' ? edge.target.id : edge.to}</span></div>
+        <div class="details-title">${edge.type}</div>
+        <div class="details-row"><span class="details-label">From:</span><span class="details-value">${typeof edge.source === 'object' ? edge.source.id : edge.from}</span></div>
+        <div class="details-row"><span class="details-label">To:</span><span class="details-value">${typeof edge.target === 'object' ? edge.target.id : edge.to}</span></div>
     `;
 }
 
@@ -842,9 +1094,7 @@ async function exportGraph(format) {
 els.loadEntryPointsBtn.addEventListener('click', loadEntryPoints);
 els.analyzeBtn.addEventListener('click', analyze);
 els.loadGraphBtn.addEventListener('click', loadGraph);
-els.refreshBtn.addEventListener('click', () => {
-    loadGraph();
-});
+els.refreshBtn.addEventListener('click', loadGraph);
 
 els.graphMode.addEventListener('change', () => {
     const isSingle = els.graphMode.value === 'single';
@@ -863,7 +1113,6 @@ els.exportDotBtn.addEventListener('click', () => exportGraph('dot'));
 els.exportJsonBtn.addEventListener('click', () => exportGraph('json'));
 els.exportMermaidBtn.addEventListener('click', () => exportGraph('mermaid'));
 
-// Handle window resize
 window.addEventListener('resize', () => {
     const svg = d3.select('#graph-svg');
     const width = svg.node().clientWidth;
@@ -875,7 +1124,6 @@ window.addEventListener('resize', () => {
     }
 });
 
-// Initialize
 setStatus('Ready');
 </script>
 </body>
