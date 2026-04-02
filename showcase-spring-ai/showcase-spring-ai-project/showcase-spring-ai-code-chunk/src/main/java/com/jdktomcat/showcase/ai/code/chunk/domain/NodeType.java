@@ -6,5 +6,6 @@ public enum NodeType {
     TYPE,
     METHOD,
     FIELD,
-    ANNOTATION
+    ANNOTATION,
+    ENTRY_POINT
 }
