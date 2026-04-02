@@ -263,7 +263,7 @@ public class ImpactChainRepository {
     public GraphData findImpactGraph(String entryPointId, int depth) {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> {
-                Record record = tx.run("""
+                List<Record> records = tx.run("""
                         MATCH (ep:EntryPoint {id: $entryPointId})-[:POINTS_TO]->(start:CodeNode)
                         OPTIONAL MATCH p = (start)-[:RELATES*1..10]->(target:CodeNode)
                         WHERE length(p) <= $depth
@@ -307,7 +307,13 @@ public class ImpactChainRepository {
                         """, Values.parameters(
                         "entryPointId", entryPointId,
                         "depth", depth
-                )).single();
+                )).list();
+                
+                if (records.isEmpty()) {
+                    return new GraphData(List.of(), List.of());
+                }
+                
+                Record record = records.get(0);
                 return mapGraphData(
                         record.get("nodes").asList(MapAccessor::asMap),
                         record.get("relationships").asList(MapAccessor::asMap),
@@ -324,7 +330,7 @@ public class ImpactChainRepository {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> {
                 String typeFilter = types.isEmpty() ? "" : "WHERE ep.type IN $types";
-                Record record = tx.run("""
+                List<Record> records = tx.run("""
                         MATCH (ep:EntryPoint)
                         """ + typeFilter + """
                         OPTIONAL MATCH (ep)-[:POINTS_TO]->(start:CodeNode)
@@ -357,7 +363,13 @@ public class ImpactChainRepository {
                                     endLine: start.endLine
                                 }] AS nodes,
                                graphRels AS relationships
-                        """, types.isEmpty() ? Values.parameters() : Values.parameters("types", types.stream().map(Enum::name).toList())).single();
+                        """, types.isEmpty() ? Values.parameters() : Values.parameters("types", types.stream().map(Enum::name).toList())).list();
+                
+                if (records.isEmpty()) {
+                    return new GraphData(List.of(), List.of());
+                }
+                
+                Record record = records.get(0);
                 return mapGraphData(
                         record.get("nodes").asList(MapAccessor::asMap),
                         record.get("relationships").asList(MapAccessor::asMap),
