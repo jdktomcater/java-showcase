@@ -41,7 +41,7 @@ final class JdtAstSupport {
         return unit;
     }
 
-    static CompilationUnit parse(Path file, String source, Path repoRoot) throws IOException {
+    static CompilationUnit parse(Path file, String source, Path repoRoot) {
         ASTParser parser = ASTParser.newParser(AST.JLS17);
         configureCommon(parser, source);
         parser.setResolveBindings(true);

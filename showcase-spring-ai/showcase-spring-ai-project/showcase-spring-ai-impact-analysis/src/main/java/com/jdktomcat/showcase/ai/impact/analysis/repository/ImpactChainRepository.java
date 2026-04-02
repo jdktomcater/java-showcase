@@ -377,7 +377,21 @@ public class ImpactChainRepository {
             String id = asString(node.get("id"));
             String typeStr = asString(node.get("type"));
             NodeType nodeType = "ENTRY_POINT".equals(typeStr) ? NodeType.ENTRY_POINT : NodeType.valueOf(typeStr);
-            
+
+            // Safely convert kind to EntryPointType
+            EntryPointType entryPointType = null;
+            if ("ENTRY_POINT".equals(typeStr)) {
+                String kind = asString(node.get("kind"));
+                if (kind != null && !kind.isBlank()) {
+                    try {
+                        entryPointType = EntryPointType.valueOf(kind);
+                    } catch (IllegalArgumentException e) {
+                        // Ignore invalid entry point types
+                        log.warn("Invalid EntryPointType: {}", kind);
+                    }
+                }
+            }
+
             nodes.add(new ImpactChainNode(
                     id,
                     nodeType,
@@ -389,7 +403,7 @@ public class ImpactChainRepository {
                     asInteger(node.get("startLine")),
                     asInteger(node.get("endLine")),
                     "ENTRY_POINT".equals(typeStr),
-                    "ENTRY_POINT".equals(typeStr) ? EntryPointType.valueOf(asString(node.get("kind"))) : null
+                    entryPointType
             ));
         }
 

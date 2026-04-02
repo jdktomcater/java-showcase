@@ -6,14 +6,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 /**
  * Main application class for Impact Chain Dependency Analysis.
- * 
+ * <p>
  * This module provides comprehensive code impact chain analysis for multi-layer data flows:
  * - HTTP interfaces (@RestController, @RequestMapping, etc.)
  * - RPC interfaces (@DubboService, @GrpcService, etc.)
  * - MQ consumers (@RabbitListener, @KafkaListener, etc.)
  * - Scheduled tasks (@Scheduled)
  * - Event-driven components (@EventListener)
- * 
+ * <p>
  * Features:
  * - Automatic entry point detection via AST parsing and pattern matching
  * - Impact chain building and visualization
