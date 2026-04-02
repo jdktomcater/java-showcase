@@ -165,6 +165,7 @@ public class ImpactChainRepository {
                                 ep.metadata = $metadata
                             MERGE (ep)-[:POINTS_TO]->(n)
                             """, Values.parameters(
+                            "methodId", methodId,
                             "entryPointId", entryPoint.id(),
                             "entryPointType", entryPoint.type().name(),
                             "className", entryPoint.className(),
