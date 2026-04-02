@@ -3,7 +3,8 @@
     "allow": [
       "Bash(mkdir *)",
       "Bash(mvn *)",
-      "Bash(rm *)"
+      "Bash(rm *)",
+      "Bash(od *)"
     ]
   },
   "$version": 3

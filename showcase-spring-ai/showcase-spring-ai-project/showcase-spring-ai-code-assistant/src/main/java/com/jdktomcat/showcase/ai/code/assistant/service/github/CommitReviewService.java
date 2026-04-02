@@ -50,8 +50,9 @@ public class CommitReviewService {
         state.setChangedFiles(files.size());
         state.setAdditions(sumAdditions(files));
         state.setDeletions(sumDeletions(files));
+        state.setCompareResponse(compareResponse);
         state.setDiff(buildDiff(compareResponse));
-        state.setCodeImpactSummary(codeImpactAnalysisService.buildImpactSummary(state.getRepository(), compareResponse));
+        state.setCodeImpactSummary(codeImpactAnalysisService.buildFullImpactSummary(state.getRepository(), compareResponse));
         state.setNeedRetry(false);
         state.setPassed(false);
         state.setDecision("PENDING");

@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.ai.code.assistant.domain.dto;
 
+import com.jdktomcat.showcase.ai.code.assistant.domain.entity.CompareResponse;
 import com.jdktomcat.showcase.ai.code.assistant.utils.JSONUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ public class CommitTaskState extends AgentState {
     private Integer changedFiles;
     private Integer additions;
     private Integer deletions;
+    private CompareResponse compareResponse;
     private String codeImpactSummary;
     // 下面的字段会在各 Agent 中填充
     private String conventionReport;
@@ -55,6 +57,7 @@ public class CommitTaskState extends AgentState {
         this.changedFiles = oldState.getChangedFiles();
         this.additions = oldState.getAdditions();
         this.deletions = oldState.getDeletions();
+        this.compareResponse = oldState.getCompareResponse();
         this.codeImpactSummary = oldState.getCodeImpactSummary();
         this.conventionReport = oldState.getConventionReport();
         this.securityReport = oldState.getSecurityReport();
