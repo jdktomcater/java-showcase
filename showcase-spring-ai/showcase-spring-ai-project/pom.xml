@@ -23,6 +23,7 @@
     <modules>
         <module>showcase-spring-ai-code-assistant</module>
         <module>showcase-spring-ai-code-chunk</module>
+        <module>showcase-spring-ai-impact-analysis</module>
     </modules>
 
     <dependencyManagement>
