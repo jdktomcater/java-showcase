@@ -335,13 +335,18 @@ public class ImpactChainRepository {
                         """ + typeFilter + """
                         OPTIONAL MATCH (ep)-[:POINTS_TO]->(start:CodeNode)
                         OPTIONAL MATCH (start)-[rel:RELATES]->(target:CodeNode)
-                        WITH [epNode IN collect(DISTINCT ep) WHERE epNode IS NOT NULL] AS entryPoints,
-                             [startNode IN collect(DISTINCT start) WHERE startNode IS NOT NULL] AS startNodes,
-                             [relation IN collect(DISTINCT rel) WHERE relation IS NOT NULL] AS graphRels
-                        UNWIND CASE WHEN size(entryPoints) = 0 THEN [NULL] ELSE entryPoints END AS ep
-                        UNWIND CASE WHEN size(startNodes) = 0 THEN [NULL] ELSE startNodes END AS start
-                        WITH ep, start, graphRels
-                        RETURN [{
+                        WITH collect(DISTINCT ep) AS entryPoints,
+                             collect(DISTINCT start) AS startNodes,
+                             collect(DISTINCT target) AS targetNodes,
+                             collect(DISTINCT rel) AS graphRels
+                        WITH entryPoints, startNodes, targetNodes, graphRels
+                        UNWIND entryPoints AS ep
+                        UNWIND CASE WHEN size(startNodes) = 0 THEN [null] ELSE startNodes END AS start
+                        UNWIND CASE WHEN size(targetNodes) = 0 THEN [null] ELSE targetNodes END AS target
+                        UNWIND CASE WHEN size(graphRels) = 0 THEN [null] ELSE graphRels END AS rel
+                        WITH ep, start, target, rel
+                        WHERE start IS NOT NULL OR ep IS NOT NULL
+                        WITH collect(DISTINCT {
                                     id: ep.id,
                                     name: ep.methodName,
                                     type: 'ENTRY_POINT',
@@ -351,7 +356,8 @@ public class ImpactChainRepository {
                                     module: ep.module,
                                     startLine: ep.lineNumber,
                                     endLine: ep.lineNumber
-                                }] + [{
+                                }) AS epNodes,
+                             collect(DISTINCT {
                                     id: start.id,
                                     name: start.name,
                                     type: start.type,
@@ -361,14 +367,37 @@ public class ImpactChainRepository {
                                     module: start.module,
                                     startLine: start.startLine,
                                     endLine: start.endLine
-                                }] AS nodes,
-                               graphRels AS relationships
+                                }) AS startNodes,
+                             collect(DISTINCT {
+                                    id: target.id,
+                                    name: target.name,
+                                    type: target.type,
+                                    fqn: target.fqn,
+                                    kind: target.kind,
+                                    filePath: target.filePath,
+                                    module: target.module,
+                                    startLine: target.startLine,
+                                    endLine: target.endLine
+                                }) AS targetNodes,
+                             collect(DISTINCT {
+                                    id: elementId(rel),
+                                    fromId: CASE WHEN startNode(rel) IS NOT NULL THEN startNode(rel).id ELSE null END,
+                                    toId: CASE WHEN endNode(rel) IS NOT NULL THEN endNode(rel).id ELSE null END,
+                                    type: rel.type
+                                }) AS rels
+                        WITH epNodes, startNodes, targetNodes, rels
+                        WHERE size(epNodes) > 0 OR size(startNodes) > 0 OR size(targetNodes) > 0
+                        RETURN 
+                            epNodes + 
+                            [n IN startNodes WHERE n.id IS NOT NULL] + 
+                            [n IN targetNodes WHERE n.id IS NOT NULL] AS nodes,
+                            [r IN rels WHERE r.fromId IS NOT NULL AND r.toId IS NOT NULL] AS relationships
                         """, types.isEmpty() ? Values.parameters() : Values.parameters("types", types.stream().map(Enum::name).toList())).list();
-                
+
                 if (records.isEmpty()) {
                     return new GraphData(List.of(), List.of());
                 }
-                
+
                 Record record = records.get(0);
                 return mapGraphData(
                         record.get("nodes").asList(MapAccessor::asMap),
