@@ -1,7 +1,6 @@
 package com.jdktomcat.showcase.ai.code.assistant.agent;
 
 import com.jdktomcat.showcase.ai.code.assistant.domain.dto.CommitTaskState;
-import com.jdktomcat.showcase.ai.code.assistant.domain.entity.CompareResponse;
 import com.jdktomcat.showcase.ai.code.assistant.service.impact.CodeImpactAnalysisService;
 import lombok.extern.slf4j.Slf4j;
 import org.bsc.langgraph4j.action.NodeAction;
@@ -61,7 +60,8 @@ public class BusinessAgent implements NodeAction<CommitTaskState> {
         %s
         """, state.getRepository(), state.getBranch(), state.getMessage(), state.getCodeImpactSummary(), state.getDiff());
         String review = chatModel.call(prompt);
-        log.info("业务完整审查完成，报告长度 {} 字", review.length());
+//        log.info("业务完整审查完成，报告长度 {} 字", review.length());
+        log.info("业务完整审查完成，报告： {} ", review);
         state.setBusinessReport(review);
     }
 
