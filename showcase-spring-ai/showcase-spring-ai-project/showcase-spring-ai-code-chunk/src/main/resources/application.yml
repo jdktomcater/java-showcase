@@ -3,8 +3,8 @@ server:
 
 app:
   code-rag:
-    repo-name: mall-swarm
-    repo-root: /Users/yuhata/workspace/github/jdktomcater/mall-swarm
+    repo-name: java-showcase
+    repo-root: /Users/yuhata/workspace/github/jdktomcater/java-showcase
     include-globs:
       - "**/*.java"
       - "**/*.xml"
