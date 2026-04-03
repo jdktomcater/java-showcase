@@ -35,6 +35,9 @@ public class TelegramNotificationService {
 
         String message = buildMessage(state);
         String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
+        
+        log.debug("准备发送 Telegram 通知 repository={} sha={} message 长度={}", 
+                state.getRepository(), state.getSha(), message.length());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -44,8 +47,14 @@ public class TelegramNotificationService {
         body.put("text", message);
         body.put("disable_web_page_preview", true);
 
-        restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
-        log.info("Telegram 提交结果通知已发送 repository={} sha={}", state.getRepository(), state.getSha());
+        try {
+            var response = restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
+            log.info("Telegram 提交结果通知已发送 repository={} sha={} responseStatus={}", 
+                    state.getRepository(), state.getSha(), response.getStatusCode());
+        } catch (Exception e) {
+            log.error("发送 Telegram 通知失败 repository={} sha={}", state.getRepository(), state.getSha(), e);
+            throw e;
+        }
     }
 
     private String buildMessage(CommitTaskState state) {

@@ -44,38 +44,56 @@ public class ImpactChainAnalyzer {
      * 4. Store in Neo4j
      */
     public AnalysisResult fullAnalysis() throws IOException {
-        log.info("Starting full impact chain analysis...");
+        log.info("开始完整影响链分析");
 
         // Step 1: Scan for entry points using pattern matching (fast)
+        log.debug("开始扫描入口点");
         List<EntryPoint> entryPoints = entryPointScanner.scan();
-        log.info("Found {} entry points via pattern scanning", entryPoints.size());
+        log.info("通过模式扫描找到 {} 个入口点", entryPoints.size());
 
         // Step 2: Save entry points to Neo4j
+        log.debug("保存入口点到 Neo4j count={}", entryPoints.size());
         repository.saveEntryPoints(entryPoints);
+        log.info("入口点保存完成");
 
         // Step 3: Build impact chains for each entry point
         List<ImpactChainNode> allNodes = new ArrayList<>();
         List<ImpactChainRelation> allRelations = new ArrayList<>();
+        int successCount = 0;
+        int failureCount = 0;
 
-        for (EntryPoint entryPoint : entryPoints) {
+        for (int i = 0; i < entryPoints.size(); i++) {
+            EntryPoint entryPoint = entryPoints.get(i);
             try {
+                log.debug("构建影响链 [{}/{}] entryPointId={}", i + 1, entryPoints.size(), entryPoint.id());
                 ImpactChain impactChain = buildImpactChain(entryPoint);
                 allNodes.addAll(impactChain.nodes());
                 allRelations.addAll(impactChain.relations());
+                successCount++;
             } catch (Exception e) {
-                log.warn("Failed to build impact chain for entry point: {}", entryPoint.id(), e);
+                failureCount++;
+                log.warn("构建影响链失败 entryPointId={} error={}", entryPoint.id(), e.getMessage(), e);
             }
         }
+
+        log.debug("影响链构建完成 success={} failure={} rawNodes={} rawRelations={}", 
+                successCount, failureCount, allNodes.size(), allRelations.size());
 
         // Remove duplicates
         List<ImpactChainNode> uniqueNodes = deduplicateNodes(allNodes);
         List<ImpactChainRelation> uniqueRelations = deduplicateRelations(allRelations);
 
-        log.info("Built impact chain with {} nodes and {} relations", uniqueNodes.size(), uniqueRelations.size());
+        log.info("影响链去重完成 nodes={} relations={} (去重前 nodes={} relations={})", 
+                uniqueNodes.size(), uniqueRelations.size(), allNodes.size(), allRelations.size());
 
         // Step 4: Save to Neo4j
+        log.debug("保存影响链到 Neo4j nodes={} relations={}", uniqueNodes.size(), uniqueRelations.size());
         repository.saveImpactChain(uniqueNodes, uniqueRelations);
+        log.debug("链接入口点到代码节点");
         repository.linkEntryPointsToCodeNodes(entryPoints);
+
+        log.info("完整影响链分析完成 entryPoints={} nodes={} relations={}", 
+                entryPoints.size(), uniqueNodes.size(), uniqueRelations.size());
 
         return new AnalysisResult(
                 entryPoints.size(),

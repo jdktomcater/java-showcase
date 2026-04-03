@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.ai.code.chunk.service;
 
 import com.jdktomcat.showcase.ai.code.chunk.dto.CodeSearchHit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -11,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CodeSearchService {
@@ -20,6 +22,7 @@ public class CodeSearchService {
     private final VectorStore vectorStore;
 
     public List<CodeSearchHit> search(String query, int topK) {
+        log.debug("执行代码搜索 query={} topK={}", query, topK);
         SearchRequest request = SearchRequest.builder()
                 .query(query)
                 .topK(topK)
@@ -27,7 +30,11 @@ public class CodeSearchService {
                 .build();
 
         List<Document> documents = vectorStore.similaritySearch(request);
-        return documents.stream().map(this::toHit).toList();
+        log.debug("向量搜索返回 {} 个文档", documents.size());
+        
+        List<CodeSearchHit> hits = documents.stream().map(this::toHit).toList();
+        log.debug("代码搜索完成 query={} hits={}", query, hits.size());
+        return hits;
     }
 
     private CodeSearchHit toHit(Document document) {

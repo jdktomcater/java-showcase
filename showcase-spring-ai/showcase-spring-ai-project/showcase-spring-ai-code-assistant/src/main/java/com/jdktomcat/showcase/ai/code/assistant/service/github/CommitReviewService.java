@@ -28,10 +28,22 @@ public class CommitReviewService {
     private int maxDiffLength;
 
     public CommitTaskState reviewPush(PushPayload pushPayload, CompareResponse compareResponse) {
+        String repository = pushPayload.getRepository() != null ? pushPayload.getRepository().getFullName() : "unknown";
+        log.info("开始评审 Push repository={} files={} additions={} deletions={}",
+                repository,
+                compareResponse != null && compareResponse.getFiles() != null ? compareResponse.getFiles().size() : 0,
+                compareResponse != null && compareResponse.getFiles() != null ? sumAdditions(compareResponse.getFiles()) : 0,
+                compareResponse != null && compareResponse.getFiles() != null ? sumDeletions(compareResponse.getFiles()) : 0);
+        
         CommitTaskState initialState = buildInitialState(pushPayload, compareResponse);
+        log.debug("初始状态构建完成 repository={} sha={} diff 长度={}", 
+                initialState.getRepository(), initialState.getSha(), 
+                initialState.getDiff() != null ? initialState.getDiff().length() : 0);
+        
+        log.info("开始执行 LangGraph4j 工作流 repository={}", repository);
         CommitTaskState finalState = commitWorkflow.invoke(initialState.toMap()).orElse(initialState);
-        log.info("提交评审完成 repository={} sha={} decision={}",
-                finalState.getRepository(), finalState.getSha(), finalState.getDecision());
+        log.info("提交评审完成 repository={} sha={} decision={} passed={}",
+                finalState.getRepository(), finalState.getSha(), finalState.getDecision(), finalState.isPassed());
         return finalState;
     }
 
@@ -51,11 +63,22 @@ public class CommitReviewService {
         state.setAdditions(sumAdditions(files));
         state.setDeletions(sumDeletions(files));
         state.setCompareResponse(compareResponse);
+        
+        log.debug("开始构建 Diff 内容 files={} maxLength={}", files.size(), maxDiffLength);
         state.setDiff(buildDiff(compareResponse));
+        
+        log.debug("开始调用代码影响面分析服务 repository={}", state.getRepository());
         state.setCodeImpactSummary(codeImpactAnalysisService.buildFullImpactSummary(state.getRepository(), compareResponse));
+        log.debug("代码影响面分析完成 repository={} summary 长度={}", 
+                state.getRepository(), 
+                state.getCodeImpactSummary() != null ? state.getCodeImpactSummary().length() : 0);
+        
         state.setNeedRetry(false);
         state.setPassed(false);
         state.setDecision("PENDING");
+        
+        log.debug("初始状态构建完成 sha={} author={} files={} additions={} deletions={}",
+                state.getSha(), state.getAuthor(), state.getChangedFiles(), state.getAdditions(), state.getDeletions());
         return state;
     }
 

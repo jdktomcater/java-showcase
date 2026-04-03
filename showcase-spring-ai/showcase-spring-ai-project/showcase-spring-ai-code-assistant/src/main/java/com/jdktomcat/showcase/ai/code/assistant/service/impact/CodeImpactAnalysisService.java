@@ -45,14 +45,18 @@ public class CodeImpactAnalysisService {
      * 构建依赖图影响面摘要（使用代码依赖图 API）
      */
     public String buildGraphImpactSummary(String repository, CompareResponse compareResponse) {
+        log.debug("开始构建依赖图影响面摘要 repository={}", repository);
         if (!impactEnabled) {
+            log.info("依赖图影响面分析未启用 repository={}", repository);
             return "依赖图影响面分析未启用。";
         }
         if (compareResponse == null || compareResponse.getFiles() == null || compareResponse.getFiles().isEmpty()) {
+            log.debug("本次提交无可用 diff 文件 repository={}", repository);
             return "本次提交无可用 diff 文件，无法结合依赖图评估影响面。";
         }
 
         List<String> changedTypes = extractChangedJavaTypes(compareResponse.getFiles());
+        log.debug("提取到 {} 个变更的 Java 类型 repository={}", changedTypes.size(), repository);
         if (changedTypes.isEmpty()) {
             return "本次提交未包含可映射到 Java 类型的工程代码变更。";
         }
@@ -64,6 +68,7 @@ public class CodeImpactAnalysisService {
         boolean hasData = false;
         for (String typeFqn : changedTypes) {
             try {
+                log.debug("查询类型依赖 type={} repository={}", typeFqn, repository);
                 DependencyResponse dependencyResponse = fetchTypeDependencies(typeFqn);
                 ImpactResponse impactResponse = fetchTypeImpact(typeFqn);
                 List<Map<String, Object>> dependencies = limit(dependencyResponse.getDependencies());
@@ -88,6 +93,7 @@ public class CodeImpactAnalysisService {
         if (!hasData) {
             summary.append("\n- 暂未识别到明确的工程内扩散路径，请结合 diff 人工判断。");
         }
+        log.debug("依赖图影响面摘要构建完成 repository={} hasData={}", repository, hasData);
         return summary.toString();
     }
 
@@ -95,7 +101,9 @@ public class CodeImpactAnalysisService {
      * 构建影响链路摘要（使用 Impact Chain API）
      */
     public String buildImpactChainSummary(String repository, CompareResponse compareResponse) {
+        log.debug("开始构建影响链路摘要 repository={}", repository);
         if (!impactEnabled) {
+            log.info("影响链路分析未启用 repository={}", repository);
             return "影响链路分析未启用。";
         }
         if (compareResponse == null || compareResponse.getFiles() == null || compareResponse.getFiles().isEmpty()) {
@@ -112,9 +120,11 @@ public class CodeImpactAnalysisService {
         summary.append("- 入口点分析：").append(changedTypes.size()).append(" 个类型\n");
 
         // 尝试匹配入口点
+        log.debug("查找相关入口点 repository={} changedTypes={}", repository, changedTypes.size());
         List<EntryPointInfo> entryPoints = findRelatedEntryPoints(changedTypes);
         if (entryPoints.isEmpty()) {
             summary.append("- 未找到与变更类型直接相关的业务入口点\n");
+            log.debug("未找到相关入口点 repository={}", repository);
             return summary.toString();
         }
 
@@ -122,6 +132,7 @@ public class CodeImpactAnalysisService {
 
         for (EntryPointInfo entryPoint : entryPoints) {
             try {
+                log.debug("查询影响链路 entryPointId={} type={}", entryPoint.getId(), entryPoint.getType());
                 ImpactChainResult chainResult = fetchImpactChain(entryPoint.getId());
 
                 summary.append("### 入口点：").append(entryPoint.getId()).append('\n');
@@ -147,6 +158,7 @@ public class CodeImpactAnalysisService {
             }
         }
 
+        log.debug("影响链路摘要构建完成 repository={} entryPoints={}", repository, entryPoints.size());
         return summary.toString();
     }
 
@@ -154,19 +166,23 @@ public class CodeImpactAnalysisService {
      * 构建完整的影响面评估报告（结合依赖图和影响链路）
      */
     public String buildFullImpactSummary(String repository, CompareResponse compareResponse) {
+        log.info("开始构建完整影响面评估报告 repository={}", repository);
         StringBuilder report = new StringBuilder();
         report.append("# 代码变更影响面评估报告\n\n");
         report.append("## 变更概览\n");
         report.append("- 仓库：").append(safe(repository)).append('\n');
         report.append("- 变更文件数：").append(compareResponse != null && compareResponse.getFiles() != null ? compareResponse.getFiles().size() : 0).append("\n\n");
-        
+
         // 1. 代码依赖图影响面
+        log.debug("构建代码依赖图影响面 repository={}", repository);
         report.append(buildGraphImpactSummary(repository, compareResponse));
         report.append("\n\n---\n\n");
-        
+
         // 2. 业务影响链路
+        log.debug("构建业务影响链路 repository={}", repository);
         report.append(buildImpactChainSummary(repository, compareResponse));
-        
+
+        log.info("完整影响面评估报告构建完成 repository={} report 长度={}", repository, report.length());
         return report.toString();
     }
 
@@ -221,17 +237,38 @@ public class CodeImpactAnalysisService {
     }
 
     private <T> T postForObject(String path, Object request, Class<T> responseType) {
+        String url = codeChunkBaseUrl + path;
+        log.debug("HTTP POST 请求 url={}", url);
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        T response = restTemplate.postForObject(codeChunkBaseUrl + path, new HttpEntity<>(request, headers), responseType);
-        if (response == null) {
-            throw new IllegalStateException("依赖图服务返回空响应：" + path);
+        
+        try {
+            T response = restTemplate.postForObject(url, new HttpEntity<>(request, headers), responseType);
+            if (response == null) {
+                log.warn("依赖图服务返回空响应 path={}", path);
+                throw new IllegalStateException("依赖图服务返回空响应：" + path);
+            }
+            log.debug("HTTP POST 响应成功 path={}", path);
+            return response;
+        } catch (Exception e) {
+            log.error("HTTP POST 请求失败 url={} path={}", url, path, e);
+            throw e;
         }
-        return response;
     }
 
     private <T> T getForObject(String path, Class<T> responseType) {
-        return restTemplate.getForObject(codeChunkBaseUrl + path, responseType);
+        String url = codeChunkBaseUrl + path;
+        log.debug("HTTP GET 请求 url={}", url);
+        
+        try {
+            T response = restTemplate.getForObject(url, responseType);
+            log.debug("HTTP GET 响应成功 path={}", path);
+            return response;
+        } catch (Exception e) {
+            log.error("HTTP GET 请求失败 url={} path={}", url, path, e);
+            throw e;
+        }
     }
 
     private void appendItems(StringBuilder summary, String title, List<Map<String, Object>> items) {

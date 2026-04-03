@@ -5,6 +5,7 @@ import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewEdge;
 import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewNode;
 import com.jdktomcat.showcase.ai.code.chunk.repository.Neo4jGraphRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ImpactAnalysisService {
@@ -19,24 +21,38 @@ public class ImpactAnalysisService {
     private final Neo4jGraphRepository graphRepository;
 
     public List<Map<String, Object>> dependencies(String nodeType, String fqn, int depth) {
-        return graphRepository.findDependencies(nodeType.toUpperCase() + ":" + fqn, depth);
+        log.debug("查询依赖 nodeType={} fqn={} depth={}", nodeType, fqn, depth);
+        List<Map<String, Object>> result = graphRepository.findDependencies(nodeType.toUpperCase() + ":" + fqn, depth);
+        log.debug("依赖查询完成 nodeType={} fqn={} count={}", nodeType, fqn, result.size());
+        return result;
     }
 
     public List<Map<String, Object>> typeDependencies(String fqn, int depth) {
-        return graphRepository.findTypeDependencies("TYPE:" + fqn, depth);
+        log.debug("查询类型依赖 fqn={} depth={}", fqn, depth);
+        List<Map<String, Object>> result = graphRepository.findTypeDependencies("TYPE:" + fqn, depth);
+        log.debug("类型依赖查询完成 fqn={} count={}", fqn, result.size());
+        return result;
     }
 
     public List<Map<String, Object>> impact(String methodFqn, int depth) {
-        return graphRepository.findImpact("METHOD:" + methodFqn, depth);
+        log.debug("查询影响 methodFqn={} depth={}", methodFqn, depth);
+        List<Map<String, Object>> result = graphRepository.findImpact("METHOD:" + methodFqn, depth);
+        log.debug("影响查询完成 methodFqn={} count={}", methodFqn, result.size());
+        return result;
     }
 
     public List<Map<String, Object>> typeImpact(String fqn, int depth) {
-        return graphRepository.findTypeImpact("TYPE:" + fqn, depth);
+        log.debug("查询类型影响 fqn={} depth={}", fqn, depth);
+        List<Map<String, Object>> result = graphRepository.findTypeImpact("TYPE:" + fqn, depth);
+        log.debug("类型影响查询完成 fqn={} count={}", fqn, result.size());
+        return result;
     }
 
     public GraphViewResponse dependencyGraph(String nodeType, String fqn, int depth) {
+        log.debug("查询依赖图 nodeType={} fqn={} depth={}", nodeType, fqn, depth);
         String nodeId = nodeType.toUpperCase() + ":" + fqn;
         Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findDependencyGraph(nodeId, depth));
+        log.debug("依赖图查询完成 nodeId={} nodes={} edges={}", nodeId, graphData.nodes().size(), graphData.edges().size());
         return new GraphViewResponse(
                 true,
                 "dependencies",
@@ -50,8 +66,10 @@ public class ImpactAnalysisService {
     }
 
     public GraphViewResponse impactGraph(String methodFqn, int depth) {
+        log.debug("查询影响图 methodFqn={} depth={}", methodFqn, depth);
         String methodId = "METHOD:" + methodFqn;
         Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findImpactGraph(methodId, depth));
+        log.debug("影响图查询完成 methodId={} nodes={} edges={}", methodId, graphData.nodes().size(), graphData.edges().size());
         return new GraphViewResponse(
                 true,
                 "impact",
@@ -65,7 +83,9 @@ public class ImpactAnalysisService {
     }
 
     public GraphViewResponse fullTypeDependencyGraph() {
+        log.debug("查询完整类型依赖图");
         Neo4jGraphRepository.GraphData graphData = internalOnly(graphRepository.findFullTypeDependencyGraph());
+        log.debug("完整类型依赖图查询完成 nodes={} edges={}", graphData.nodes().size(), graphData.edges().size());
         return new GraphViewResponse(
                 true,
                 "classgraph",
