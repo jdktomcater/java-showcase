@@ -8,7 +8,6 @@ rocketmq:
     maxMessageSize: 131072
     group: yuhata-producer-group
 
-
 logging:
   level:
     root: info

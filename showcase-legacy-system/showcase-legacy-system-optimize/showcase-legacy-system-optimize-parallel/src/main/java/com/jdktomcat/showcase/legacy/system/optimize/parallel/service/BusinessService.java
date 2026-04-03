@@ -23,6 +23,7 @@ public class BusinessService {
     public String doBusiness(Long id) {
         try {
             log.info("doBusiness id:{}", id);
+            log.info("doBusiness id:{}", id);
             Random rand = new Random();
             // nextInt(61) 生成 0-60，加 50 后范围是 150-250
             int randomNum = rand.nextInt(101) + 50;
