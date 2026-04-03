@@ -112,6 +112,7 @@ public class ParallelComponent {
         log.info("password:{}", parallelConfig.getPassword());
         log.info("password:{}", parallelConfig.getPassword());
         log.info("password:{}", parallelConfig.getPassword());
+        log.info("password:{}", parallelConfig.getPassword());
         // 保证原先顺序
         results.sort(Comparator.comparing(Pair::getLeft));
         return results.stream().map(Pair::getRight).collect(Collectors.toList());
