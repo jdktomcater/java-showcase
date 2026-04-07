@@ -1,0 +1,36 @@
+POST /jptx-nginx-*/_search
+{
+    "size": 0,
+    "query": {
+        "bool": {
+            "filter": [
+                {
+                    "range": {
+                        "@timestamp": {
+                            "gte": "2026-04-02T06:00:00.000Z",
+                            "lte": "2026-04-07T10:00:00.000Z",
+                            "format": "strict_date_optional_time||epoch_millis"
+                        }
+                    }
+                },
+                {
+                    "term": {
+                        "uri.keyword": "/withdraw/fast/priorityMatchList"
+                    }
+                }
+            ]
+        }
+    },
+    "aggs": {
+        "response_time_stats": {
+            "percentiles": {
+                "field": "responsetime",
+                "percents": [
+                    95,
+                    99
+                ],
+                "keyed": true
+            }
+        }
+    }
+}
