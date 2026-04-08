@@ -25,6 +25,7 @@
         <module>showcase-redis</module>
         <module>showcase-threadpool</module>
         <module>showcase-opencsv</module>
+        <module>showcase-httpclient</module>
     </modules>
 
     <properties>

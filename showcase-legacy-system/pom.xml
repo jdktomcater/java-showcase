@@ -9,6 +9,7 @@
   <modules>
     <module>showcase-legacy-system-vault</module>
     <module>showcase-legacy-system-optimize</module>
+    <module>showcase-legacy-system-component</module>
   </modules>
   <properties>
     <java.version>1.8</java.version>
