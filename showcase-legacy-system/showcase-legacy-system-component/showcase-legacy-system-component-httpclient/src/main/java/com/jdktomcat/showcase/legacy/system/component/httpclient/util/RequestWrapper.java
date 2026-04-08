@@ -166,33 +166,29 @@ public class RequestWrapper implements Serializable {
 
     protected <T> ResponseEntity<T> doExec(Class<T> responseType) {
         try {
-            // build url
             String urlCopy = url;
             if (MapUtils.isNotEmpty(this.uriVars)) {
                 urlCopy = urlCopy + "?" + Joiner.on("&").useForNull("").withKeyValueSeparator("=").join(this.uriVars);
             }
-            // build headers
             HttpHeaders headersCopy = contentType;
             headersCopy.putAll(nullSafeHeaders(this.headers));
-            // build body
             Object bodyCopy = body;
             if (MediaType.APPLICATION_JSON_UTF8.equals(contentType.getContentType()) && !(bodyCopy instanceof String)) {
                 bodyCopy = OBJECT_MAPPER.writeValueAsString(bodyCopy);
             }
-            // build proxy
             HttpProxy proxyCopy = this.proxy;
             if (Objects.isNull(proxyCopy)) {
                 proxyCopy = DynamicProxyTemplateHolder.chooseDefaultProxy();
             }
             RequestEntity<?> request = new RequestEntity<>(bodyCopy, headersCopy, method, URI.create(urlCopy));
             ResponseEntity<T> response = DynamicProxyTemplateHolder.get(proxyCopy).exchange(request, responseType);
-            log.info("RequestWrapper#exec\nproxy: {}\nrequest: {}\nresponse{}", proxyCopy, request, response);
+            log.info("RequestWrapper#exec proxy: {} request: {} response：{}", proxyCopy, request, response);
             return response;
         } catch (RuntimeException e) {
             log.error("RequestWrapper#exec catch RuntimeException.", e);
             throw e;
         } catch (Exception e) {
-            log.error("RequestWrapper#exec catch " + e.getClass().getName() + ".", e);
+            log.error("RequestWrapper#exec catch：{} " , e.getClass().getName() + ".", e);
             throw new RuntimeException(e);
         }
     }
