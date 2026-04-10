@@ -23,16 +23,13 @@ public class ImpactChainAnalyzer {
     private static final Logger log = LoggerFactory.getLogger(ImpactChainAnalyzer.class);
 
     private final EntryPointScanner entryPointScanner;
-    private final JdtEntryPointAnalyzer jdtEntryPointAnalyzer;
     private final ImpactChainRepository repository;
 
     public ImpactChainAnalyzer(
             EntryPointScanner entryPointScanner,
-            JdtEntryPointAnalyzer jdtEntryPointAnalyzer,
             ImpactChainRepository repository
     ) {
         this.entryPointScanner = entryPointScanner;
-        this.jdtEntryPointAnalyzer = jdtEntryPointAnalyzer;
         this.repository = repository;
     }
 

@@ -2,21 +2,21 @@ package com.jdktomcat.showcase.ai.code.chunk.service;
 
 import com.jdktomcat.showcase.ai.code.chunk.domain.CodeChunk;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeParameter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,51 +31,56 @@ public class JavaCodeChunker {
 
     public List<CodeChunk> chunk(Path file) throws IOException {
         String source = Files.readString(file);
-        CompilationUnit cu = JdtAstSupport.parse(source);
+        CtModel model = SpoonAstSupport.parse(source);
 
-        String packageName = cu.getPackage() == null
-                ? ""
-                : cu.getPackage().getName().getFullyQualifiedName();
+        List<CtType<?>> types = model.getElements(new TypeFilter<>(CtType.class)).stream()
+                .map(t -> (CtType<?>) t)
+                .filter(t -> !t.isImplicit())
+                .sorted(Comparator.comparing(t -> t.getPosition().getSourceStart()))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        String packageName = types.stream()
+                .findFirst()
+                .map(t -> t.getPackage() == null ? "" : t.getPackage().getQualifiedName())
+                .orElse("");
 
         String relativePath = Path.of(repoRoot).relativize(file).toString().replace('\\', '/');
         List<CodeChunk> chunks = new ArrayList<>();
 
-        cu.accept(new ASTVisitor() {
-            @Override
-            public boolean visit(TypeDeclaration type) {
-                String className = type.getName().getIdentifier();
+        for (CtType<?> type : types) {
+            if (type.getQualifiedName() == null) {
+                continue;
+            }
+            String className = type.getSimpleName();
 
+            chunks.add(buildChunk(
+                    relativePath,
+                    packageName,
+                    className,
+                    null,
+                    "class",
+                    SpoonAstSupport.startLine(type),
+                    SpoonAstSupport.endLine(type),
+                    SpoonAstSupport.extractJavadocText(type),
+                    buildClassSignature(type)
+            ));
+
+            List<CtMethod<?>> methods = new ArrayList<>(type.getMethods());
+            methods.sort(Comparator.comparing(m -> m.getPosition().getSourceStart()));
+            for (CtMethod<?> method : methods) {
                 chunks.add(buildChunk(
                         relativePath,
                         packageName,
                         className,
-                        null,
-                        "class",
-                        JdtAstSupport.startLine(cu, type),
-                        JdtAstSupport.endLine(cu, type),
-                        JdtAstSupport.extractJavadocText(source, type.getJavadoc()),
-                        buildClassSignature(type)
+                        method.getSimpleName(),
+                        "method",
+                        SpoonAstSupport.startLine(method),
+                        SpoonAstSupport.endLine(method),
+                        SpoonAstSupport.extractJavadocText(method),
+                        SpoonAstSupport.extractSource(source, method)
                 ));
-
-                for (MethodDeclaration method : type.getMethods()) {
-                    if (method.isConstructor()) {
-                        continue;
-                    }
-                    chunks.add(buildChunk(
-                            relativePath,
-                            packageName,
-                            className,
-                            method.getName().getIdentifier(),
-                            "method",
-                            JdtAstSupport.startLine(cu, method),
-                            JdtAstSupport.endLine(cu, method),
-                            JdtAstSupport.extractJavadocText(source, method.getJavadoc()),
-                            JdtAstSupport.extractSource(source, method)
-                    ));
-                }
-                return true;
             }
-        });
+        }
 
         return chunks;
     }
@@ -117,35 +122,37 @@ public class JavaCodeChunker {
         );
     }
 
-    @SuppressWarnings("unchecked")
-    private String buildClassSignature(TypeDeclaration type) {
-        String modifiers = ((List<IExtendedModifier>) type.modifiers()).stream()
-                .filter(IExtendedModifier::isModifier)
-                .map(Modifier.class::cast)
-                .map(Modifier::getKeyword)
-                .map(Modifier.ModifierKeyword::toString)
+    private String buildClassSignature(CtType<?> type) {
+        String modifiers = type.getModifiers().stream()
+                .map(ModifierKind::toString)
                 .collect(Collectors.joining(" "));
 
-        String typeParameters = type.typeParameters().isEmpty()
+        String typeParameters = type.getFormalCtTypeParameters().isEmpty()
                 ? ""
-                : ((List<TypeParameter>) type.typeParameters()).stream()
-                .map(Object::toString)
+                : type.getFormalCtTypeParameters().stream()
+                .map(CtTypeParameter::toString)
                 .collect(Collectors.joining(", ", "<", ">"));
 
-        String extendsClause = type.isInterface() || type.getSuperclassType() == null
-                ? ""
-                : " extends " + type.getSuperclassType();
+        String keyword = type.isInterface() ? "interface " : "class ";
+        String extendsClause = "";
+        if (!type.isInterface()) {
+            CtTypeReference<?> superClass = type.getSuperclass();
+            if (superClass != null) {
+                extendsClause = " extends " + superClass;
+            }
+        }
 
         String superTypesKeyword = type.isInterface() ? " extends " : " implements ";
-        String implementsClause = type.superInterfaceTypes().isEmpty()
+        List<CtTypeReference<?>> interfaces = new ArrayList<>(type.getSuperInterfaces());
+        String implementsClause = interfaces.isEmpty()
                 ? ""
-                : ((List<Type>) type.superInterfaceTypes()).stream()
-                .map(Object::toString)
+                : interfaces.stream()
+                .map(CtTypeReference::toString)
                 .collect(Collectors.joining(", ", superTypesKeyword, ""));
 
         return (modifiers.isBlank() ? "" : modifiers + " ")
-                + (type.isInterface() ? "interface " : "class ")
-                + type.getName().getIdentifier()
+                + keyword
+                + type.getSimpleName()
                 + typeParameters
                 + extendsClause
                 + implementsClause;
