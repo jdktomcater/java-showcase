@@ -185,9 +185,8 @@ public class EntryPointScanner {
 
             // Determine if this is an entry point and its type
             EntryPointType entryPointType = determineEntryPointType(annotations, classContext.annotations());
-            String metadata = buildMetadata(annotations, entryPointType);
-
             if (entryPointType != null) {
+                String metadata = buildMetadata(annotations, entryPointType);
                 String methodSignature = buildMethodSignature(classContext.className(), methodName, returnType);
                 methods.add(new MethodContext(
                         classContext.className(),

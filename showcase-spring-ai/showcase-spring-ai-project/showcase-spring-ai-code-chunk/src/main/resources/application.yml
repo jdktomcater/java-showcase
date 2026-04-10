@@ -3,8 +3,8 @@ server:
 
 app:
   code-rag:
-    repo-name: java-showcase
-    repo-root: /Users/yuhata/workspace/github/jdktomcater/java-showcase
+    repo-name: showcase-pay
+    repo-root: /Users/yuhata/workspace/github/jdktomcater/showcase-pay
     include-globs:
       - "**/*.java"
       - "**/*.xml"
@@ -12,6 +12,8 @@ app:
       - "**/*.yaml"
       - "**/*.md"
       - "**/*.sql"
+  impact-analysis:
+    repo-root: /Users/yuhata/workspace/github/jdktomcater/showcase-pay
 
 spring:
   datasource:
