@@ -12,17 +12,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CodeImpactAnalysisService {
+
+    private static final Pattern DIFF_HUNK_PATTERN = Pattern.compile("@@ -\\d+(?:,\\d+)? \\+(\\d+)(?:,(\\d+))? @@");
 
     private final RestTemplate restTemplate;
 
@@ -110,20 +115,21 @@ public class CodeImpactAnalysisService {
             return "本次提交无可用 diff 文件。";
         }
 
-        List<String> changedTypes = extractChangedJavaTypes(compareResponse.getFiles());
-        if (changedTypes.isEmpty()) {
+        ChangedCodeContext changedContext = resolveChangedCodeContext(compareResponse.getFiles());
+        if (changedContext.typeFqns().isEmpty() && changedContext.methodFqns().isEmpty()) {
             return "未包含可映射到 Java 类型的变更。";
         }
 
         StringBuilder summary = new StringBuilder("## 业务影响链路摘要\n");
         summary.append("- 仓库：").append(safe(repository)).append('\n');
-        summary.append("- 入口点分析：").append(changedTypes.size()).append(" 个类型\n");
+        summary.append("- 变更类型数：").append(changedContext.typeFqns().size()).append('\n');
+        summary.append("- 变更方法数：").append(changedContext.methodFqns().size()).append('\n');
 
-        // 尝试匹配入口点
-        log.debug("查找相关入口点 repository={} changedTypes={}", repository, changedTypes.size());
-        List<EntryPointInfo> entryPoints = findRelatedEntryPoints(changedTypes);
+        log.debug("查找相关入口点 repository={} changedTypes={} changedMethods={}",
+                repository, changedContext.typeFqns().size(), changedContext.methodFqns().size());
+        List<EntryPointInfo> entryPoints = findRelatedEntryPoints(changedContext);
         if (entryPoints.isEmpty()) {
-            summary.append("- 未找到与变更类型直接相关的业务入口点\n");
+            summary.append("- 未找到与变更直接相关的业务入口点\n");
             log.debug("未找到相关入口点 repository={}", repository);
             return summary.toString();
         }
@@ -137,6 +143,10 @@ public class CodeImpactAnalysisService {
 
                 summary.append("### 入口点：").append(entryPoint.getId()).append('\n');
                 summary.append("- 类型：").append(entryPoint.getType()).append('\n');
+                String route = formatRoute(entryPoint);
+                if (!route.isBlank()) {
+                    summary.append("- 路由：").append(route).append('\n');
+                }
                 summary.append("- 位置：").append(entryPoint.getClassName()).append('#').append(entryPoint.getMethodName()).append('\n');
 
                 if (chainResult.getImpactChain().isEmpty()) {
@@ -186,22 +196,48 @@ public class CodeImpactAnalysisService {
         return report.toString();
     }
 
-    private List<EntryPointInfo> findRelatedEntryPoints(List<String> changedTypes) {
+    private List<EntryPointInfo> findRelatedEntryPoints(ChangedCodeContext changedContext) {
         try {
-            EntryPointListResponse entryPointResponse = fetchAllEntryPoints();
-            List<EntryPointInfo> allEntryPoints = entryPointResponse.getEntryPoints().stream()
-                    .map(ep -> {
-                        EntryPointInfo info = new EntryPointInfo();
-                        info.setId(ep.get("id").toString());
-                        info.setType(ep.get("type").toString());
-                        info.setClassName(ep.get("className").toString());
-                        info.setMethodName(ep.get("methodName").toString());
-                        return info;
-                    })
-                    .toList();
+            List<EntryPointInfo> allEntryPoints = loadAllEntryPoints();
+            Map<String, EntryPointInfo> entryPointByMethod = new LinkedHashMap<>();
+            for (EntryPointInfo entryPoint : allEntryPoints) {
+                if (entryPoint.getMethodSignature() != null && !entryPoint.getMethodSignature().isBlank()) {
+                    entryPointByMethod.put(entryPoint.getMethodSignature(), entryPoint);
+                }
+            }
 
             Set<EntryPointInfo> matched = new LinkedHashSet<>();
-            for (String typeFqn : changedTypes) {
+            for (String methodFqn : changedContext.methodFqns()) {
+                EntryPointInfo directEntryPoint = entryPointByMethod.get(methodFqn);
+                if (directEntryPoint != null) {
+                    matched.add(directEntryPoint);
+                }
+
+                ImpactResponse impactResponse = fetchMethodImpact(methodFqn);
+                for (Map<String, Object> impact : impactResponse.getImpacts()) {
+                    String callerMethod = safe(impact.get("fqn"));
+                    EntryPointInfo callerEntryPoint = entryPointByMethod.get(callerMethod);
+                    if (callerEntryPoint != null) {
+                        matched.add(callerEntryPoint);
+                    }
+                    if (matched.size() >= maxTypes) {
+                        return new ArrayList<>(matched);
+                    }
+                }
+            }
+
+            Set<String> relatedTypes = new LinkedHashSet<>(changedContext.typeFqns());
+            for (String typeFqn : changedContext.typeFqns()) {
+                ImpactResponse impactResponse = fetchTypeImpact(typeFqn);
+                for (Map<String, Object> impact : impactResponse.getImpacts()) {
+                    relatedTypes.add(safe(impact.get("fqn")));
+                    if (relatedTypes.size() >= maxTypes * 2) {
+                        break;
+                    }
+                }
+            }
+
+            for (String typeFqn : relatedTypes) {
                 for (EntryPointInfo entryPoint : allEntryPoints) {
                     if (entryPoint.getClassName().equals(typeFqn) ||
                         entryPoint.getClassName().startsWith(typeFqn + "$") ||
@@ -220,12 +256,38 @@ public class CodeImpactAnalysisService {
         }
     }
 
+    private List<EntryPointInfo> loadAllEntryPoints() {
+        EntryPointListResponse entryPointResponse = fetchAllEntryPoints();
+        return entryPointResponse.getEntryPoints().stream()
+                .map(this::toEntryPointInfo)
+                .toList();
+    }
+
+    private EntryPointInfo toEntryPointInfo(Map<String, Object> entryPoint) {
+        EntryPointInfo info = new EntryPointInfo();
+        info.setId(safe(entryPoint.get("id")));
+        info.setType(safe(entryPoint.get("type")));
+        info.setClassName(safe(entryPoint.get("className")));
+        info.setMethodName(safe(entryPoint.get("methodName")));
+        info.setMethodSignature(safe(entryPoint.get("methodSignature")));
+        info.setMetadata(safe(entryPoint.get("metadata")));
+        return info;
+    }
+
     private DependencyResponse fetchTypeDependencies(String fqn) {
         return postForObject("/api/code/type-dependencies", new GraphQueryRequest(fqn, impactDepth), DependencyResponse.class);
     }
 
     private ImpactResponse fetchTypeImpact(String fqn) {
         return postForObject("/api/code/type-impact", new GraphQueryRequest(fqn, impactDepth), ImpactResponse.class);
+    }
+
+    private ImpactResponse fetchMethodImpact(String methodFqn) {
+        return postForObject("/api/code/impact", new ImpactQueryRequest(methodFqn, impactDepth), ImpactResponse.class);
+    }
+
+    private LocationResponse fetchCodeLocation(String filePath, int line) {
+        return postForObject("/api/code/location", new CodeLocationRequest(filePath, line), LocationResponse.class);
     }
 
     private ImpactChainResult fetchImpactChain(String entryPointId) {
@@ -295,6 +357,54 @@ public class CodeImpactAnalysisService {
         return "-";
     }
 
+    private ChangedCodeContext resolveChangedCodeContext(List<CompareResponse.FileDiff> files) {
+        Set<String> changedTypes = new LinkedHashSet<>(extractChangedJavaTypes(files));
+        Set<String> changedMethods = new LinkedHashSet<>();
+
+        for (CompareResponse.FileDiff file : files) {
+            if (file.getFilename() == null || !file.getFilename().endsWith(".java")) {
+                continue;
+            }
+            for (Integer line : extractChangedLineAnchors(file.getPatch())) {
+                try {
+                    LocationResponse response = fetchCodeLocation(file.getFilename(), line);
+                    for (Map<String, Object> node : response.getNodes()) {
+                        String nodeType = safe(node.get("type"));
+                        String fqn = safe(node.get("fqn"));
+                        if ("METHOD".equals(nodeType) && !fqn.isBlank() && !"-".equals(fqn)) {
+                            changedMethods.add(fqn);
+                        }
+                        if ("TYPE".equals(nodeType) && !fqn.isBlank() && !"-".equals(fqn)) {
+                            changedTypes.add(fqn);
+                        }
+                    }
+                } catch (Exception ex) {
+                    log.debug("按文件行解析变更节点失败 file={} line={}", file.getFilename(), line, ex);
+                }
+            }
+        }
+
+        return new ChangedCodeContext(new ArrayList<>(changedTypes), new ArrayList<>(changedMethods));
+    }
+
+    private List<Integer> extractChangedLineAnchors(String patch) {
+        if (patch == null || patch.isBlank()) {
+            return List.of();
+        }
+        Set<Integer> anchors = new LinkedHashSet<>();
+        Matcher matcher = DIFF_HUNK_PATTERN.matcher(patch);
+        while (matcher.find()) {
+            int newStart = Integer.parseInt(matcher.group(1));
+            int newCount = matcher.group(2) == null ? 1 : Integer.parseInt(matcher.group(2));
+            if (newCount == 0) {
+                anchors.add(Math.max(1, newStart));
+            } else {
+                anchors.add(newStart);
+            }
+        }
+        return new ArrayList<>(anchors);
+    }
+
     private List<String> extractChangedJavaTypes(List<CompareResponse.FileDiff> files) {
         Set<String> types = new LinkedHashSet<>();
         for (CompareResponse.FileDiff file : files) {
@@ -339,6 +449,38 @@ public class CodeImpactAnalysisService {
         return Objects.toString(value, "-");
     }
 
+    private String formatRoute(EntryPointInfo entryPoint) {
+        if (!"HTTP".equalsIgnoreCase(entryPoint.getType())) {
+            return "";
+        }
+        Map<String, String> metadata = parseMetadata(entryPoint.getMetadata());
+        String path = metadata.getOrDefault("path", "");
+        String httpMethod = metadata.getOrDefault("httpMethod", "");
+        if (!httpMethod.isBlank() && !path.isBlank()) {
+            return httpMethod + " " + path;
+        }
+        return path;
+    }
+
+    private Map<String, String> parseMetadata(String metadata) {
+        if (metadata == null || metadata.isBlank() || "-".equals(metadata)) {
+            return Map.of();
+        }
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String token : metadata.split(";")) {
+            if (token.isBlank()) {
+                continue;
+            }
+            int index = token.indexOf('=');
+            if (index < 0) {
+                result.put(token, "");
+                continue;
+            }
+            result.put(token.substring(0, index), token.substring(index + 1));
+        }
+        return result;
+    }
+
     // ==================== Records ====================
 
     private record GraphQueryRequest(
@@ -350,6 +492,24 @@ public class CodeImpactAnalysisService {
     private record ImpactChainQuery(
             String entryPointId,
             Integer depth
+    ) {
+    }
+
+    private record ImpactQueryRequest(
+            String methodFqn,
+            Integer depth
+    ) {
+    }
+
+    private record CodeLocationRequest(
+            String filePath,
+            Integer line
+    ) {
+    }
+
+    private record ChangedCodeContext(
+            List<String> typeFqns,
+            List<String> methodFqns
     ) {
     }
 
@@ -390,10 +550,21 @@ public class CodeImpactAnalysisService {
     }
 
     @Data
+    public static class LocationResponse {
+        private boolean success;
+        private String filePath;
+        private Integer line;
+        private Integer count;
+        private List<Map<String, Object>> nodes = List.of();
+    }
+
+    @Data
     public static class EntryPointInfo {
         private String id;
         private String type;
         private String className;
         private String methodName;
+        private String methodSignature;
+        private String metadata;
     }
 }

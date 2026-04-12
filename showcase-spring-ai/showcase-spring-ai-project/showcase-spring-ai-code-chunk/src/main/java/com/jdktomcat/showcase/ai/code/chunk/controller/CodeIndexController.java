@@ -1,6 +1,7 @@
 package com.jdktomcat.showcase.ai.code.chunk.controller;
 
 import com.jdktomcat.showcase.ai.code.chunk.dto.CodeSearchHit;
+import com.jdktomcat.showcase.ai.code.chunk.dto.CodeLocationRequest;
 import com.jdktomcat.showcase.ai.code.chunk.dto.CodeSearchRequest;
 import com.jdktomcat.showcase.ai.code.chunk.dto.DependencyQueryRequest;
 import com.jdktomcat.showcase.ai.code.chunk.dto.GraphViewRequest;
@@ -116,6 +117,20 @@ public class CodeIndexController {
                 "target", request.methodFqn(),
                 "count", impacts.size(),
                 "impacts", impacts
+        );
+    }
+
+    @PostMapping("/api/code/location")
+    public Map<String, Object> locate(@Valid @RequestBody CodeLocationRequest request) {
+        log.debug("收到代码定位请求 filePath={} line={}", request.filePath(), request.line());
+        List<Map<String, Object>> nodes = impactAnalysisService.locate(request.filePath(), request.line());
+        log.debug("代码定位完成 filePath={} line={} count={}", request.filePath(), request.line(), nodes.size());
+        return Map.of(
+                "success", true,
+                "filePath", request.filePath(),
+                "line", request.line(),
+                "count", nodes.size(),
+                "nodes", nodes
         );
     }
 

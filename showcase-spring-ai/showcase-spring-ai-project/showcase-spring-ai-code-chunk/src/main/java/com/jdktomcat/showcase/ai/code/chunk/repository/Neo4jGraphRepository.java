@@ -29,16 +29,19 @@ public class Neo4jGraphRepository {
         try (Session session = driver.session()) {
             session.executeWrite(tx -> {
                 for (CodeGraphNode node : nodes) {
+                    // Stub nodes from JavaDependencyAnalyzer.externalNode() send null filePath/module/kind/lines.
+                    // COALESCE keeps values already set when the real source file is indexed, so type-dependencies
+                    // (project-only: filePath IS NOT NULL) are not wiped by later stub merges.
                     tx.run("""
                             MERGE (n:CodeNode {id: $id})
                             SET n.type = $type,
                                 n.name = $name,
                                 n.fqn = $fqn,
-                                n.kind = $kind,
-                                n.filePath = $filePath,
-                                n.module = $module,
-                                n.startLine = $startLine,
-                                n.endLine = $endLine
+                                n.kind = coalesce($kind, n.kind),
+                                n.filePath = coalesce($filePath, n.filePath),
+                                n.module = coalesce($module, n.module),
+                                n.startLine = coalesce($startLine, n.startLine),
+                                n.endLine = coalesce($endLine, n.endLine)
                             """, Values.parameters(
                             "id", node.id(),
                             "type", node.type().name(),
@@ -91,6 +94,9 @@ public class Neo4jGraphRepository {
         }
     }
 
+    /**
+     * Outgoing type-to-type dependencies within the indexed repository only ({@code target.filePath} set).
+     */
     public List<Map<String, Object>> findTypeDependencies(String typeId, int depth) {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> tx.run("""
@@ -142,6 +148,34 @@ public class Neo4jGraphRepository {
         }
     }
 
+    public List<Map<String, Object>> findNodesByFileAndLine(String filePath, int line) {
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> tx.run("""
+                    MATCH (node:CodeNode {filePath: $filePath})
+                    WHERE node.type IN ['METHOD', 'TYPE']
+                      AND node.startLine IS NOT NULL
+                      AND coalesce(node.endLine, node.startLine) >= $line
+                      AND node.startLine <= $line
+                    RETURN node.id AS id,
+                           node.type AS type,
+                           node.name AS name,
+                           node.fqn AS fqn,
+                           node.kind AS kind,
+                           node.filePath AS filePath,
+                           node.module AS module,
+                           node.startLine AS startLine,
+                           node.endLine AS endLine
+                    ORDER BY CASE node.type WHEN 'METHOD' THEN 0 WHEN 'TYPE' THEN 1 ELSE 2 END,
+                             coalesce(node.endLine, node.startLine) - node.startLine ASC,
+                             node.fqn
+                    """, Values.parameters(
+                    "filePath", filePath,
+                    "line", line
+            )).list(MapAccessor::asMap));
+        }
+    }
+
+    /** Incoming type-to-type references within the indexed repository only ({@code caller.filePath} set). */
     public List<Map<String, Object>> findTypeImpact(String typeId, int depth) {
         try (Session session = driver.session()) {
             return session.executeRead(tx -> tx.run("""

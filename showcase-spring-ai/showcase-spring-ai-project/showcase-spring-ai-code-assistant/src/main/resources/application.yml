@@ -7,7 +7,7 @@ github:
   api:
     token: ${GITHUB_API_TOKEN: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}
   review:
-    max-diff-length: 12000
+    max-diff-length: ${GITHUB_REVIEW_MAX_DIFF_LENGTH:8000}
 
 code-chunk:
   base-url: ${CODE_CHUNK_BASE_URL:http://localhost:8081}
@@ -32,7 +32,7 @@ spring:
     ollama:
       init:
         timeout: 60m
-        max-retries: 10
+        max-retries: 2
         embedding:
           additional-models:
             - qwen3-coder:480b-cloud
@@ -41,7 +41,19 @@ spring:
       embedding:
         model: qwen3-coder:480b-cloud
       chat:
-        model: gpt-oss:120b-cloud
+        options:
+          model: ${OLLAMA_CHAT_MODEL:gpt-oss:120b-cloud}
+          keep_alive: ${OLLAMA_CHAT_KEEP_ALIVE:30m}
+          temperature: ${OLLAMA_CHAT_TEMPERATURE:0.1}
+          num-predict: ${OLLAMA_CHAT_NUM_PREDICT:1200}
+          num-ctx: ${OLLAMA_CHAT_NUM_CTX:4096}
+
+app:
+  webhook:
+    executor:
+      core-pool-size: ${WEBHOOK_EXECUTOR_CORE_POOL_SIZE:1}
+      max-pool-size: ${WEBHOOK_EXECUTOR_MAX_POOL_SIZE:2}
+      queue-capacity: ${WEBHOOK_EXECUTOR_QUEUE_CAPACITY:20}
 
 
 # 日志配置（便于调试流程）
@@ -49,4 +61,3 @@ logging:
   level:
     org.langchain4j: DEBUG
     com.jdktomcat.showcase.ai.code.assistant: DEBUG
-

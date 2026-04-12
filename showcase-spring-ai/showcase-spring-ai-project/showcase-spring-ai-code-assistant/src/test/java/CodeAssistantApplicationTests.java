@@ -8,7 +8,6 @@ public class CodeAssistantApplicationTests {
 
     @Test
     void contextLoads() {
-        System.out.println(System.getenv("OLLAMA_BASE_URL"));
     }
 
     @Test

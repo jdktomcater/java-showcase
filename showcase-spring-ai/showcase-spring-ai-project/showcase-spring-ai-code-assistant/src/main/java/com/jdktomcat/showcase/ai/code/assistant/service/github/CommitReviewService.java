@@ -3,6 +3,7 @@ package com.jdktomcat.showcase.ai.code.assistant.service.github;
 import com.jdktomcat.showcase.ai.code.assistant.domain.dto.CommitTaskState;
 import com.jdktomcat.showcase.ai.code.assistant.domain.entity.CompareResponse;
 import com.jdktomcat.showcase.ai.code.assistant.domain.entity.PushPayload;
+import com.jdktomcat.showcase.ai.code.assistant.dto.ReviewDiffRequest;
 import com.jdktomcat.showcase.ai.code.assistant.service.impact.CodeImpactAnalysisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,16 @@ public class CommitReviewService {
         return finalState;
     }
 
+    public CommitTaskState reviewDiff(ReviewDiffRequest request) {
+        log.info("开始评审手动 diff repository={} branch={} sha={}",
+                request.getRepository(), request.getBranch(), request.getSha());
+        CommitTaskState initialState = buildInitialState(request);
+        CommitTaskState finalState = commitWorkflow.invoke(initialState.toMap()).orElse(initialState);
+        log.info("手动 diff 评审完成 repository={} sha={} decision={} passed={}",
+                finalState.getRepository(), finalState.getSha(), finalState.getDecision(), finalState.isPassed());
+        return finalState;
+    }
+
     private CommitTaskState buildInitialState(PushPayload pushPayload, CompareResponse compareResponse) {
         CommitTaskState state = new CommitTaskState();
         PushPayload.Commit latestCommit = getLatestCommit(pushPayload.getCommits());
@@ -79,6 +90,27 @@ public class CommitReviewService {
         
         log.debug("初始状态构建完成 sha={} author={} files={} additions={} deletions={}",
                 state.getSha(), state.getAuthor(), state.getChangedFiles(), state.getAdditions(), state.getDeletions());
+        return state;
+    }
+
+    private CommitTaskState buildInitialState(ReviewDiffRequest request) {
+        CommitTaskState state = new CommitTaskState();
+        state.setRepository(defaultString(request.getRepository()));
+        state.setBranch(defaultString(request.getBranch()));
+        state.setSha(defaultString(request.getSha()));
+        state.setAuthor(defaultString(request.getAuthor()));
+        state.setEmail(defaultString(request.getEmail()));
+        state.setMessage(defaultString(request.getMessage()));
+        state.setCompareUrl(defaultString(request.getCompareUrl()));
+        state.setCompareResponse(null);
+        state.setDiff(normalizeDiff(request.getDiff()));
+        state.setChangedFiles(request.getChangedFiles() != null ? request.getChangedFiles() : 0);
+        state.setAdditions(request.getAdditions() != null ? request.getAdditions() : 0);
+        state.setDeletions(request.getDeletions() != null ? request.getDeletions() : 0);
+        state.setCodeImpactSummary(codeImpactAnalysisService.buildFullImpactSummary(state.getRepository(), null));
+        state.setNeedRetry(false);
+        state.setPassed(false);
+        state.setDecision("PENDING");
         return state;
     }
 
@@ -155,6 +187,20 @@ public class CommitReviewService {
             return builder.substring(0, maxDiffLength);
         }
         return builder.toString();
+    }
+
+    private String normalizeDiff(String diff) {
+        if (StringUtils.isBlank(diff)) {
+            return "No file diff available.";
+        }
+        if (diff.length() <= maxDiffLength) {
+            return diff;
+        }
+        return diff.substring(0, maxDiffLength) + "\n[diff truncated to fit model context]";
+    }
+
+    private String defaultString(String value) {
+        return StringUtils.defaultString(value);
     }
 
     private String extractBranch(String ref) {

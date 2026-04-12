@@ -45,7 +45,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- 使用 ollama 本地模型测试 也可以用其他模型-->
+        <!-- 使用 Ollama 提供 Chat / Embedding 能力 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-ollama</artifactId>

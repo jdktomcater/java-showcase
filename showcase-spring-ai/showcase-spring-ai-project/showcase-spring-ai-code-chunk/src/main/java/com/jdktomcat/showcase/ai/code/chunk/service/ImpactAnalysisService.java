@@ -41,6 +41,13 @@ public class ImpactAnalysisService {
         return result;
     }
 
+    public List<Map<String, Object>> locate(String filePath, int line) {
+        log.debug("按文件行定位节点 filePath={} line={}", filePath, line);
+        List<Map<String, Object>> result = graphRepository.findNodesByFileAndLine(filePath, line);
+        log.debug("文件行定位完成 filePath={} line={} count={}", filePath, line, result.size());
+        return result;
+    }
+
     public List<Map<String, Object>> typeImpact(String fqn, int depth) {
         log.debug("查询类型影响 fqn={} depth={}", fqn, depth);
         List<Map<String, Object>> result = graphRepository.findTypeImpact("TYPE:" + fqn, depth);

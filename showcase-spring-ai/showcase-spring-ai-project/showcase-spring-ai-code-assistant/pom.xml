@@ -11,6 +11,11 @@
     <artifactId>showcase-spring-ai-code-assistant</artifactId>
     
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- H2 内存数据库（模拟订单数据） -->
         <dependency>
             <groupId>com.h2database</groupId>
