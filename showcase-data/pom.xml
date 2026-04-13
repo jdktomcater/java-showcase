@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-data-druid</module>
+        <module>showcase-data-mysql-mgr-ssl</module>
         <module>showcase-data-mybatis-plus</module>
         <module>showcase-data-sharding-jdbc</module>
         <module>showcase-data-vault</module>

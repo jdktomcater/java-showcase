@@ -1,0 +1,42 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: showcase-data-mysql-mgr-ssl
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+showcase:
+  mysql:
+    mgr:
+      username: ${SHOWCASE_MGR_USERNAME:app_user}
+      password: ${SHOWCASE_MGR_PASSWORD:App#123456}
+      connect-timeout-ms: ${SHOWCASE_MGR_CONNECT_TIMEOUT_MS:5000}
+      socket-timeout-ms: ${SHOWCASE_MGR_SOCKET_TIMEOUT_MS:5000}
+      ssl-mode: ${SHOWCASE_MGR_SSL_MODE:VERIFY_CA}
+      enabled-tls-protocols: ${SHOWCASE_MGR_TLS_PROTOCOLS:TLSv1.2,TLSv1.3}
+      trust-certificate-key-store-url: ${SHOWCASE_MGR_TRUSTSTORE_URL:file:./docker/certs/client/truststore.jks}
+      trust-certificate-key-store-password: ${SHOWCASE_MGR_TRUSTSTORE_PASSWORD:changeit}
+      trust-certificate-key-store-type: ${SHOWCASE_MGR_TRUSTSTORE_TYPE:JKS}
+      nodes:
+        - name: mysql1
+          host: ${SHOWCASE_MGR_NODE1_HOST:127.0.0.1}
+          port: ${SHOWCASE_MGR_NODE1_PORT:33061}
+          database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
+        - name: mysql2
+          host: ${SHOWCASE_MGR_NODE2_HOST:127.0.0.1}
+          port: ${SHOWCASE_MGR_NODE2_PORT:33062}
+          database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
+        - name: mysql3
+          host: ${SHOWCASE_MGR_NODE3_HOST:127.0.0.1}
+          port: ${SHOWCASE_MGR_NODE3_PORT:33063}
+          database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
+
+logging:
+  level:
+    com.jdktomcat.showcase.data.mysql.mgr.ssl: INFO

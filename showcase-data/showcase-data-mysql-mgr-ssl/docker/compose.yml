@@ -1,0 +1,86 @@
+services:
+  mysql1:
+    image: mysql:8.4
+    container_name: showcase-mgr-mysql1
+    hostname: mysql1
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123456
+    ports:
+      - "33061:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --ssl-mode=REQUIRED ping -h127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - mysql1-data:/var/lib/mysql
+      - ./conf/mysql1/my.cnf:/etc/mysql/conf.d/z-mgr.cnf:ro
+      - ./init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./certs/ca/ca.pem:/certs/ca.pem:ro
+      - ./certs/mysql1/server-cert.pem:/certs/server-cert.pem:ro
+      - ./certs/mysql1/server-key.pem:/certs/server-key.pem:ro
+
+  mysql2:
+    image: mysql:8.4
+    container_name: showcase-mgr-mysql2
+    hostname: mysql2
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123456
+    ports:
+      - "33062:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --ssl-mode=REQUIRED ping -h127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - mysql2-data:/var/lib/mysql
+      - ./conf/mysql2/my.cnf:/etc/mysql/conf.d/z-mgr.cnf:ro
+      - ./init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./certs/ca/ca.pem:/certs/ca.pem:ro
+      - ./certs/mysql2/server-cert.pem:/certs/server-cert.pem:ro
+      - ./certs/mysql2/server-key.pem:/certs/server-key.pem:ro
+
+  mysql3:
+    image: mysql:8.4
+    container_name: showcase-mgr-mysql3
+    hostname: mysql3
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123456
+    ports:
+      - "33063:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin --ssl-mode=REQUIRED ping -h127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - mysql3-data:/var/lib/mysql
+      - ./conf/mysql3/my.cnf:/etc/mysql/conf.d/z-mgr.cnf:ro
+      - ./init/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./certs/ca/ca.pem:/certs/ca.pem:ro
+      - ./certs/mysql3/server-cert.pem:/certs/server-cert.pem:ro
+      - ./certs/mysql3/server-key.pem:/certs/server-key.pem:ro
+
+  mgr-setup:
+    image: mysql:8.4
+    container_name: showcase-mgr-setup
+    depends_on:
+      mysql1:
+        condition: service_healthy
+      mysql2:
+        condition: service_healthy
+      mysql3:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123456
+      MGR_REPL_PASSWORD: Repl#123456
+    restart: "no"
+    volumes:
+      - ./scripts/bootstrap-mgr.sh:/bootstrap-mgr.sh:ro
+    entrypoint: ["/bin/bash", "/bootstrap-mgr.sh"]
+
+volumes:
+  mysql1-data:
+  mysql2-data:
+  mysql3-data:
