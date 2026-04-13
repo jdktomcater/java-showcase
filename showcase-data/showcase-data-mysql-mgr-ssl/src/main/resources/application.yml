@@ -11,6 +11,12 @@ management:
       exposure:
         include: health,info
 
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+
 showcase:
   mysql:
     mgr:
@@ -35,6 +41,18 @@ showcase:
         - name: mysql3
           host: ${SHOWCASE_MGR_NODE3_HOST:127.0.0.1}
           port: ${SHOWCASE_MGR_NODE3_PORT:33063}
+          database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
+      proxy:
+        enabled: ${SHOWCASE_MGR_PROXY_ENABLED:true}
+        read-write:
+          name: f5-rw
+          host: ${SHOWCASE_MGR_PROXY_RW_HOST:127.0.0.1}
+          port: ${SHOWCASE_MGR_PROXY_RW_PORT:13306}
+          database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
+        read-only:
+          name: f5-ro
+          host: ${SHOWCASE_MGR_PROXY_RO_HOST:127.0.0.1}
+          port: ${SHOWCASE_MGR_PROXY_RO_PORT:13307}
           database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
 
 logging:

@@ -17,7 +17,7 @@ CREATE USER IF NOT EXISTS 'repl'@'%' IDENTIFIED BY 'Repl#123456' REQUIRE SSL;
 GRANT REPLICATION SLAVE, CONNECTION_ADMIN, BACKUP_ADMIN ON *.* TO 'repl'@'%';
 
 CREATE USER IF NOT EXISTS 'app_user'@'%' IDENTIFIED BY 'App#123456' REQUIRE SSL;
-GRANT SELECT ON mgr_demo.* TO 'app_user'@'%';
+GRANT SELECT, UPDATE ON mgr_demo.* TO 'app_user'@'%';
 GRANT SELECT ON performance_schema.* TO 'app_user'@'%';
 GRANT REPLICATION CLIENT ON *.* TO 'app_user'@'%';
 

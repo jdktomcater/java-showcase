@@ -10,6 +10,8 @@ public record ClusterValidationResponse(
         int expectedNodeCount,
         int reachableNodeCount,
         List<CheckResult> checks,
+        MybatisPlusProbeResult mybatisPlusProbe,
+        List<ProxyValidationResult> proxies,
         List<NodeValidationResult> nodes,
         Map<String, String> hints
 ) {

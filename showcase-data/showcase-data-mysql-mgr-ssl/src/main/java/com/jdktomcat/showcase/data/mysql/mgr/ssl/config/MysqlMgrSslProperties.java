@@ -18,6 +18,7 @@ public class MysqlMgrSslProperties {
     private String trustCertificateKeyStorePassword = "changeit";
     private String trustCertificateKeyStoreType = "JKS";
     private List<Node> nodes = new ArrayList<>();
+    private Proxy proxy = new Proxy();
 
     public String getUsername() {
         return username;
@@ -99,11 +100,98 @@ public class MysqlMgrSslProperties {
         this.nodes = nodes;
     }
 
+    public Proxy getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
+    }
+
     public static class Node {
         private String name;
         private String host = "127.0.0.1";
         private int port;
         private String database = "mgr_demo";
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        public int getPort() {
+            return port;
+        }
+
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        public String getDatabase() {
+            return database;
+        }
+
+        public void setDatabase(String database) {
+            this.database = database;
+        }
+    }
+
+    public static class Proxy {
+        private boolean enabled = true;
+        private Endpoint readWrite = new Endpoint("f5-rw", "127.0.0.1", 13306, "mgr_demo");
+        private Endpoint readOnly = new Endpoint("f5-ro", "127.0.0.1", 13307, "mgr_demo");
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public Endpoint getReadWrite() {
+            return readWrite;
+        }
+
+        public void setReadWrite(Endpoint readWrite) {
+            this.readWrite = readWrite;
+        }
+
+        public Endpoint getReadOnly() {
+            return readOnly;
+        }
+
+        public void setReadOnly(Endpoint readOnly) {
+            this.readOnly = readOnly;
+        }
+    }
+
+    public static class Endpoint {
+        private String name;
+        private String host;
+        private int port;
+        private String database;
+
+        public Endpoint() {
+        }
+
+        public Endpoint(String name, String host, int port, String database) {
+            this.name = name;
+            this.host = host;
+            this.port = port;
+            this.database = database;
+        }
 
         public String getName() {
             return name;
