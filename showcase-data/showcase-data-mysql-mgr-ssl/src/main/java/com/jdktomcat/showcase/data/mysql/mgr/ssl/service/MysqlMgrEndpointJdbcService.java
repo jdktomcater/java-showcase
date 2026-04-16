@@ -22,7 +22,7 @@ public class MysqlMgrEndpointJdbcService implements DisposableBean {
     }
 
     public JdbcTemplate jdbcTemplateForNode(MysqlMgrSslProperties.Node node) {
-        String key = "node:%s:%d/%s".formatted(node.getHost(), node.getPort(), node.getDatabase());
+        String key = String.format("node:%s:%d/%s", node.getHost(), node.getPort(), node.getDatabase());
         return jdbcTemplates.computeIfAbsent(key, ignored -> {
             DruidDataSource dataSource = dataSourceFactory.createDataSource(node.getHost(), node.getPort(), node.getDatabase());
             dataSources.put(key, dataSource);
@@ -31,7 +31,7 @@ public class MysqlMgrEndpointJdbcService implements DisposableBean {
     }
 
     public JdbcTemplate jdbcTemplateForEndpoint(MysqlMgrSslProperties.Endpoint endpoint) {
-        String key = "endpoint:%s:%d/%s".formatted(endpoint.getHost(), endpoint.getPort(), endpoint.getDatabase());
+        String key = String.format("endpoint:%s:%d/%s", endpoint.getHost(), endpoint.getPort(), endpoint.getDatabase());
         return jdbcTemplates.computeIfAbsent(key, ignored -> {
             DruidDataSource dataSource = dataSourceFactory.createDataSource(endpoint.getHost(), endpoint.getPort(), endpoint.getDatabase());
             dataSources.put(key, dataSource);

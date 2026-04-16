@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,52 +24,46 @@ import java.util.Objects;
 @Service
 public class MysqlMgrSslValidationService {
 
-    private static final String NODE_OVERVIEW_SQL = """
-            SELECT @@hostname AS hostname,
-                   @@port AS port,
-                   @@version AS version,
-                   @@server_uuid AS server_uuid,
-                   @@group_replication_ssl_mode AS group_replication_ssl_mode,
-                   @@group_replication_recovery_use_ssl AS group_replication_recovery_use_ssl,
-                   @@require_secure_transport AS require_secure_transport
-            """;
+    private static final String NODE_OVERVIEW_SQL =
+            "SELECT @@hostname AS hostname, " +
+                    "@@port AS port, " +
+                    "@@version AS version, " +
+                    "@@server_uuid AS server_uuid, " +
+                    "@@group_replication_ssl_mode AS group_replication_ssl_mode, " +
+                    "@@group_replication_recovery_use_ssl AS group_replication_recovery_use_ssl, " +
+                    "@@require_secure_transport AS require_secure_transport";
 
-    private static final String LOCAL_MEMBER_SQL = """
-            SELECT member_host, member_port, member_state, member_role
-            FROM performance_schema.replication_group_members
-            WHERE member_id = @@server_uuid
-            """;
+    private static final String LOCAL_MEMBER_SQL =
+            "SELECT member_host, member_port, member_state, member_role " +
+                    "FROM performance_schema.replication_group_members " +
+                    "WHERE member_id = @@server_uuid";
 
-    private static final String CLUSTER_MEMBERS_SQL = """
-            SELECT member_host, member_port, member_state, member_role
-            FROM performance_schema.replication_group_members
-            ORDER BY member_host, member_port
-            """;
+    private static final String CLUSTER_MEMBERS_SQL =
+            "SELECT member_host, member_port, member_state, member_role " +
+                    "FROM performance_schema.replication_group_members " +
+                    "ORDER BY member_host, member_port";
 
-    private static final String RECOVERY_CHANNEL_SQL = """
-            SELECT CHANNEL_NAME,
-                   HOST,
-                   PORT,
-                   USER AS replication_user,
-                   SSL_ALLOWED,
-                   TLS_VERSION,
-                   SSL_CA_FILE,
-                   SSL_VERIFY_SERVER_CERTIFICATE
-            FROM performance_schema.replication_connection_configuration
-            WHERE CHANNEL_NAME = 'group_replication_recovery'
-            """;
+    private static final String RECOVERY_CHANNEL_SQL =
+            "SELECT CHANNEL_NAME, " +
+                    "HOST, " +
+                    "PORT, " +
+                    "USER AS replication_user, " +
+                    "SSL_ALLOWED, " +
+                    "TLS_VERSION, " +
+                    "SSL_CA_FILE, " +
+                    "SSL_VERIFY_SERVER_CERTIFICATE " +
+                    "FROM performance_schema.replication_connection_configuration " +
+                    "WHERE CHANNEL_NAME = 'group_replication_recovery'";
 
-    private static final String SSL_STATUS_SQL = """
-            SHOW SESSION STATUS
-            WHERE Variable_name IN ('Ssl_version', 'Ssl_cipher', 'Ssl_verify_mode')
-            """;
+    private static final String SSL_STATUS_SQL =
+            "SHOW SESSION STATUS " +
+                    "WHERE Variable_name IN ('Ssl_version', 'Ssl_cipher', 'Ssl_verify_mode')";
 
-    private static final String PROXY_OVERVIEW_SQL = """
-            SELECT @@hostname AS hostname,
-                   @@port AS port,
-                   @@super_read_only AS super_read_only,
-                   @@read_only AS read_only
-            """;
+    private static final String PROXY_OVERVIEW_SQL =
+            "SELECT @@hostname AS hostname, " +
+                    "@@port AS port, " +
+                    "@@super_read_only AS super_read_only, " +
+                    "@@read_only AS read_only";
 
     private final MysqlMgrSslProperties properties;
     private final MysqlMgrEndpointJdbcService endpointJdbcService;
@@ -95,19 +91,19 @@ public class MysqlMgrSslValidationService {
         boolean proxyEnabled = properties.getProxy() != null && properties.getProxy().isEnabled();
 
         int expectedNodeCount = properties.getNodes().size();
-        int reachableNodeCount = (int) nodeResults.stream().filter(NodeValidationResult::reachable).count();
+        int reachableNodeCount = (int) nodeResults.stream().filter(NodeValidationResult::isReachable).count();
         boolean allReachable = reachableNodeCount == expectedNodeCount && expectedNodeCount > 0;
         boolean allJdbcEncrypted = nodeResults.stream().allMatch(this::jdbcEncrypted);
         boolean allGroupSslEnabled = nodeResults.stream().allMatch(this::groupSslEnabled);
         boolean allRecoverySslEnabled = nodeResults.stream().allMatch(this::recoverySslEnabled);
         boolean allMembersOnline = nodeResults.stream().allMatch(this::memberOnline);
         boolean clusterSizeMatches = nodeResults.stream()
-                .filter(NodeValidationResult::reachable)
-                .allMatch(result -> result.clusterMembers() != null && result.clusterMembers().size() == expectedNodeCount);
+                .filter(NodeValidationResult::isReachable)
+                .allMatch(result -> result.getClusterMembers() != null && result.getClusterMembers().size() == expectedNodeCount);
         boolean readWriteProxyValid = !proxyEnabled || proxyValid(proxyResults, properties.getProxy().getReadWrite().getName());
         boolean readOnlyProxyValid = !proxyEnabled || proxyValid(proxyResults, properties.getProxy().getReadOnly().getName());
 
-        List<CheckResult> clusterChecks = List.of(
+        List<CheckResult> clusterChecks = Arrays.asList(
                 new CheckResult("reachable_nodes", allReachable,
                         "reachable=" + reachableNodeCount + ", expected=" + expectedNodeCount),
                 new CheckResult("jdbc_tls_encrypted", allJdbcEncrypted,
@@ -124,10 +120,10 @@ public class MysqlMgrSslValidationService {
                         proxyEnabled ? "write proxy should route to a writable primary and keep TLS enabled" : "proxy validation disabled"),
                 new CheckResult("f5_ro_proxy", readOnlyProxyValid,
                         proxyEnabled ? "read proxy should route to a readonly secondary and keep TLS enabled" : "proxy validation disabled"),
-                new CheckResult("mybatis_plus_probe_rw", mybatisPlusProbe.valid(),
-                        mybatisPlusProbe.valid()
-                                ? "mybatis-plus updated ssl_probe through routed host " + mybatisPlusProbe.routedHost()
-                                : Objects.toString(mybatisPlusProbe.errorMessage(), "mybatis-plus validation failed"))
+                new CheckResult("mybatis_plus_probe_rw", mybatisPlusProbe.isValid(),
+                        mybatisPlusProbe.isValid()
+                                ? "mybatis-plus updated ssl_probe through routed host " + mybatisPlusProbe.getRoutedHost()
+                                : Objects.toString(mybatisPlusProbe.getErrorMessage(), "mybatis-plus validation failed"))
         );
 
         Map<String, String> hints = new LinkedHashMap<>();
@@ -137,7 +133,7 @@ public class MysqlMgrSslValidationService {
         hints.put("manual_sql_4", "SELECT @@hostname, @@super_read_only, @@read_only;");
         hints.put("manual_sql_5", "SELECT * FROM mgr_demo.ssl_probe WHERE id = 1;");
 
-        boolean valid = clusterChecks.stream().allMatch(CheckResult::passed);
+        boolean valid = clusterChecks.stream().allMatch(CheckResult::isPassed);
         return new ClusterValidationResponse(
                 OffsetDateTime.now(),
                 valid,
@@ -174,13 +170,13 @@ public class MysqlMgrSslValidationService {
             checks.add(new CheckResult("require_secure_transport", isEnabled(variables.get("require_secure_transport")),
                     "require_secure_transport=" + variables.get("require_secure_transport")));
             checks.add(new CheckResult("local_member_online",
-                    localMember != null && "ONLINE".equalsIgnoreCase(localMember.state()),
+                    localMember != null && "ONLINE".equalsIgnoreCase(localMember.getState()),
                     localMember == null ? "no row in replication_group_members for current node"
-                            : "state=" + localMember.state() + ", role=" + localMember.role()));
+                            : "state=" + localMember.getState() + ", role=" + localMember.getRole()));
             checks.add(new CheckResult("probe_table_accessible", probeTableRows != null,
                     probeTableRows == null ? "unable to read mgr_demo.ssl_probe" : "mgr_demo.ssl_probe rows=" + probeTableRows));
 
-            boolean valid = checks.stream().allMatch(CheckResult::passed);
+            boolean valid = checks.stream().allMatch(CheckResult::isPassed);
             return new NodeValidationResult(
                     node.getName(),
                     buildJdbcUrl(node.getHost(), node.getPort(), node.getDatabase()),
@@ -196,18 +192,18 @@ public class MysqlMgrSslValidationService {
                     null
             );
         } catch (Exception ex) {
-            List<CheckResult> checks = List.of(new CheckResult("connectivity", false, ex.getMessage()));
+            List<CheckResult> checks = Collections.singletonList(new CheckResult("connectivity", false, ex.getMessage()));
             return new NodeValidationResult(
                     node.getName(),
                     buildJdbcUrl(node.getHost(), node.getPort(), node.getDatabase()),
                     false,
                     false,
                     checks,
-                    Map.of(),
-                    Map.of(),
+                    Collections.<String, String>emptyMap(),
+                    Collections.<String, String>emptyMap(),
                     null,
                     null,
-                    List.of(),
+                    Collections.<ClusterMemberView>emptyList(),
                     null,
                     ex.getMessage()
             );
@@ -216,7 +212,7 @@ public class MysqlMgrSslValidationService {
 
     private List<ProxyValidationResult> validateProxies() {
         if (properties.getProxy() == null || !properties.getProxy().isEnabled()) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         List<ProxyValidationResult> results = new ArrayList<>();
@@ -251,8 +247,8 @@ public class MysqlMgrSslValidationService {
                     false,
                     false,
                     null,
-                    Map.of(),
-                    Map.of(),
+                    Collections.<String, String>emptyMap(),
+                    Collections.<String, String>emptyMap(),
                     ex.getMessage()
             );
         }
@@ -261,7 +257,7 @@ public class MysqlMgrSslValidationService {
     private Map<String, String> querySingleRow(JdbcTemplate jdbcTemplate, String sql) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
         if (rows.isEmpty()) {
-            return Map.of();
+            return Collections.emptyMap();
         }
         return convertMap(rows.get(0));
     }
@@ -331,37 +327,37 @@ public class MysqlMgrSslValidationService {
     }
 
     private int toInt(Object value) {
-        if (value instanceof Number number) {
-            return number.intValue();
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
         }
         return Integer.parseInt(Objects.toString(value));
     }
 
     private boolean jdbcEncrypted(NodeValidationResult result) {
-        return result.reachable()
-                && hasText(result.sslSession().get("Ssl_version"))
-                && hasText(result.sslSession().get("Ssl_cipher"));
+        return result.isReachable()
+                && hasText(result.getSslSession().get("Ssl_version"))
+                && hasText(result.getSslSession().get("Ssl_cipher"));
     }
 
     private boolean groupSslEnabled(NodeValidationResult result) {
-        return result.reachable()
-                && !"DISABLED".equalsIgnoreCase(result.variables().get("group_replication_ssl_mode"));
+        return result.isReachable()
+                && !"DISABLED".equalsIgnoreCase(result.getVariables().get("group_replication_ssl_mode"));
     }
 
     private boolean recoverySslEnabled(NodeValidationResult result) {
-        return result.reachable()
-                && isEnabled(result.variables().get("group_replication_recovery_use_ssl"))
-                && isRecoveryChannelSecure(result.localMember(), result.recoveryChannel());
+        return result.isReachable()
+                && isEnabled(result.getVariables().get("group_replication_recovery_use_ssl"))
+                && isRecoveryChannelSecure(result.getLocalMember(), result.getRecoveryChannel());
     }
 
     private boolean memberOnline(NodeValidationResult result) {
-        return result.reachable()
-                && result.localMember() != null
-                && "ONLINE".equalsIgnoreCase(result.localMember().state());
+        return result.isReachable()
+                && result.getLocalMember() != null
+                && "ONLINE".equalsIgnoreCase(result.getLocalMember().getState());
     }
 
     private boolean isRecoveryChannelSslAllowed(RecoveryChannelView recoveryChannel) {
-        return recoveryChannel != null && "Yes".equalsIgnoreCase(recoveryChannel.sslAllowed());
+        return recoveryChannel != null && "Yes".equalsIgnoreCase(recoveryChannel.getSslAllowed());
     }
 
     private boolean isRecoveryChannelSecure(ClusterMemberView localMember, RecoveryChannelView recoveryChannel) {
@@ -375,11 +371,11 @@ public class MysqlMgrSslValidationService {
         if (recoveryChannel == null && isPrimary(localMember)) {
             return "primary_member_no_active_recovery_channel";
         }
-        return recoveryChannel == null ? "n/a" : recoveryChannel.sslAllowed();
+        return recoveryChannel == null ? "n/a" : recoveryChannel.getSslAllowed();
     }
 
     private boolean isPrimary(ClusterMemberView localMember) {
-        return localMember != null && "PRIMARY".equalsIgnoreCase(localMember.role());
+        return localMember != null && "PRIMARY".equalsIgnoreCase(localMember.getRole());
     }
 
     private boolean isEnabled(String value) {
@@ -396,14 +392,18 @@ public class MysqlMgrSslValidationService {
 
     private boolean proxyValid(List<ProxyValidationResult> results, String proxyName) {
         return results.stream()
-                .filter(result -> proxyName.equals(result.proxyName()))
+                .filter(result -> proxyName.equals(result.getProxyName()))
                 .findFirst()
-                .map(ProxyValidationResult::valid)
+                .map(ProxyValidationResult::isValid)
                 .orElse(false);
     }
 
     private String buildJdbcUrl(String host, int port, String database) {
-        return "jdbc:mysql://%s:%d/%s?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true"
-                .formatted(host, port, database);
+        return String.format(
+                "jdbc:mysql://%s:%d/%s?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                host,
+                port,
+                database
+        );
     }
 }

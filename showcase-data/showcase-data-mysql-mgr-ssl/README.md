@@ -6,6 +6,8 @@
 2. 一个 F5 NGINX 风格的 TCP 代理层，对外暴露 MGR 单主集群的读写代理端口。
 3. 一个本地 Spring Boot 服务，使用 Druid 连接池和 MyBatis-Plus 对业务表做读写验证，同时对每个节点和代理端口做 SSL / MGR 状态校验并输出 JSON 结果。
 
+当前 `docker/compose.yml` 默认使用 `mysql:8.0.32`，如需切换版本可在启动前覆盖环境变量 `MYSQL_IMAGE_TAG`。
+
 ## 目录
 
 - `docker/compose.yml`: 3 节点 MGR 集群和一次性 bootstrap 服务
@@ -18,7 +20,7 @@
 ## 前置条件
 
 - Docker / Docker Compose
-- JDK 17
+- JDK 8
 - Maven 3.9+
 - `openssl`
 - `keytool`
@@ -29,8 +31,11 @@
 
 ```bash
 ./docker/scripts/generate-certs.sh
+docker compose -f docker/compose.yml down -v
 docker compose -f docker/compose.yml up -d
 ```
+
+如果你之前已经用别的版本启动过这套环境，先执行 `docker compose -f docker/compose.yml down -v` 清掉命名卷，避免从 `8.4` 切到 `8.0.32` 时出现数据目录不兼容。
 
 等待 `mgr-setup` 执行完成后，检查集群：
 
@@ -38,6 +43,8 @@ docker compose -f docker/compose.yml up -d
 docker compose -f docker/compose.yml ps
 docker compose -f docker/compose.yml logs mgr-setup
 ```
+
+`mgr-setup` 是一次性初始化服务，只负责等待 3 个节点就绪、执行 MGR bootstrap、打印成员状态。它执行成功后的预期状态就是 `Exited (0)`，不是长期保持 `Up`。
 
 三个节点映射到本机的端口分别是：
 

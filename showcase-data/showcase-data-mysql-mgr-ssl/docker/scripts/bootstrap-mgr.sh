@@ -11,6 +11,12 @@ mysql_exec() {
   mysql --ssl-mode=REQUIRED -h"${host}" -uroot -p"${ROOT_PASSWORD}" -e "${sql}"
 }
 
+reset_node_gtid_state() {
+  local host="$1"
+  # `RESET MASTER` works on MySQL 8.0.x and is sufficient for a fresh local lab cluster.
+  mysql_exec "${host}" "RESET MASTER;"
+}
+
 wait_for_node() {
   local host="$1"
   until mysqladmin --ssl-mode=REQUIRED ping -h"${host}" -uroot -p"${ROOT_PASSWORD}" --silent; do
@@ -37,7 +43,7 @@ wait_for_online() {
 
 for host in mysql1 mysql2 mysql3; do
   wait_for_node "${host}"
-  mysql_exec "${host}" "RESET BINARY LOGS AND GTIDS;"
+  reset_node_gtid_state "${host}"
 done
 
 mysql_exec mysql1 "SET GLOBAL group_replication_bootstrap_group=ON;"

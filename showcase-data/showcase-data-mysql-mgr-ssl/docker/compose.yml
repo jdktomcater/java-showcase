@@ -1,6 +1,6 @@
 services:
   mysql1:
-    image: mysql:8.4
+    image: mysql:${MYSQL_IMAGE_TAG:-8.0.32}
     container_name: showcase-mgr-mysql1
     hostname: mysql1
     environment:
@@ -21,7 +21,7 @@ services:
       - ./certs/mysql1/server-key.pem:/certs/server-key.pem:ro
 
   mysql2:
-    image: mysql:8.4
+    image: mysql:${MYSQL_IMAGE_TAG:-8.0.32}
     container_name: showcase-mgr-mysql2
     hostname: mysql2
     environment:
@@ -42,7 +42,7 @@ services:
       - ./certs/mysql2/server-key.pem:/certs/server-key.pem:ro
 
   mysql3:
-    image: mysql:8.4
+    image: mysql:${MYSQL_IMAGE_TAG:-8.0.32}
     container_name: showcase-mgr-mysql3
     hostname: mysql3
     environment:
@@ -63,7 +63,7 @@ services:
       - ./certs/mysql3/server-key.pem:/certs/server-key.pem:ro
 
   mgr-setup:
-    image: mysql:8.4
+    image: mysql:${MYSQL_IMAGE_TAG:-8.0.32}
     container_name: showcase-mgr-setup
     depends_on:
       mysql1:

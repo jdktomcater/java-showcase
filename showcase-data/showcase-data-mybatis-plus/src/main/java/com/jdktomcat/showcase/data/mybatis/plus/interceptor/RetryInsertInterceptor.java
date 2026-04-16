@@ -73,9 +73,11 @@ public class RetryInsertInterceptor implements Interceptor {
             // 判断异常类型
             Throwable throwable = exception.getCause();
             // 异常类型
-            if (!(throwable instanceof SQLIntegrityConstraintViolationException sqlException)) {
+            if (!(throwable instanceof SQLIntegrityConstraintViolationException)) {
                 return false;
             }
+            SQLIntegrityConstraintViolationException sqlException =
+                    (SQLIntegrityConstraintViolationException) throwable;
             // sql状态码校验
             if (!sqlException.getSQLState().equalsIgnoreCase("23000")) {
                 return false;

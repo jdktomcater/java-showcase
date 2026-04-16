@@ -169,7 +169,19 @@ public class MybatisPluginBenchmarkRunner implements CommandLineRunner {
         return String.format("%.3f", ms);
     }
 
-    private record BenchmarkResult(long durationMs, long success, long fail, long[] samples) {}
+    private static final class BenchmarkResult {
+        private final long durationMs;
+        private final long success;
+        private final long fail;
+        private final long[] samples;
+
+        private BenchmarkResult(long durationMs, long success, long fail, long[] samples) {
+            this.durationMs = durationMs;
+            this.success = success;
+            this.fail = fail;
+            this.samples = samples;
+        }
+    }
 
     private static final class SampleCollector {
         private final long[] buf;
@@ -189,5 +201,4 @@ public class MybatisPluginBenchmarkRunner implements CommandLineRunner {
         }
     }
 }
-
 

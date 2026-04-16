@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.data.vault.listener;
 
-import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.vault.core.lease.SecretLeaseContainer;
 import org.springframework.vault.core.lease.event.*;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 import java.util.Map;
 

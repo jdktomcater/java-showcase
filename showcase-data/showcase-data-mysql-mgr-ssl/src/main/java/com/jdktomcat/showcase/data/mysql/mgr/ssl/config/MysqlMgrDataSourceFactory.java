@@ -42,12 +42,16 @@ public class MysqlMgrDataSourceFactory {
     }
 
     private String buildJdbcUrl(String host, int port, String database) {
-        return "jdbc:mysql://%s:%d/%s?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true"
-                .formatted(host, port, database);
+        return String.format(
+                "jdbc:mysql://%s:%d/%s?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                host,
+                port,
+                database
+        );
     }
 
     private String buildDataSourceName(String host, int port, String database) {
-        return "mgr_%s_%d_%s".formatted(host, port, database)
+        return String.format("mgr_%s_%d_%s", host, port, database)
                 .replaceAll("[^a-zA-Z0-9_\\-]", "_");
     }
 
@@ -90,9 +94,12 @@ public class MysqlMgrDataSourceFactory {
         }
 
         throw new IllegalStateException(
-                "Truststore not found. Checked configured path '%s' from working directory '%s'. " +
-                        "Run ./docker/scripts/generate-certs.sh or set SHOWCASE_MGR_TRUSTSTORE_URL explicitly."
-                        .formatted(configuredUrl, currentDir)
+                String.format(
+                        "Truststore not found. Checked configured path '%s' from working directory '%s'. " +
+                                "Run ./docker/scripts/generate-certs.sh or set SHOWCASE_MGR_TRUSTSTORE_URL explicitly.",
+                        configuredUrl,
+                        currentDir
+                )
         );
     }
 }
