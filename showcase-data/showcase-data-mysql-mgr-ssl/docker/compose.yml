@@ -80,13 +80,29 @@ services:
       - ./scripts/bootstrap-mgr.sh:/bootstrap-mgr.sh:ro
     entrypoint: ["/bin/bash", "/bootstrap-mgr.sh"]
 
+  mgr-cluster-metadata-setup:
+    image: mysql/mysql-server:${MYSQL_IMAGE_TAG:-8.0.32}
+    platform: linux/amd64
+    container_name: showcase-mgr-cluster-metadata-setup
+    depends_on:
+      mgr-setup:
+        condition: service_completed_successfully
+    environment:
+      MYSQL_ROOT_PASSWORD: root@123456
+      MGR_CLUSTER_NAME: showcaseCluster
+    restart: "no"
+    volumes:
+      - ./scripts/bootstrap-cluster-metadata.sh:/bootstrap-cluster-metadata.sh:ro
+      - ./certs/ca/ca.pem:/certs/ca.pem:ro
+    entrypoint: ["/bin/bash", "/bootstrap-cluster-metadata.sh"]
+
   mysql-router:
     image: mysql/mysql-router:${MYSQL_ROUTER_IMAGE_TAG:-8.0.32}
     platform: linux/amd64
     container_name: showcase-mysql-router
     hostname: mysql-router
     depends_on:
-      mgr-setup:
+      mgr-cluster-metadata-setup:
         condition: service_completed_successfully
     environment:
       MYSQL_HOST: mysql1

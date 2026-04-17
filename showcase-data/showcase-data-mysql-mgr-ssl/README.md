@@ -1,21 +1,23 @@
 # MySQL MGR SSL 本地验证模块
 
-这个模块提供四部分能力：
+这个模块提供五部分能力：
 
 1. `docker-compose` 起一个 3 节点 MySQL Group Replication 集群，并打开 TLS/SSL。
-2. 一层官方 `MySQL Router`，负责从集群元数据自动发现当前 `PRIMARY/SECONDARY` 并对外暴露 `rw/ro` 端口。
-3. 一个 F5 NGINX 风格的 TCP 代理层，作为 Router 前面的统一入口，对外暴露最终的读写代理端口。
-4. 一个本地 Spring Boot 服务，使用 Druid 连接池和 MyBatis-Plus 对业务表做读写验证，同时对每个节点和代理端口做 SSL / MGR 状态校验并输出 JSON 结果。
+2. 一个一次性的 `mysqlsh` 初始化步骤，把现有 3 节点 `MGR` 通过 `adoptFromGR` 收编成带元数据的 `InnoDB Cluster`。
+3. 一层官方 `MySQL Router`，负责从集群元数据自动发现当前 `PRIMARY/SECONDARY` 并对外暴露 `rw/ro` 端口。
+4. 一个 F5 NGINX 风格的 TCP 代理层，作为 Router 前面的统一入口，对外暴露最终的读写代理端口。
+5. 一个本地 Spring Boot 服务，使用 Druid 连接池和 MyBatis-Plus 对业务表做读写验证，同时对每个节点和代理端口做 SSL / MGR 状态校验并输出 JSON 结果。
 
-当前 `docker/compose.yml` 默认使用 `mysql:8.0.32` 和 `mysql/mysql-router:8.0.32`，如需切换版本可在启动前覆盖环境变量 `MYSQL_IMAGE_TAG` 和 `MYSQL_ROUTER_IMAGE_TAG`。
+当前 `docker/compose.yml` 默认使用 `mysql:8.0.32`、`mysql/mysql-server:8.0.32` 和 `mysql/mysql-router:8.0.32`。如需切换版本可在启动前覆盖环境变量 `MYSQL_IMAGE_TAG` 和 `MYSQL_ROUTER_IMAGE_TAG`。
 
 ## 目录
 
-- `docker/compose.yml`: 3 节点 MGR 集群、MySQL Router 和 F5 风格代理
+- `docker/compose.yml`: 3 节点 MGR 集群、`mysqlsh` 元数据初始化、MySQL Router 和 F5 风格代理
 - `docker/f5-proxy/*`: F5 NGINX 风格的 TCP 代理镜像；可直连 MGR，也可转发到 Router
 - `docker/conf/mysql*/my.cnf`: 每个节点的 MySQL + MGR + SSL 配置
 - `docker/init/01-init.sql`: 初始化业务库、探针表、验证账号、复制账号
 - `docker/scripts/generate-certs.sh`: 生成 CA、节点证书和客户端 truststore
+- `docker/scripts/bootstrap-cluster-metadata.sh`: 使用 `mysqlsh` 把现有 GR 组收编为带元数据的 InnoDB Cluster
 - `src/main/...`: 本地验证服务
 
 ## 前置条件
@@ -43,9 +45,12 @@ docker compose -f docker/compose.yml up -d
 ```bash
 docker compose -f docker/compose.yml ps
 docker compose -f docker/compose.yml logs mgr-setup
+docker compose -f docker/compose.yml logs mgr-cluster-metadata-setup
 ```
 
 `mgr-setup` 是一次性初始化服务，只负责等待 3 个节点就绪、执行 MGR bootstrap、打印成员状态。它执行成功后的预期状态就是 `Exited (0)`，不是长期保持 `Up`。
+
+`mgr-cluster-metadata-setup` 也是一次性服务。它会在 `MGR` 已经形成 3 节点组之后，调用 `mysqlsh dba.createCluster(..., {adoptFromGR: true})` 写入 `mysql_innodb_cluster_metadata`，供后续 `MySQL Router` bootstrap 使用。它执行成功后的预期状态同样是 `Exited (0)`。
 
 三个节点映射到本机的端口分别是：
 
@@ -145,6 +150,7 @@ WHERE CHANNEL_NAME = 'group_replication_recovery';
 - distributed recovery 另外显式设置了 `group_replication_recovery_use_ssl=ON` 和 CA 校验。
 - 验证服务默认使用 `VERIFY_CA` 连接本机映射端口；如需自定义证书路径，可覆盖 `SHOWCASE_MGR_TRUSTSTORE_URL` 等环境变量。
 - `MySQL Router` 通过官方 `--bootstrap` 方式接入 MGR 元数据，并使用 `client_ssl_mode=PASSTHROUGH` 保持客户端到 MySQL 节点的 TLS 通道。
+- `MySQL Router` 不能直接对一个“只有 Group Replication、没有元数据”的裸 MGR 做 bootstrap；必须先有 `mysql_innodb_cluster_metadata`，所以这里额外加了 `mgr-cluster-metadata-setup` 一次性服务。
 - 官方 `mysql/mysql-router` 镜像里的 `MYSQL_ROUTER_BOOTSTRAP_EXTRA_OPTIONS` 实际按 shell 参数展开，写多个选项时要用空格分隔，不要用逗号分隔。
 - F5 代理层这里用的是基于 F5 NGINX 体系的 `stream` TCP 代理思路，默认只做 `L4` 转发，把 `rw/ro` 流量转发到 Router 暴露的两个端口。
 - 当前 compose 为了简化演示只放了 `1` 个 Router；生产上通常会部署 `2` 个及以上，然后把 F5/LB 的后端扩成多个 Router 实例。
