@@ -54,7 +54,7 @@ try {
   print("Adopting the existing Group Replication deployment as InnoDB Cluster '${CLUSTER_NAME}'.\\n");
   cluster = dba.createCluster('${CLUSTER_NAME}', {adoptFromGR: true});
 }
-cluster.rescan({addUnmanaged: true, removeObsolete: true});
+cluster.rescan();
 print("InnoDB Cluster metadata is ready for MySQL Router.\\n");
 print(JSON.stringify(cluster.status(), null, 2) + "\\n");
 EOF
