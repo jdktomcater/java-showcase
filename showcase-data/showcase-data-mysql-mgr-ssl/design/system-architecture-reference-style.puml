@@ -1,0 +1,136 @@
+@startuml
+title <size:24><b>System Architecture Overview</b></size>\n<size:13><color:#64748B>reference-style layered architecture</color></size>
+left to right direction
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam dpi 180
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam ArrowColor #334155
+skinparam ArrowThickness 1.7
+skinparam RoundCorner 10
+skinparam packageStyle rectangle
+
+skinparam package {
+  BorderColor #7C9BFF
+  BorderThickness 1.5
+  FontColor #1E293B
+  BackgroundColor #F8FAFF
+}
+
+skinparam rectangle {
+  BorderColor #94A3B8
+  FontColor #0F172A
+  BackgroundColor #FFFFFF
+}
+
+skinparam queue {
+  BorderColor #94A3B8
+  BackgroundColor #FFFFFF
+}
+
+skinparam database {
+  BorderColor #94A3B8
+  BackgroundColor #FFFFFF
+}
+
+skinparam cloud {
+  BorderColor #94A3B8
+  BackgroundColor #FFFFFF
+}
+
+skinparam node {
+  BorderColor #94A3B8
+  BackgroundColor #FFFFFF
+}
+
+package "Production Environment" as PROD {
+  package "External Access" as EXT {
+    actor "Web / Mobile\nClients" as CLIENT
+    rectangle "VIP / DNS" as DNS #F8FAFC
+    node "Nginx Cluster" as NGINX #F8FAFC
+    rectangle "Gateway Sentinel" as SENTINEL #EEF2FF
+
+    CLIENT --> DNS
+    DNS --> NGINX
+    NGINX --> SENTINEL
+  }
+
+  package "Service Governance" as GOV {
+    cloud "Service Registry\nZookeeper / Nacos" as REG #ECFEFF
+    cloud "Dynamic Config\nApollo / Config Center" as CFG #ECFDF5
+    cloud "Tracing\nOpenTelemetry" as TRACE #F0F9FF
+    cloud "Monitoring\nPrometheus + Alertmanager" as PM #F8FAFC
+  }
+
+  package "Business Services" as BIZ {
+    rectangle "Web App" as WEB #FEFCE8
+    rectangle "Common Service" as COMM #E0F2FE
+    rectangle "Auth & ACL" as AUTH #DCFCE7
+    rectangle "Message Service" as MSG #F8FAFC
+    rectangle "Task Service" as TASK #F8FAFC
+  }
+
+  package "Data & Middleware" as DATA {
+    database "Redis Cluster\nRouting / Cache" as REDIS #FFF7ED
+    queue "MQ Cluster\nKafka / RocketMQ" as MQ #FFF7ED
+    database "MySQL Cluster\nPrimary / Secondary" as MYSQL #FFF7ED
+    folder "Object Storage\nMinIO" as MINIO #FFF7ED
+    node "ELK\nElasticsearch / Logstash / Kibana" as ELK #F8FAFC
+  }
+
+  package "Observability & Alerting" as OBS {
+    rectangle "Grafana" as GRAFANA #F8FAFC
+    rectangle "Alert Channel\nWeCom / DingTalk" as ALERT #F8FAFC
+  }
+}
+
+package "CI / CD & Runtime" as CICD {
+  actor "Developer" as DEV
+  rectangle "GitLab" as GITLAB #F8FAFC
+  rectangle "Nexus" as NEXUS #F8FAFC
+  rectangle "Docker Registry" as REGISTRY #F8FAFC
+  node "Kubernetes (UAT / PROD)" as K8S #ECFEFF
+  rectangle "Jenkins Pipeline" as JENKINS #F8FAFC
+  actor "Ops" as OPS
+
+  DEV --> GITLAB
+  GITLAB --> NEXUS
+  NEXUS --> REGISTRY
+  REGISTRY --> JENKINS
+  JENKINS --> K8S
+  OPS --> JENKINS
+}
+
+SENTINEL --> WEB
+SENTINEL --> COMM
+SENTINEL --> AUTH
+
+REG --> WEB : register / discover
+REG --> COMM : register / discover
+CFG --> WEB : dynamic config
+CFG --> COMM : dynamic config
+TRACE --> AUTH : trace context
+PM --> AUTH : metrics / alert
+
+WEB --> AUTH
+COMM --> MSG
+COMM --> TASK
+AUTH --> REDIS
+MSG --> MQ
+TASK --> MYSQL
+TASK --> MINIO
+
+WEB --> ELK : app logs
+AUTH --> ELK : audit logs
+PM --> GRAFANA
+PM --> ALERT
+
+K8S --> SENTINEL
+K8S --> WEB
+K8S --> COMM
+K8S --> AUTH
+K8S --> MSG
+K8S --> TASK
+@enduml

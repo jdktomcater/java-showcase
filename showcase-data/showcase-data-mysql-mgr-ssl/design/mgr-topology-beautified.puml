@@ -1,0 +1,63 @@
+@startuml
+title <size:22><b>MySQL MGR Architecture</b></size>\n<size:13><color:#64748B>showcase-data-mysql-mgr-ssl</color></size>
+top to bottom direction
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam dpi 190
+skinparam defaultFontName Helvetica
+skinparam linetype polyline
+skinparam ArrowThickness 2
+skinparam ArrowColor #64748B
+skinparam RoundCorner 16
+skinparam nodesep 70
+skinparam ranksep 70
+
+skinparam package {
+  BorderColor #D4DCE8
+  BackgroundColor #F8FAFC
+  FontColor #1E293B
+}
+
+skinparam rectangle {
+  BorderColor #CBD5E1
+  FontColor #0F172A
+}
+
+skinparam database {
+  BorderColor #CBD5E1
+  FontColor #0F172A
+}
+
+package "Layer 1 · Access" as L1 #F8FAFC {
+  rectangle "<size:18><b>Application</b></size>\n<size:13><color:#475569>Validator Service</color></size>\n\n<size:12><color:#64748B>proxy-rw / proxy-ro</color></size>" as APP #EAF2FF-FFFFFF
+}
+
+package "Layer 2 · Traffic" as L2 #F8FAFC {
+  rectangle "<size:18><b>F5 Proxy</b></size>\n<size:13><color:#64748B>RW 13306  •  RO 13307</color></size>\n<size:12><color:#64748B>Status 18080</color></size>" as F5 #E9F9EF-FFFFFF
+  rectangle "<size:18><b>MySQL Router</b></size>\n<size:13><color:#64748B>16446 -> 6446 (rw)</color></size>\n<size:13><color:#64748B>16447 -> 6447 (ro)</color></size>" as ROUTER #FFF5D6-FFFFFF
+  F5 -[hidden]down-> ROUTER
+}
+
+package "Layer 3 · Data (MySQL MGR Cluster / SSL)" as L3 #F8FAFC {
+  database "<size:18><b>mysql1</b></size>\n<size:13><color:#64748B>33061 -> 3306</color></size>\n<size:13><color:#2563EB><b>PRIMARY</b></color></size>" as M1 #FFF9EA-FFFFFF
+  database "<size:18><b>mysql2</b></size>\n<size:13><color:#64748B>33062 -> 3306</color></size>\n<size:13><color:#EA580C><b>SECONDARY</b></color></size>" as M2 #FFF9EA-FFFFFF
+  database "<size:18><b>mysql3</b></size>\n<size:13><color:#64748B>33063 -> 3306</color></size>\n<size:13><color:#EA580C><b>SECONDARY</b></color></size>" as M3 #FFF9EA-FFFFFF
+
+  M1 -[hidden]down-> M2
+  M2 -[hidden]down-> M3
+}
+
+L1 -[hidden]down-> L2
+L2 -[hidden]down-> L3
+
+APP -[#2563EB]-> F5 : <b>JDBC / TLS</b>
+F5 -[#2563EB]-> ROUTER : <b>L4 Forward</b>
+ROUTER -[#16A34A]-> M1 : <b>RW</b>
+ROUTER -[#F97316]-> M2 : <b>RO</b>
+ROUTER -[#F97316]-> M3 : <b>RO</b>
+
+M1 -[#94A3B8,dashed]-> M2 : Group Replication
+M2 -[#94A3B8,dashed]-> M3
+M1 -[#94A3B8,dashed]-> M3
+@enduml

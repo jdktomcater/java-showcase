@@ -1,0 +1,72 @@
+@startuml
+title <size:24><b>数据库架构拓扑图</b></size>\n<size:13><color:#64748B>MySQL MGR + Router + F5</color></size>
+top to bottom direction
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam dpi 180
+skinparam defaultFontName Helvetica
+skinparam linetype polyline
+skinparam ArrowColor #334155
+skinparam ArrowThickness 1.8
+skinparam RoundCorner 8
+skinparam packageStyle rectangle
+
+skinparam package {
+  BorderColor #5B7FFF
+  BorderThickness 1.6
+  FontColor #1E293B
+  BackgroundColor #F8FAFF
+}
+
+skinparam rectangle {
+  BorderColor #94A3B8
+  FontColor #0F172A
+  BackgroundColor #FFFFFF
+}
+
+skinparam database {
+  BorderColor #94A3B8
+  FontColor #0F172A
+  BackgroundColor #FFFFFF
+}
+
+package "数据库内网部署" as DBNET {
+  package "访问接入层" as ACCESS {
+    actor "业务系统\n(读写请求)" as APP
+    rectangle "f5-mgr-proxy\nRW:13306  RO:13307\nSTATUS:18080" as F5 #ECFDF5
+
+    APP --> F5 : TCP / TLS
+  }
+
+  package "数据库路由层" as ROUTING {
+    rectangle "MySQL Router\nRW:16446->6446\nRO:16447->6447" as ROUTER #FFF7ED
+  }
+
+  package "MGR 集群数据层" as MGR {
+    database "mysql1\n33061->3306\nPRIMARY" as M1 #E0F2FE
+    rectangle "RO Hub" as ROH #FFF7ED
+    database "mysql2\n33062->3306\nSECONDARY" as M2 #FFF1E6
+    database "mysql3\n33063->3306\nSECONDARY" as M3 #FFF1E6
+
+    M1 -[hidden]right-> ROH
+    ROH -[hidden]right-> M2
+    M2 -[hidden]right-> M3
+
+    M1 -[#64748B,dashed]-> M2 : Group Replication
+    M2 -[#64748B,dashed]-> M3
+    M1 -[#64748B,dashed]-> M3
+  }
+
+  ACCESS -[hidden]down-> ROUTING
+  ROUTING -[hidden]down-> MGR
+  F5 -[hidden]down-> ROUTER
+  ROUTER -[hidden]down-> ROH
+
+  F5 -down-> ROUTER : L4 代理
+  ROUTER -down-> M1 : RW
+  ROUTER -down-> ROH : RO
+  ROH --> M2
+  ROH --> M3
+}
+@enduml

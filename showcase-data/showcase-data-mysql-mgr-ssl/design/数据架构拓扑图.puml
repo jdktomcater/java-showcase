@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+rectangle "业务应用 / 验证服务\n(proxy-rw/proxy-ro)" as APP
+rectangle "f5-mgr-proxy\nRW:13306  RO:13307\nSTATUS:18080" as F5
+rectangle "MySQL Router\n16446->6446(rw)\n16447->6447(ro)" as ROUTER
+
+database "mysql1\n33061->3306\nMGR Member" as M1
+database "mysql2\n33062->3306\nMGR Member" as M2
+database "mysql3\n33063->3306\nMGR Member" as M3
+
+APP --> F5
+F5 --> ROUTER
+ROUTER --> M1
+ROUTER --> M2
+ROUTER --> M3
+
+M1 -- M2
+M2 -- M3
+M1 -- M3
+@enduml
