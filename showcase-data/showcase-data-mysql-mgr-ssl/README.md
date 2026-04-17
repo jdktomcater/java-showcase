@@ -145,6 +145,7 @@ WHERE CHANNEL_NAME = 'group_replication_recovery';
 - distributed recovery 另外显式设置了 `group_replication_recovery_use_ssl=ON` 和 CA 校验。
 - 验证服务默认使用 `VERIFY_CA` 连接本机映射端口；如需自定义证书路径，可覆盖 `SHOWCASE_MGR_TRUSTSTORE_URL` 等环境变量。
 - `MySQL Router` 通过官方 `--bootstrap` 方式接入 MGR 元数据，并使用 `client_ssl_mode=PASSTHROUGH` 保持客户端到 MySQL 节点的 TLS 通道。
+- 官方 `mysql/mysql-router` 镜像里的 `MYSQL_ROUTER_BOOTSTRAP_EXTRA_OPTIONS` 实际按 shell 参数展开，写多个选项时要用空格分隔，不要用逗号分隔。
 - F5 代理层这里用的是基于 F5 NGINX 体系的 `stream` TCP 代理思路，默认只做 `L4` 转发，把 `rw/ro` 流量转发到 Router 暴露的两个端口。
 - 当前 compose 为了简化演示只放了 `1` 个 Router；生产上通常会部署 `2` 个及以上，然后把 F5/LB 的后端扩成多个 Router 实例。
 - Spring Boot 默认业务数据源走 `proxy-rw`，底层连接池使用 Druid，`ssl_probe` 的读写校验通过 MyBatis-Plus 完成。

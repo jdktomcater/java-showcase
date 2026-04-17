@@ -82,6 +82,7 @@ services:
 
   mysql-router:
     image: mysql/mysql-router:${MYSQL_ROUTER_IMAGE_TAG:-8.0.32}
+    platform: linux/amd64
     container_name: showcase-mysql-router
     hostname: mysql-router
     depends_on:
@@ -93,7 +94,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root@123456
       MYSQL_INNODB_CLUSTER_MEMBERS: 3
-      MYSQL_ROUTER_BOOTSTRAP_EXTRA_OPTIONS: --ssl-mode=VERIFY_CA,--ssl-ca=/router/certs/ca.pem,--client-ssl-mode=PASSTHROUGH
+      MYSQL_ROUTER_BOOTSTRAP_EXTRA_OPTIONS: "--ssl-mode=VERIFY_CA --ssl-ca=/router/certs/ca.pem --client-ssl-mode=PASSTHROUGH"
     ports:
       - "16446:6446"
       - "16447:6447"
