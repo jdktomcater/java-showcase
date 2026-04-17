@@ -1,21 +1,21 @@
-upstream mgr_primary {
-    server ${PRIMARY_HOST}:3306 max_fails=3 fail_timeout=3s;
+upstream mgr_rw {
+${RW_SERVERS}
 }
 
-upstream mgr_secondary {
-${SECONDARY_SERVERS}
+upstream mgr_ro {
+${RO_SERVERS}
 }
 
 server {
     listen ${MGR_RW_LISTEN_PORT};
     proxy_connect_timeout 3s;
     proxy_timeout 1h;
-    proxy_pass mgr_primary;
+    proxy_pass mgr_rw;
 }
 
 server {
     listen ${MGR_RO_LISTEN_PORT};
     proxy_connect_timeout 3s;
     proxy_timeout 1h;
-    proxy_pass mgr_secondary;
+    proxy_pass mgr_ro;
 }

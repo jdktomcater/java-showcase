@@ -116,10 +116,16 @@ public class MysqlMgrSslValidationService {
                         "every local member should be ONLINE"),
                 new CheckResult("cluster_size", clusterSizeMatches,
                         "every node should see " + expectedNodeCount + " members in replication_group_members"),
-                new CheckResult("f5_rw_proxy", readWriteProxyValid,
-                        proxyEnabled ? "write proxy should route to a writable primary and keep TLS enabled" : "proxy validation disabled"),
-                new CheckResult("f5_ro_proxy", readOnlyProxyValid,
-                        proxyEnabled ? "read proxy should route to a readonly secondary and keep TLS enabled" : "proxy validation disabled"),
+                new CheckResult("proxy_rw", readWriteProxyValid,
+                        proxyEnabled
+                                ? "proxy endpoint '" + properties.getProxy().getReadWrite().getName()
+                                + "' should route to a writable primary and keep TLS enabled"
+                                : "proxy validation disabled"),
+                new CheckResult("proxy_ro", readOnlyProxyValid,
+                        proxyEnabled
+                                ? "proxy endpoint '" + properties.getProxy().getReadOnly().getName()
+                                + "' should route to a readonly secondary and keep TLS enabled"
+                                : "proxy validation disabled"),
                 new CheckResult("mybatis_plus_probe_rw", mybatisPlusProbe.isValid(),
                         mybatisPlusProbe.isValid()
                                 ? "mybatis-plus updated ssl_probe through routed host " + mybatisPlusProbe.getRoutedHost()

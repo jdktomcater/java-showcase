@@ -45,12 +45,12 @@ showcase:
       proxy:
         enabled: ${SHOWCASE_MGR_PROXY_ENABLED:true}
         read-write:
-          name: f5-rw
+          name: proxy-rw
           host: ${SHOWCASE_MGR_PROXY_RW_HOST:127.0.0.1}
           port: ${SHOWCASE_MGR_PROXY_RW_PORT:13306}
           database: ${SHOWCASE_MGR_DATABASE:mgr_demo}
         read-only:
-          name: f5-ro
+          name: proxy-ro
           host: ${SHOWCASE_MGR_PROXY_RO_HOST:127.0.0.1}
           port: ${SHOWCASE_MGR_PROXY_RO_PORT:13307}
           database: ${SHOWCASE_MGR_DATABASE:mgr_demo}

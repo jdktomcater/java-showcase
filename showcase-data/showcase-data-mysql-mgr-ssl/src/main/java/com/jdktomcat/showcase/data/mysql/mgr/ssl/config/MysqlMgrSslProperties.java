@@ -149,8 +149,8 @@ public class MysqlMgrSslProperties {
 
     public static class Proxy {
         private boolean enabled = true;
-        private Endpoint readWrite = new Endpoint("f5-rw", "127.0.0.1", 13306, "mgr_demo");
-        private Endpoint readOnly = new Endpoint("f5-ro", "127.0.0.1", 13307, "mgr_demo");
+        private Endpoint readWrite = new Endpoint("proxy-rw", "127.0.0.1", 13306, "mgr_demo");
+        private Endpoint readOnly = new Endpoint("proxy-ro", "127.0.0.1", 13307, "mgr_demo");
 
         public boolean isEnabled() {
             return enabled;

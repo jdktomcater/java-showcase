@@ -1,17 +1,18 @@
 # MySQL MGR SSL 本地验证模块
 
-这个模块提供三部分能力：
+这个模块提供四部分能力：
 
 1. `docker-compose` 起一个 3 节点 MySQL Group Replication 集群，并打开 TLS/SSL。
-2. 一个 F5 NGINX 风格的 TCP 代理层，对外暴露 MGR 单主集群的读写代理端口。
-3. 一个本地 Spring Boot 服务，使用 Druid 连接池和 MyBatis-Plus 对业务表做读写验证，同时对每个节点和代理端口做 SSL / MGR 状态校验并输出 JSON 结果。
+2. 一层官方 `MySQL Router`，负责从集群元数据自动发现当前 `PRIMARY/SECONDARY` 并对外暴露 `rw/ro` 端口。
+3. 一个 F5 NGINX 风格的 TCP 代理层，作为 Router 前面的统一入口，对外暴露最终的读写代理端口。
+4. 一个本地 Spring Boot 服务，使用 Druid 连接池和 MyBatis-Plus 对业务表做读写验证，同时对每个节点和代理端口做 SSL / MGR 状态校验并输出 JSON 结果。
 
-当前 `docker/compose.yml` 默认使用 `mysql:8.0.32`，如需切换版本可在启动前覆盖环境变量 `MYSQL_IMAGE_TAG`。
+当前 `docker/compose.yml` 默认使用 `mysql:8.0.32` 和 `mysql/mysql-router:8.0.32`，如需切换版本可在启动前覆盖环境变量 `MYSQL_IMAGE_TAG` 和 `MYSQL_ROUTER_IMAGE_TAG`。
 
 ## 目录
 
-- `docker/compose.yml`: 3 节点 MGR 集群和一次性 bootstrap 服务
-- `docker/f5-proxy/*`: F5 NGINX 风格的 MySQL MGR 代理镜像和自动发现脚本
+- `docker/compose.yml`: 3 节点 MGR 集群、MySQL Router 和 F5 风格代理
+- `docker/f5-proxy/*`: F5 NGINX 风格的 TCP 代理镜像；可直连 MGR，也可转发到 Router
 - `docker/conf/mysql*/my.cnf`: 每个节点的 MySQL + MGR + SSL 配置
 - `docker/init/01-init.sql`: 初始化业务库、探针表、验证账号、复制账号
 - `docker/scripts/generate-certs.sh`: 生成 CA、节点证书和客户端 truststore
@@ -52,7 +53,12 @@ docker compose -f docker/compose.yml logs mgr-setup
 - `mysql2 -> 33062`
 - `mysql3 -> 33063`
 
-F5 代理层暴露的端口：
+MySQL Router 暴露的直连端口：
+
+- `mysql-router rw -> 16446`
+- `mysql-router ro -> 16447`
+
+F5 代理层暴露的统一入口端口：
 
 - `f5-mgr-proxy rw -> 13306`
 - `f5-mgr-proxy ro -> 13307`
@@ -81,9 +87,17 @@ curl http://127.0.0.1:8088/api/mysql/mgr/validate
 也可以直接通过代理测试：
 
 ```bash
+mysql --ssl-mode=VERIFY_CA --ssl-ca=./docker/certs/ca/ca.pem -h127.0.0.1 -P16446 -uapp_user -p
+mysql --ssl-mode=VERIFY_CA --ssl-ca=./docker/certs/ca/ca.pem -h127.0.0.1 -P16447 -uapp_user -p
 mysql --ssl-mode=VERIFY_CA --ssl-ca=./docker/certs/ca/ca.pem -h127.0.0.1 -P13306 -uapp_user -p
 mysql --ssl-mode=VERIFY_CA --ssl-ca=./docker/certs/ca/ca.pem -h127.0.0.1 -P13307 -uapp_user -p
 curl http://127.0.0.1:18080/proxy-status
+```
+
+如果你想让本地 Spring Boot 验证服务直接校验 Router，而不是校验 F5 入口，可以临时覆盖代理端口：
+
+```bash
+SHOWCASE_MGR_PROXY_RW_PORT=16446 SHOWCASE_MGR_PROXY_RO_PORT=16447 mvn spring-boot:run
 ```
 
 ## 结果怎么看
@@ -109,8 +123,8 @@ curl http://127.0.0.1:18080/proxy-status
 - `recoveryChannel.sslAllowed = Yes`
 - 所有节点 `localMember.state = ONLINE`
 - 每个节点都能看到 3 个成员
-- `f5-rw` 命中可写主节点
-- `f5-ro` 命中只读从节点
+- `proxy-rw` 命中可写主节点
+- `proxy-ro` 命中只读从节点
 - `mybatisPlusProbe.valid = true`
 
 ## 手工 SQL 复核
@@ -130,5 +144,7 @@ WHERE CHANNEL_NAME = 'group_replication_recovery';
 - `group_replication_ssl_mode=VERIFY_IDENTITY` 用于组内通信。
 - distributed recovery 另外显式设置了 `group_replication_recovery_use_ssl=ON` 和 CA 校验。
 - 验证服务默认使用 `VERIFY_CA` 连接本机映射端口；如需自定义证书路径，可覆盖 `SHOWCASE_MGR_TRUSTSTORE_URL` 等环境变量。
-- F5 代理层这里用的是基于 F5 NGINX 体系的 `stream` TCP 代理思路，`rw` 端口动态指向 PRIMARY，`ro` 端口动态指向 SECONDARY。
-- Spring Boot 默认业务数据源走 `f5-rw`，底层连接池使用 Druid，`ssl_probe` 的读写校验通过 MyBatis-Plus 完成。
+- `MySQL Router` 通过官方 `--bootstrap` 方式接入 MGR 元数据，并使用 `client_ssl_mode=PASSTHROUGH` 保持客户端到 MySQL 节点的 TLS 通道。
+- F5 代理层这里用的是基于 F5 NGINX 体系的 `stream` TCP 代理思路，默认只做 `L4` 转发，把 `rw/ro` 流量转发到 Router 暴露的两个端口。
+- 当前 compose 为了简化演示只放了 `1` 个 Router；生产上通常会部署 `2` 个及以上，然后把 F5/LB 的后端扩成多个 Router 实例。
+- Spring Boot 默认业务数据源走 `proxy-rw`，底层连接池使用 Druid，`ssl_probe` 的读写校验通过 MyBatis-Plus 完成。
