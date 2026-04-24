@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: showcase-data-driver
+  profiles:
+    active: mysql8
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/showcase_driver?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&cachePrepStmts=true&useServerPrepStmts=true}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:123456}
+    druid:
+      initial-size: 1
+      min-idle: 1
+      max-active: 8
+      max-wait: 3000
+      test-while-idle: true
+      validation-query: SELECT 1
+      filters: stat
+  sql:
+    init:
+      mode: always
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.jdktomcat.showcase.data.driver.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+
+app:
+  benchmark:
+    enabled: true
+    seed-size: ${BENCHMARK_SEED_SIZE:5000}
+    batch-size: ${BENCHMARK_BATCH_SIZE:500}
+    warmup-rounds: ${BENCHMARK_WARMUP_ROUNDS:80}
+    measure-rounds: ${BENCHMARK_MEASURE_ROUNDS:300}
+    page-size: ${BENCHMARK_PAGE_SIZE:50}
+
+logging:
+  level:
+    com.jdktomcat.showcase.data.driver: INFO

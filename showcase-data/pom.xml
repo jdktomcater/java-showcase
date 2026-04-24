@@ -17,6 +17,7 @@
         <module>showcase-data-mybatis-plus</module>
         <module>showcase-data-sharding-jdbc</module>
         <module>showcase-data-vault</module>
+        <module>showcase-data-driver</module>
     </modules>
 
     <properties>
