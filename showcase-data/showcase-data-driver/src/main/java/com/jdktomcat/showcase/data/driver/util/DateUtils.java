@@ -2,10 +2,6 @@ package com.jdktomcat.showcase.data.driver.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.management.ManagementFactory;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
