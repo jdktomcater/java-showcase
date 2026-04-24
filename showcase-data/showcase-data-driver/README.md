@@ -8,8 +8,8 @@
 
 当前内置两组 Maven Profile：
 
-- `mysql5` -> `mysql-connector-java:5.1.49`
-- `mysql8` -> `mysql-connector-java:8.0.26`
+- `mysql8017` -> `mysql:mysql-connector-java:8.0.17`
+- `mysql830` -> `com.mysql:mysql-connector-j:8.3.0`
 
 ## 准备数据库
 
@@ -31,16 +31,16 @@ export MYSQL_PASSWORD='123456'
 
 ## 运行方式
 
-对比 MySQL 5 驱动：
+对比 `mysql:mysql-connector-java:8.0.17`：
 
 ```bash
-mvn -pl showcase-data-driver -Pmysql5 spring-boot:run -Dspring-boot.run.profiles=mysql5
+mvn -pl showcase-data-driver -Pmysql8017 spring-boot:run
 ```
 
-对比 MySQL 8 驱动：
+对比 `com.mysql:mysql-connector-j:8.3.0`：
 
 ```bash
-mvn -pl showcase-data-driver -Pmysql8 spring-boot:run -Dspring-boot.run.profiles=mysql8
+mvn -pl showcase-data-driver -Pmysql830 spring-boot:run
 ```
 
 ## 输出内容
