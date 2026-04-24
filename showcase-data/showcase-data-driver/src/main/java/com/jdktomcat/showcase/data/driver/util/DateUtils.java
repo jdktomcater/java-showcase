@@ -15,7 +15,7 @@ import java.util.Date;
  * @author js-oswald
  */
 @Slf4j
-public class DateUtils  {
+public class DateUtils {
 
     /**
      * 获取当前Date型日期
@@ -34,10 +34,11 @@ public class DateUtils  {
     public static Date getNowDateFromZero() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(getNowDate());
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-        calendar.set(Calendar.MILLISECOND,0);
+        calendar.add(Calendar.DAY_OF_MONTH, -15);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
     }
 }
