@@ -19,7 +19,7 @@ public class QueryBenchmarkService {
             queryTask.run(i);
         }
 
-        List<Long> samples = new ArrayList<Long>(measureRounds);
+        List<Long> samples = new ArrayList<>(measureRounds);
         for (int i = 0; i < measureRounds; i++) {
             long startNanos = System.nanoTime();
             queryTask.run(i);

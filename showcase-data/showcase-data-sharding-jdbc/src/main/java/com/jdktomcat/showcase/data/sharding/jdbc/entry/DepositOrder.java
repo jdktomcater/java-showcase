@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
 @TableName(value="t_depositorder", autoResultMap = true)
 public class DepositOrder implements Serializable {
 
-    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

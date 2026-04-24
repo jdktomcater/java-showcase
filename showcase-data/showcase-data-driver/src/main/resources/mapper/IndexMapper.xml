@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jdktomcat.showcase.data.driver.mapper.IndexMapper">
+    <resultMap type="com.jdktomcat.showcase.data.driver.domain.IndexVO" id="IndexVOResult">
+        <result property="succeedpayamount" column="succeedpayamount"/>
+        <result property="succeedcount" column="succeedcount"/>
+        <result property="failcount" column="failcount"/>
+        <result property="totalcount" column="totalcount"/>
+    </resultMap>
+    <select id="getIndexorderBysucceed" parameterType="com.jdktomcat.showcase.data.driver.domain.IndexVO" resultMap="IndexVOResult">
+        SELECT SUM(PayAmount) AS succeedpayamount,
+        count(1) AS succeedcount
+        FROM (
+        SELECT PayAmount
+        FROM t_depositorder td
+        <where>
+            (OrderStatus = 3 OR OrderStatus = 4)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_withdraworder td
+        <where>
+            (OrderStatus = 3 OR OrderStatus = 4)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+            AND OrderType = 0
+        </where>
+
+
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirddepositorder td
+
+        <where>
+            (OrderStatus = 3 OR OrderStatus = 4)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirdwithdraworder td
+        <where>
+            (OrderStatus = 3 OR OrderStatus = 4)
+            and  td.IsFastPay <![CDATA[ <> ]]> 10
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+        ) t
+    </select>
+    <select id="getIndexorderByfail" parameterType="com.jdktomcat.showcase.data.driver.domain.IndexVO" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM (
+        SELECT PayAmount
+        FROM t_depositorder td
+        <where>
+            (OrderStatus = 6 OR OrderStatus = 7)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+
+
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_withdraworder td
+        <where>
+            (OrderStatus = 6 OR OrderStatus = 7)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+            AND OrderType = 0
+        </where>
+
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirddepositorder td
+        <where>
+            (OrderStatus = 6 OR OrderStatus = 7)
+
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirdwithdraworder td
+        <where>
+            (OrderStatus = 6 OR OrderStatus = 7)
+            and td.IsFastPay <![CDATA[ <> ]]> 10
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+            AND OrderType = 0
+        </where>
+        ) t
+    </select>
+    <select id="getIndexorderBytotal" parameterType="com.jdktomcat.showcase.data.driver.domain.IndexVO" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM (
+        SELECT PayAmount
+        FROM t_depositorder td
+        <where>
+            and td.OrderStatus  <![CDATA[ <> ]]> -1
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_withdraworder td
+        <where>
+            and td.OrderStatus  <![CDATA[ <> ]]> -1
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+            AND OrderType = 0
+        </where>
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirddepositorder td
+        <where>
+            and td.OrderStatus  <![CDATA[ <> ]]> -1
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+        UNION ALL
+
+        SELECT PayAmount
+        FROM t_thirdwithdraworder td
+        <where>
+            and td.OrderStatus  <![CDATA[ <> ]]> -1
+            and td.IsFastPay <![CDATA[ <> ]]> 10
+            <if test="supplierbranchid !=null">
+                and td.SupplierBranchID = #{supplierbranchid}
+            </if>
+            <if test="querytime !=null">
+                and td.CreateTime >= #{querytime}
+            </if>
+        </where>
+        ) t
+    </select>
+</mapper>

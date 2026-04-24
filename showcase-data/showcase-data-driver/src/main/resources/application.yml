@@ -3,21 +3,26 @@ spring:
     name: showcase-data-driver
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/showcase_driver?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&cachePrepStmts=true&useServerPrepStmts=true}
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:123456}
+    url: jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+    username: ${MYSQL_USERNAME:tx_test}
+    password: ${MYSQL_PASSWORD:WQR2A0uUVMjGon1puQ}
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
-      initial-size: 1
-      min-idle: 1
-      max-active: 8
-      max-wait: 3000
+      initialSize: 30
+      minIdle: 30
+      maxActive: 200
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      maxEvictableIdleTimeMillis: 900000
+      validationQuery: SELECT 1
+      validationQueryTimeout: 3
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: true
       test-while-idle: true
       validation-query: SELECT 1
       filters: stat
-  sql:
-    init:
-      mode: always
 
 mybatis:
   mapper-locations: classpath:/mapper/*.xml
@@ -29,11 +34,6 @@ mybatis:
 app:
   benchmark:
     enabled: true
-    seed-size: ${BENCHMARK_SEED_SIZE:5000}
-    batch-size: ${BENCHMARK_BATCH_SIZE:500}
-    warmup-rounds: ${BENCHMARK_WARMUP_ROUNDS:80}
-    measure-rounds: ${BENCHMARK_MEASURE_ROUNDS:300}
-    page-size: ${BENCHMARK_PAGE_SIZE:50}
 
 logging:
   level:
