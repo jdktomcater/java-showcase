@@ -21,6 +21,7 @@
         <module>showcase-spring-ai-ollama</module>
         <module>showcase-spring-ai-langgraph4j</module>
         <module>showcase-spring-ai-project</module>
+        <module>showcase-spring-ai-mcp</module>
     </modules>
     <properties>
         <java.version>17</java.version>

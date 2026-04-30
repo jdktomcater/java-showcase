@@ -1,0 +1,50 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: mcp-mysql-server
+
+  # 默认使用 H2 的 MySQL 兼容模式，无需额外安装数据库即可体验 MCP 工具调用
+  datasource:
+    url: jdbc:h2:mem:demo;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+
+  # Spring AI MCP Server 配置
+  ai:
+    mcp:
+      server:
+        name: mcp-mysql-server
+        version: 1.0.0
+        type: SYNC
+        instructions: "提供 MySQL 数据库只读查询能力：列表、表结构、SELECT 查询。"
+        sse-endpoint: /sse
+        sse-message-endpoint: /mcp/messages
+
+logging:
+  level:
+    com.jdktomcat.showcase.spring.ai.mcp: INFO
+    org.springframework.ai.mcp: INFO
+
+---
+# 切换到真实 MySQL 时启用：mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/demo?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+  sql:
+    init:
+      mode: never
