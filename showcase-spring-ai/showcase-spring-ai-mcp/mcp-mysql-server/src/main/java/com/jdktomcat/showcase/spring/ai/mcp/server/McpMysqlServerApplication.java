@@ -32,8 +32,6 @@ public class McpMysqlServerApplication {
      */
     @Bean
     public ToolCallbackProvider mysqlToolCallbackProvider(MysqlQueryTools mysqlQueryTools) {
-        return MethodToolCallbackProvider.builder()
-                .toolObjects(mysqlQueryTools)
-                .build();
+        return MethodToolCallbackProvider.builder().toolObjects(mysqlQueryTools).build();
     }
 }

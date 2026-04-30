@@ -38,21 +38,17 @@ public class MysqlQueryTools {
         log.info("[MCP-Tool] listTables invoked");
         // SHOW TABLES 在 MySQL 返回 1 列 (Tables_in_<db>)，但在 H2 MySQL 模式下返回
         // 2 列 (TABLE_NAME, TABLE_SCHEMA)。这里只取每行第一列，兼容两种实现。
-        return jdbcTemplate.query("SHOW TABLES",
-                (rs, rowNum) -> rs.getString(1));
+        return jdbcTemplate.query("SHOW TABLES", (rs, rowNum) -> rs.getString(1));
     }
 
-    @Tool(name = "describeTable",
-            description = "查看指定表的结构（字段名、类型、是否可空、键、默认值等）")
-    public List<Map<String, Object>> describeTable(
-            @ToolParam(description = "要查看结构的表名，例如：t_user") String tableName) {
+    @Tool(name = "describeTable", description = "查看指定表的结构（字段名、类型、是否可空、键、默认值等）")
+    public List<Map<String, Object>> describeTable(@ToolParam(description = "要查看结构的表名，例如：t_user") String tableName) {
         log.info("[MCP-Tool] describeTable invoked, tableName={}", tableName);
         validateIdentifier(tableName);
         return jdbcTemplate.queryForList("DESC " + tableName);
     }
 
-    @Tool(name = "executeSelect",
-            description = "执行只读 SQL 查询（仅允许 SELECT / SHOW / DESC），返回结果集（最多 100 行）")
+    @Tool(name = "executeSelect", description = "执行只读 SQL 查询（仅允许 SELECT / SHOW / DESC），返回结果集（最多 100 行）")
     public List<Map<String, Object>> executeSelect(
             @ToolParam(description = "完整 SQL 语句，必须以 SELECT/SHOW/DESC 开头")
             String sql,
