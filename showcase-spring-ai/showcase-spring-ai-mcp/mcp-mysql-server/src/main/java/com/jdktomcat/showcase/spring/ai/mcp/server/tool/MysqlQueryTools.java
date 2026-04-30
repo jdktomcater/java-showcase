@@ -36,7 +36,10 @@ public class MysqlQueryTools {
     @Tool(name = "listTables", description = "列出当前数据库中所有表的表名")
     public List<String> listTables() {
         log.info("[MCP-Tool] listTables invoked");
-        return jdbcTemplate.queryForList("SHOW TABLES", String.class);
+        // SHOW TABLES 在 MySQL 返回 1 列 (Tables_in_<db>)，但在 H2 MySQL 模式下返回
+        // 2 列 (TABLE_NAME, TABLE_SCHEMA)。这里只取每行第一列，兼容两种实现。
+        return jdbcTemplate.query("SHOW TABLES",
+                (rs, rowNum) -> rs.getString(1));
     }
 
     @Tool(name = "describeTable",
