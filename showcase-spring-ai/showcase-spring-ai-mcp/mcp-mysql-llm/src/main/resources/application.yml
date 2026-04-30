@@ -13,7 +13,7 @@ spring:
       base-url: http://localhost:11434
       chat:
         options:
-          model: qwen2.5:7b
+          model: qwen3-coder:480-cloud
           temperature: 0.1
 
     # ===== MCP Client =====
