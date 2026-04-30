@@ -20,6 +20,7 @@
 
     <modules>
         <module>showcase-spring-ai-base-mcp</module>
+        <module>showcase-spring-ai-base-rag</module>
     </modules>
 
 </project>
