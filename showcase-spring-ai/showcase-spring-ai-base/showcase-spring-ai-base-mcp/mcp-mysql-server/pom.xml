@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcat.showcase</groupId>
-        <artifactId>showcase-spring-ai-mcp</artifactId>
+        <artifactId>showcase-spring-ai-base-mcp</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mcp-mysql-client</artifactId>
+    <artifactId>mcp-mysql-server</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,10 +18,26 @@
     </properties>
 
     <dependencies>
-        <!-- Spring AI MCP Client (SSE transport) -->
+        <!-- Spring AI MCP Server (SSE / WebMVC transport) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-mcp-client</artifactId>
+            <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+        </dependency>
+
+        <!-- JDBC + MySQL（默认 H2 with MySQL 模式，便于零依赖体验） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
