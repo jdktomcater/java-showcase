@@ -36,13 +36,8 @@ public class ChatClientConfig {
             """;
 
     @Bean
-    public ChatClient chatClient(ChatClient.Builder chatClientBuilder,
-                                 ToolCallbackProvider toolCallbackProvider) {
-        log.info("初始化 ChatClient，注入 MCP ToolCallbackProvider: {}",
-                toolCallbackProvider.getClass().getSimpleName());
-        return chatClientBuilder
-                .defaultSystem(DEFAULT_SYSTEM_PROMPT)
-                .defaultToolCallbacks(toolCallbackProvider)
-                .build();
+    public ChatClient chatClient(ChatClient.Builder chatClientBuilder,ToolCallbackProvider toolCallbackProvider) {
+        log.info("初始化 ChatClient，注入 MCP ToolCallbackProvider: {}", toolCallbackProvider.getClass().getSimpleName());
+        return chatClientBuilder.defaultSystem(DEFAULT_SYSTEM_PROMPT).defaultToolCallbacks(toolCallbackProvider).build();
     }
 }

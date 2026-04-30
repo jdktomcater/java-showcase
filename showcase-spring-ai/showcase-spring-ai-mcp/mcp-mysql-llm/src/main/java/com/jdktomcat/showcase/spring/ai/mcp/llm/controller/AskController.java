@@ -44,11 +44,7 @@ public class AskController {
 
     private Map<String, String> doAsk(String question) {
         log.info("收到用户提问: {}", question);
-        String answer = chatClient
-                .prompt()
-                .user(question)
-                .call()
-                .content();
+        String answer = chatClient.prompt().user(question).call().content();
         log.info("LLM 回答: {}", answer);
         return Map.of(
                 "question", question,
