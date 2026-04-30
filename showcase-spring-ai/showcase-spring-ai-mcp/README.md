@@ -8,6 +8,7 @@
 |---|---|---|
 | `mcp-mysql-server` | **MCP Server** | 暴露 `listTables`、`describeTable`、`executeSelect` 三个 Tool，使用 SSE 传输（基于 Spring MVC） |
 | `mcp-mysql-client` | **MCP Client** | 通过 SSE 连接到 Server，启动时自动列出工具并依次调用，将结果打印到控制台 |
+| `mcp-mysql-llm` | **LLM + MCP** | Ollama 大模型 + Spring AI ChatClient，把 MCP Tool 作为 Function 暴露给模型，由 LLM 自主调用工具完成自然语言查库 |
 
 > 数据源默认使用 H2（开启 MySQL 兼容模式），免安装即可体验；如需连真实 MySQL，按 [切换到真实 MySQL](#切换到真实-mysql) 一节调整即可。
 
@@ -42,6 +43,54 @@ mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-client spring-boot:r
 2. `listTables` → 当前库中的表名；
 3. `describeTable(t_user)` → t_user 表结构；
 4. `executeSelect(...)` → 用户与订单的关联查询结果。
+
+### 4. （可选）启动 LLM 示例：让大模型自己调 MCP（端口 8092）
+
+前置条件：本机已安装 [Ollama](https://ollama.com)，并 pull 一个**支持 tools / function-calling** 的模型，例如：
+
+```bash
+ollama pull qwen2.5:7b      # 或 llama3.1:8b、qwen3:8b 等
+ollama serve                # 默认监听 11434
+```
+
+启动 LLM 应用：
+
+```bash
+mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-llm spring-boot:run
+```
+
+然后用自然语言提问，由模型自己决定何时调用 `listTables` / `describeTable` / `executeSelect`：
+
+```bash
+# GET 形式（注意 URL 编码）
+curl 'http://localhost:8092/ai/ask?question=数据库里都有哪些表？'
+
+# POST 形式
+curl -X POST 'http://localhost:8092/ai/ask' \
+     -H 'Content-Type: text/plain' \
+     --data '统计每个城市的用户数，按用户数倒序'
+
+curl -X POST 'http://localhost:8092/ai/ask' \
+     -H 'Content-Type: text/plain' \
+     --data '订单金额最高的 3 笔订单分别是哪个用户下的？'
+```
+
+> 默认模型为 `qwen2.5:7b`，可在 `application.yml` 的 `spring.ai.ollama.chat.options.model` 修改。
+
+数据流：
+
+```
+HTTP /ai/ask
+   │
+   ▼
+ChatClient（Ollama 推理）
+   │   ⇆  Tool Calling
+   ▼
+SyncMcpToolCallbackProvider（自动装配）
+   │
+   ▼  SSE
+mcp-mysql-server  →  JdbcTemplate  →  MySQL/H2
+```
 
 ## 工具一览
 
@@ -93,10 +142,17 @@ showcase-spring-ai-mcp
 │       └── resources
 │           ├── application.yml
 │           └── db/{schema.sql, data.sql}
-└── mcp-mysql-client              # MCP Client（SSE）
+├── mcp-mysql-client              # MCP Client（SSE）
+│   └── src/main
+│       ├── java/.../client
+│       │   ├── McpMysqlClientApplication.java
+│       │   └── runner/McpClientRunner.java
+│       └── resources/application.yml
+└── mcp-mysql-llm                 # LLM + MCP（Ollama + ChatClient）
     └── src/main
-        ├── java/.../client
-        │   ├── McpMysqlClientApplication.java
-        │   └── runner/McpClientRunner.java
+        ├── java/.../llm
+        │   ├── McpMysqlLlmApplication.java
+        │   ├── config/ChatClientConfig.java
+        │   └── controller/AskController.java
         └── resources/application.yml
 ```

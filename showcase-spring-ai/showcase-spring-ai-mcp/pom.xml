@@ -15,6 +15,7 @@
     <modules>
         <module>mcp-mysql-server</module>
         <module>mcp-mysql-client</module>
+        <module>mcp-mysql-llm</module>
     </modules>
 
     <properties>
