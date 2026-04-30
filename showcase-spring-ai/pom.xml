@@ -21,7 +21,6 @@
         <module>showcase-spring-ai-ollama</module>
         <module>showcase-spring-ai-langgraph4j</module>
         <module>showcase-spring-ai-project</module>
-        <module>showcase-spring-ai-base-mcp</module>
         <module>showcase-spring-ai-base</module>
     </modules>
     <properties>
