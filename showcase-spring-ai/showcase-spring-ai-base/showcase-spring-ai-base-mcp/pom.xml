@@ -13,9 +13,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>mcp-mysql-server</module>
-        <module>mcp-mysql-client</module>
-        <module>mcp-mysql-llm</module>
+        <module>mcp-gateway</module>
+        <module>mcp-client</module>
+        <module>mcp-server</module>
     </modules>
 
     <properties>

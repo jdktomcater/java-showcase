@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.jdktomcat.showcase</groupId>
-        <artifactId>showcase-spring-ai-base-mcp</artifactId>
+        <artifactId>mcp-client</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mcp-mysql-client</artifactId>
+    <artifactId>mcp-mysql-llm</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,7 +18,13 @@
     </properties>
 
     <dependencies>
-        <!-- Spring AI MCP Client (SSE transport) -->
+        <!-- Ollama 本地大模型（也可替换为 OpenAI 等其他 spring-ai-starter-model-*） -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-ollama</artifactId>
+        </dependency>
+
+        <!-- Spring AI MCP Client：把远端 MCP Tool 自动适配为 ChatClient ToolCallback -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-client</artifactId>

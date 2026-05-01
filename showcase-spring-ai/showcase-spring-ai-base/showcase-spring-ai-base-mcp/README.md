@@ -9,6 +9,7 @@
 | `mcp-mysql-server` | **MCP Server** | 暴露 `listTables`、`describeTable`、`executeSelect` 三个 Tool，使用 SSE 传输（基于 Spring MVC） |
 | `mcp-mysql-client` | **MCP Client** | 通过 SSE 连接到 Server，启动时自动列出工具并依次调用，将结果打印到控制台 |
 | `mcp-mysql-llm` | **LLM + MCP** | Ollama 大模型 + Spring AI ChatClient，把 MCP Tool 作为 Function 暴露给模型，由 LLM 自主调用工具完成自然语言查库 |
+| `mcp-gateway` | **MCP Gateway** | 聚合多个 SSE MCP 上游，提供命名空间路由、API Key 鉴权、工具白名单、限流、审计、指标和运维端点 |
 
 > 数据源默认使用 H2（开启 MySQL 兼容模式），免安装即可体验；如需连真实 MySQL，按 [切换到真实 MySQL](#切换到真实-mysql) 一节调整即可。
 
@@ -91,6 +92,30 @@ SyncMcpToolCallbackProvider（自动装配）
    ▼  SSE
 mcp-mysql-server  →  JdbcTemplate  →  MySQL/H2
 ```
+
+### 5. （可选）启动 MCP Gateway（端口 8095）
+
+先保持 `mcp-mysql-server` 运行，再启动网关：
+
+```bash
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-gateway spring-boot:run
+```
+
+默认 API Key 为 `demo-gateway-key`，默认聚合 `mcp-mysql-server`，并把工具暴露为：
+
+- `mysql.listTables`
+- `mysql.describeTable`
+- `mysql.executeSelect`
+
+运维端点：
+
+```bash
+curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/upstreams
+curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/tools
+curl -X POST -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/refresh
+```
+
+详见 `mcp-gateway/README.md`。
 
 ## 工具一览
 
