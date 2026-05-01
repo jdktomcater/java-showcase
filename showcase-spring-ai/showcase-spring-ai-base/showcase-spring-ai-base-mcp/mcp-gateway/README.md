@@ -27,7 +27,7 @@
 先启动 MySQL MCP Server：
 
 ```bash
-mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-mysql-server spring-boot:run
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-server/mcp-mysql-server spring-boot:run
 ```
 
 再启动网关：

@@ -17,7 +17,8 @@ spring:
           temperature: 0.1
 
     # ===== MCP Client =====
-    # 连接到 mcp-mysql-server（默认 8090 端口），并把远端 Tool 自动暴露为 ToolCallback
+    # 默认连接到 mcp-gateway（8095 端口），由网关再按命名空间路由到 mcp-mysql-server。
+    # 网关要求 API Key，这里通过 sse-endpoint query 参数传入；网关会把 api_key 继续附加到 message endpoint。
     mcp:
       client:
         type: SYNC
@@ -28,9 +29,9 @@ spring:
           enabled: true
         sse:
           connections:
-            mysql-server:
-              url: http://localhost:8090
-              sse-endpoint: /sse
+            mysql-gateway:
+              url: http://localhost:8095
+              sse-endpoint: /sse?api_key=demo-gateway-key
 
 logging:
   level:

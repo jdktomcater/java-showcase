@@ -18,13 +18,13 @@
 ### 1. 构建
 
 ```bash
-mvn -pl showcase-spring-ai/showcase-spring-ai-mcp -am clean package -DskipTests
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp -am clean package -DskipTests
 ```
 
 ### 2. 启动 MCP Server（端口 8090）
 
 ```bash
-mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-server spring-boot:run
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-server/mcp-mysql-server spring-boot:run
 ```
 
 启动成功后，可见如下端点：
@@ -35,7 +35,7 @@ mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-server spring-boot:r
 ### 3. 启动 MCP Client（另开一个终端）
 
 ```bash
-mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-client spring-boot:run
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-client/mcp-mysql-client spring-boot:run
 ```
 
 控制台将依次输出：
@@ -45,7 +45,31 @@ mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-client spring-boot:r
 3. `describeTable(t_user)` → t_user 表结构；
 4. `executeSelect(...)` → 用户与订单的关联查询结果。
 
-### 4. （可选）启动 LLM 示例：让大模型自己调 MCP（端口 8092）
+### 4. （可选）启动 MCP Gateway（端口 8095）
+
+先保持 `mcp-mysql-server` 运行，再启动网关：
+
+```bash
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-gateway spring-boot:run
+```
+
+默认 API Key 为 `demo-gateway-key`，默认聚合 `mcp-mysql-server`，并把工具暴露为：
+
+- `mysql.listTables`
+- `mysql.describeTable`
+- `mysql.executeSelect`
+
+运维端点：
+
+```bash
+curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/upstreams
+curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/tools
+curl -X POST -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/refresh
+```
+
+详见 `mcp-gateway/README.md`。
+
+### 5. （可选）启动 LLM 示例：通过 MCP Gateway 让大模型查库（端口 8092）
 
 前置条件：本机已安装 [Ollama](https://ollama.com)，并 pull 一个**支持 tools / function-calling** 的模型，例如：
 
@@ -57,10 +81,12 @@ ollama serve                # 默认监听 11434
 启动 LLM 应用：
 
 ```bash
-mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-llm spring-boot:run
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-client/mcp-mysql-llm spring-boot:run
 ```
 
-然后用自然语言提问，由模型自己决定何时调用 `listTables` / `describeTable` / `executeSelect`：
+`mcp-mysql-llm` 默认连接 `mcp-gateway` 的 `http://localhost:8095/sse?api_key=demo-gateway-key`，
+由网关再路由到 `mcp-mysql-server`。然后用自然语言提问，由模型自己决定何时调用
+`mysql.listTables` / `mysql.describeTable` / `mysql.executeSelect`：
 
 ```bash
 # GET 形式（注意 URL 编码）
@@ -90,32 +116,8 @@ ChatClient（Ollama 推理）
 SyncMcpToolCallbackProvider（自动装配）
    │
    ▼  SSE
-mcp-mysql-server  →  JdbcTemplate  →  MySQL/H2
+mcp-gateway  →  mcp-mysql-server  →  JdbcTemplate  →  MySQL/H2
 ```
-
-### 5. （可选）启动 MCP Gateway（端口 8095）
-
-先保持 `mcp-mysql-server` 运行，再启动网关：
-
-```bash
-mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-gateway spring-boot:run
-```
-
-默认 API Key 为 `demo-gateway-key`，默认聚合 `mcp-mysql-server`，并把工具暴露为：
-
-- `mysql.listTables`
-- `mysql.describeTable`
-- `mysql.executeSelect`
-
-运维端点：
-
-```bash
-curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/upstreams
-curl -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/tools
-curl -X POST -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/refresh
-```
-
-详见 `mcp-gateway/README.md`。
 
 ## 工具一览
 
@@ -124,6 +126,8 @@ curl -X POST -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/refres
 | `listTables` | 列出当前数据库所有表 | 无 |
 | `describeTable` | 查看指定表结构 | `tableName` |
 | `executeSelect` | 执行只读 SQL（仅 SELECT/SHOW/DESC） | `sql`、`maxRows`（可选，默认 100，最大 500） |
+
+经 `mcp-gateway` 暴露时，工具名会加上命名空间前缀：`mysql.listTables`、`mysql.describeTable`、`mysql.executeSelect`。
 
 > 安全约束：`executeSelect` 拒绝非只读语句（INSERT/UPDATE/DELETE/DDL 等），并对返回行数做硬上限。
 
@@ -148,7 +152,7 @@ curl -X POST -H 'X-API-Key: demo-gateway-key' http://localhost:8095/admin/refres
 服务端已内置 `mysql` profile，只需准备好 MySQL 实例与库表，再以下方式启动：
 
 ```bash
-mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-server \
+mvn -pl showcase-spring-ai-base/showcase-spring-ai-base-mcp/mcp-server/mcp-mysql-server \
     spring-boot:run \
     -Dspring-boot.run.profiles=mysql \
     -Dspring-boot.run.jvmArguments="-Dspring.datasource.url=jdbc:mysql://127.0.0.1:3306/your_db -Dspring.datasource.username=root -Dspring.datasource.password=xxx"
@@ -159,25 +163,10 @@ mvn -pl showcase-spring-ai/showcase-spring-ai-mcp/mcp-mysql-server \
 ```
 showcase-spring-ai-mcp
 ├── pom.xml                       # 聚合 + spring-ai-bom
-├── mcp-mysql-server              # MCP Server（SSE）
-│   └── src/main
-│       ├── java/.../server
-│       │   ├── McpMysqlServerApplication.java
-│       │   └── tool/MysqlQueryTools.java
-│       └── resources
-│           ├── application.yml
-│           └── db/{schema.sql, data.sql}
-├── mcp-mysql-client              # MCP Client（SSE）
-│   └── src/main
-│       ├── java/.../client
-│       │   ├── McpMysqlClientApplication.java
-│       │   └── runner/McpClientRunner.java
-│       └── resources/application.yml
-└── mcp-mysql-llm                 # LLM + MCP（Ollama + ChatClient）
-    └── src/main
-        ├── java/.../llm
-        │   ├── McpMysqlLlmApplication.java
-        │   ├── config/ChatClientConfig.java
-        │   └── controller/AskController.java
-        └── resources/application.yml
+├── mcp-server
+│   └── mcp-mysql-server          # MCP Server（SSE）
+├── mcp-gateway                   # MCP Gateway（SSE 聚合 + 鉴权 + 路由）
+└── mcp-client
+    ├── mcp-mysql-client          # MCP Client（SSE）
+    └── mcp-mysql-llm             # LLM + MCP Gateway（Ollama + ChatClient）
 ```
