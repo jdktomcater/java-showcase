@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: mcp-mysql-client
+  main:
+    web-application-type: none
+
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        name: mcp-mysql-client
+        version: 1.0.0
+        request-timeout: 30s
+        toolcallback:
+          # 将远端 MCP Tool 自动适配为 Spring AI ToolCallback，便于后续与 ChatClient 串联
+          enabled: true
+        sse:
+          connections:
+            mysql-server:
+              url: http://localhost:8090
+              sse-endpoint: /sse
+
+logging:
+  level:
+    com.jdktomcat.showcase.spring.ai.mcp: INFO
+    io.modelcontextprotocol: INFO
+    org.springframework.ai.mcp: INFO

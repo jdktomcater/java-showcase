@@ -1,0 +1,48 @@
+server:
+  port: 8095
+
+spring:
+  application:
+    name: mcp-gateway
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+mcp:
+  gateway:
+    name: mcp-gateway
+    version: 1.0.0
+    message-endpoint: /mcp/messages
+    auth:
+      enabled: true
+      api-key-header: X-API-Key
+      api-key-query-param: api_key
+      clients:
+        - name: demo
+          api-key: demo-gateway-key
+          allowed-tools:
+            - mysql.*
+          rate-limit:
+            capacity: 120
+            refill-per-minute: 120
+    upstreams:
+      - name: mysql
+        enabled: true
+        base-url: http://localhost:8090
+        sse-endpoint: /sse
+        request-timeout: 30s
+
+logging:
+  level:
+    com.jdktomcat.showcase.spring.ai.mcp.gateway: INFO
+    MCP_AUDIT: INFO
