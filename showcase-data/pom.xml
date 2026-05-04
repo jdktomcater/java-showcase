@@ -18,6 +18,7 @@
         <module>showcase-data-sharding-jdbc</module>
         <module>showcase-data-vault</module>
         <module>showcase-data-driver</module>
+        <module>showcase-data-neo4j</module>
     </modules>
 
     <properties>

@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: showcase-data-neo4j
+  neo4j:
+    uri: ${NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: ${NEO4J_USERNAME:neo4j}
+      password: ${NEO4J_PASSWORD:password}
+
+showcase:
+  neo4j:
+    initialize-sample-data: ${SHOWCASE_NEO4J_INITIALIZE_SAMPLE_DATA:true}
+
+logging:
+  level:
+    org.springframework.data.neo4j.cypher: debug
