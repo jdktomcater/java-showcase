@@ -1,0 +1,29 @@
+server:
+  port: 8093
+
+spring:
+  application:
+    name: mcp-skywalking-server
+
+  ai:
+    mcp:
+      server:
+        name: mcp-skywalking-server
+        version: 1.0.0
+        type: SYNC
+        instructions: "提供 Apache SkyWalking OAP GraphQL 查询能力：健康检查、服务元数据、拓扑、Trace、Metrics MQE。"
+        sse-endpoint: /sse
+        sse-message-endpoint: /mcp/messages
+
+skywalking:
+  graphql-endpoint: ${SKYWALKING_GRAPHQL_ENDPOINT:http://localhost:12800/graphql}
+  request-timeout: 30s
+  query-zone: ${SKYWALKING_QUERY_ZONE:Asia/Shanghai}
+  headers:
+    - name: ${SKYWALKING_AUTH_HEADER:}
+      value: ${SKYWALKING_AUTH_VALUE:}
+
+logging:
+  level:
+    com.jdktomcat.showcase.spring.ai.mcp.skywalking: INFO
+    org.springframework.ai.mcp: INFO
