@@ -4,9 +4,9 @@ import com.jdktomcat.showcase.data.neo4j.dto.MomentFeedItem;
 import com.jdktomcat.showcase.data.neo4j.dto.PersonSummary;
 import com.jdktomcat.showcase.data.neo4j.service.FriendCircleService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,23 +32,23 @@ public class FriendCircleController {
         return friendCircleService.listPeople();
     }
 
-    @GetMapping("/people/{userId}/friends")
-    public List<PersonSummary> findDirectFriends(@PathVariable String userId) {
+    @GetMapping("/people/friends")
+    public List<PersonSummary> findDirectFriends(@RequestParam String userId) {
         return friendCircleService.findDirectFriends(userId);
     }
 
-    @GetMapping("/people/{userId}/friends/suggestions")
-    public List<PersonSummary> findFriendSuggestions(@PathVariable String userId) {
+    @GetMapping("/people/friends/suggestions")
+    public List<PersonSummary> findFriendSuggestions(@RequestParam String userId) {
         return friendCircleService.findFriendSuggestions(userId);
     }
 
-    @GetMapping("/people/{userId}/mutual-friends/{otherUserId}")
-    public List<PersonSummary> findMutualFriends(@PathVariable String userId, @PathVariable String otherUserId) {
+    @GetMapping("/people/mutual-friends")
+    public List<PersonSummary> findMutualFriends(@RequestParam String userId, @RequestParam String otherUserId) {
         return friendCircleService.findMutualFriends(userId, otherUserId);
     }
 
-    @GetMapping("/people/{userId}/timeline")
-    public List<MomentFeedItem> findFriendTimeline(@PathVariable String userId) {
+    @GetMapping("/people/timeline")
+    public List<MomentFeedItem> findFriendTimeline(@RequestParam String userId) {
         return friendCircleService.findFriendTimeline(userId);
     }
 }
