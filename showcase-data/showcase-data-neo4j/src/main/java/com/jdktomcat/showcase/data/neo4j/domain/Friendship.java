@@ -1,7 +1,6 @@
 package com.jdktomcat.showcase.data.neo4j.domain;
 
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
@@ -10,8 +9,7 @@ import java.time.LocalDate;
 @RelationshipProperties
 public class Friendship {
 
-    @Id
-    @GeneratedValue
+    @RelationshipId
     private Long id;
 
     @TargetNode

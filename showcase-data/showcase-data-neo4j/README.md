@@ -1,6 +1,6 @@
 # Showcase Data Neo4j
 
-This module demonstrates a small friend-circle graph with Spring Data Neo4j.
+This module demonstrates a small friend-circle graph with Spring Data Neo4j's `Neo4jClient`.
 
 Graph model:
 

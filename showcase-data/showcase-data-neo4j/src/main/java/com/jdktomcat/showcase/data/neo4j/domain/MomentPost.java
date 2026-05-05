@@ -1,6 +1,5 @@
 package com.jdktomcat.showcase.data.neo4j.domain;
 
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
@@ -10,9 +9,6 @@ import java.time.LocalDateTime;
 public class MomentPost {
 
     @Id
-    @GeneratedValue
-    private Long id;
-
     private String postId;
 
     private String content;
@@ -32,14 +28,6 @@ public class MomentPost {
         this.topic = topic;
         this.city = city;
         this.createdAt = createdAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getPostId() {
