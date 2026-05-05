@@ -24,6 +24,7 @@
         <module>showcase-ipgeo</module>
         <module>showcase-redis</module>
         <module>showcase-threadpool</module>
+        <module>showcase-hashmap</module>
     </modules>
 
     <properties>
