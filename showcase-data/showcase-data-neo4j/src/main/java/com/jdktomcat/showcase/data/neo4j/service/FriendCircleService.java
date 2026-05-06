@@ -110,6 +110,33 @@ public class FriendCircleService {
                 + "ORDER BY name", parameters);
     }
 
+    @Transactional
+    public void blockUser(String blockerUserId, String targetUserId) {
+        neo4jClient.query("MATCH (blocker:Person {userId: $blockerUserId}), (target:Person {userId: $targetUserId}) "
+                        + "MERGE (blocker)-[r:BLOCKED]->(target) "
+                        + "ON CREATE SET r.blockedAt = $blockedAt")
+                .bind(blockerUserId).to("blockerUserId")
+                .bind(targetUserId).to("targetUserId")
+                .bind(LocalDateTime.now()).to("blockedAt")
+                .run();
+    }
+
+    @Transactional
+    public void unblockUser(String blockerUserId, String targetUserId) {
+        neo4jClient.query("MATCH (:Person {userId: $blockerUserId})-[r:BLOCKED]->(:Person {userId: $targetUserId}) "
+                        + "DELETE r")
+                .bind(blockerUserId).to("blockerUserId")
+                .bind(targetUserId).to("targetUserId")
+                .run();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PersonSummary> listBlockedUsers(String userId) {
+        return fetchPersonSummaries("MATCH (:Person {userId: $userId})-[:BLOCKED]->(blocked:Person) "
+                + "RETURN blocked.userId AS userId, blocked.name AS name, blocked.city AS city, blocked.bio AS bio "
+                + "ORDER BY blocked.name", singletonParameter("userId", userId));
+    }
+
     @Transactional(readOnly = true)
     public List<MomentFeedItem> findFriendTimeline(String userId) {
         String cypher = "MATCH (:Person {userId: $userId})-[:FRIEND_WITH]-(friend:Person)-[:PUBLISHED]->(post:MomentPost) "
@@ -144,7 +171,7 @@ public class FriendCircleService {
     }
 
     private Map<String, Object> person(String userId, String name, String city, String bio) {
-        Map<String, Object> person = new HashMap<String, Object>();
+        Map<String, Object> person = new HashMap<>();
         person.put("userId", userId);
         person.put("name", name);
         person.put("city", city);
@@ -153,7 +180,7 @@ public class FriendCircleService {
     }
 
     private Map<String, Object> friendship(String fromUserId, String toUserId, LocalDate since, int closeness) {
-        Map<String, Object> friendship = new HashMap<String, Object>();
+        Map<String, Object> friendship = new HashMap<>();
         friendship.put("fromUserId", fromUserId);
         friendship.put("toUserId", toUserId);
         friendship.put("since", since);
@@ -163,7 +190,7 @@ public class FriendCircleService {
 
     private Map<String, Object> post(String authorUserId, String postId, String content, String topic, String city,
                                      LocalDateTime createdAt) {
-        Map<String, Object> post = new HashMap<String, Object>();
+        Map<String, Object> post = new HashMap<>();
         post.put("authorUserId", authorUserId);
         post.put("postId", postId);
         post.put("content", content);

@@ -5,6 +5,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class Person {
     @Relationship(type = "PUBLISHED", direction = Relationship.Direction.OUTGOING)
     private Set<MomentPost> posts = new HashSet<MomentPost>();
 
+    @Relationship(type = "BLOCKED", direction = Relationship.Direction.OUTGOING)
+    private Set<BlockRelation> blockedUsers = new HashSet<BlockRelation>();
+
     public Person() {
     }
 
@@ -42,6 +46,10 @@ public class Person {
 
     public void publish(MomentPost post) {
         this.posts.add(post);
+    }
+
+    public void block(Person target, LocalDateTime blockedAt) {
+        this.blockedUsers.add(new BlockRelation(target, blockedAt));
     }
 
     public String getUserId() {
@@ -90,5 +98,13 @@ public class Person {
 
     public void setPosts(Set<MomentPost> posts) {
         this.posts = posts;
+    }
+
+    public Set<BlockRelation> getBlockedUsers() {
+        return blockedUsers;
+    }
+
+    public void setBlockedUsers(Set<BlockRelation> blockedUsers) {
+        this.blockedUsers = blockedUsers;
     }
 }

@@ -3,6 +3,7 @@ package com.jdktomcat.showcase.data.neo4j.web;
 import com.jdktomcat.showcase.data.neo4j.dto.MomentFeedItem;
 import com.jdktomcat.showcase.data.neo4j.dto.PersonSummary;
 import com.jdktomcat.showcase.data.neo4j.service.FriendCircleService;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +51,22 @@ public class FriendCircleController {
     @GetMapping("/people/timeline")
     public List<MomentFeedItem> findFriendTimeline(@RequestParam String userId) {
         return friendCircleService.findFriendTimeline(userId);
+    }
+
+    @PostMapping("/people/block")
+    public String blockUser(@RequestParam String userId, @RequestParam String targetUserId) {
+        friendCircleService.blockUser(userId, targetUserId);
+        return "blocked";
+    }
+
+    @DeleteMapping("/people/block")
+    public String unblockUser(@RequestParam String userId, @RequestParam String targetUserId) {
+        friendCircleService.unblockUser(userId, targetUserId);
+        return "unblocked";
+    }
+
+    @GetMapping("/people/blocked")
+    public List<PersonSummary> listBlockedUsers(@RequestParam String userId) {
+        return friendCircleService.listBlockedUsers(userId);
     }
 }
