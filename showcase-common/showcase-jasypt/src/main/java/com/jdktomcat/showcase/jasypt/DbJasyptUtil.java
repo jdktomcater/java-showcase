@@ -42,18 +42,27 @@ public class DbJasyptUtil {
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         config.setPassword(password);
         config.setAlgorithm(StandardPBEByteEncryptor.DEFAULT_ALGORITHM);
-        config.setKeyObtentionIterations("1000");
+//        config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");
-        config.setProviderName(null);
-        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
-        config.setIvGeneratorClassName("org.jasypt.iv.NoIvGenerator");
-        config.setStringOutputType("base64");
+//        config.setProviderName(null);
+//        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+//        config.setIvGeneratorClassName("org.jasypt.iv.NoIvGenerator");
+//        config.setStringOutputType("base64");
         return config;
     }
 
     public static void main(String[] args) {
-        String password= "typay#generalfront";
-        String value = "7v/VVGRAckFRRhhFyTLu6U7pE31HStVGemdBcioO8Eo=";
+        String password= "WmXu4M1!9*oxAdWAM";
+        String value = "vKyAJ7Ndl4McwojLp38IcAwIdIDq904o+74pS8dZI9Uiw6MGD5SmeHMfkxFXoszbva6HxFt31cQ=";
         System.out.println(dencryptPwd(password, value));
+
+//        String encrypted = "vKyAJ7Ndl4McwojLp38IcAwIdIDq904o+74pS8dZI9Uiw6MGD5SmeHMfkxFXoszbva6HxFt31cQ=";
+//        String password = "WmXu4M1!9*oxAdWAM";
+//
+//        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+//        encryptor.setPassword(password);
+//        encryptor.setAlgorithm(StandardPBEByteEncryptor.DEFAULT_ALGORITHM);
+//        String plain = encryptor.decrypt(encrypted);
+//        System.out.println(plain);
     }
 }

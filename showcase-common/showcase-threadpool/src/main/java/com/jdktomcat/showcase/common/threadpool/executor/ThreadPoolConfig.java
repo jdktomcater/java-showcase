@@ -24,7 +24,23 @@ public class ThreadPoolConfig {
         executor.setKeepAliveSeconds(2);
         executor.setThreadNamePrefix("thread-pool-thread-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-//        executor.setRejectedExecutionHandler(new CallerRunsPolicyWithReport());
+        executor.initialize();
+        return executor;
+    }
+
+
+    @Bean("remoteRequestParallelExecutor")
+    public ThreadPoolTaskExecutor remoteRequestParallelExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("remote-request-");
+        // 拒绝策略：CallerRuns，避免任务悄然丢失，同时限制突发流量
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        // 优雅下线：等待已有任务执行完毕
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(30);
         executor.initialize();
         return executor;
     }

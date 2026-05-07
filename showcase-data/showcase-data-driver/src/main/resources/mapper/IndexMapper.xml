@@ -196,4 +196,8 @@
         </where>
         ) t
     </select>
+
+    <select id="sleep">
+        select sleep(5000);
+    </select>
 </mapper>

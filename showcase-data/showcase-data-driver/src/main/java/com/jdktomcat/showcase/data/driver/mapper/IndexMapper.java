@@ -14,4 +14,6 @@ public interface IndexMapper {
     Long getIndexorderByfail(IndexVO indexVO);
 
     Long getIndexorderBytotal(IndexVO indexVO);
+
+    void sleep();
 }

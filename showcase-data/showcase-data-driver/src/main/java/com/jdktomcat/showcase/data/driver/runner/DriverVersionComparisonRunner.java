@@ -35,35 +35,36 @@ public class DriverVersionComparisonRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (!benchmarkProperties.isEnabled()) {
-            log.info("MySQL driver benchmark is disabled.");
-            return;
-        }
-        logDriverMetadata();
-        List<BenchmarkScenarioResult> scenarioResults = new ArrayList<>();
-        scenarioResults.add(queryBenchmarkService.run("succeed", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
-            IndexVO indexVO = indexService.getIndexVOToday();
-            IndexVO result = indexMapper.getIndexorderBysucceed(indexVO);
-            log.info("getIndexorderBysucceed:{}", result.toString());
-        }));
-        scenarioResults.add(queryBenchmarkService.run("total", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
-            IndexVO indexVO = indexService.getIndexVOToday();
-            Long total = indexMapper.getIndexorderBytotal(indexVO);
-            log.info("getIndexorderBytotal:{}", total);
-        }));
-
-        scenarioResults.add(queryBenchmarkService.run("fail", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
-            IndexVO indexVO = indexService.getIndexVOToday();
-            Long fail = indexMapper.getIndexorderByfail(indexVO);
-            log.info("getIndexorderByfail:{}", fail);
-        }));
-
-        log.info("Benchmark profiles: {}", Arrays.toString(environment.getActiveProfiles()));
-        log.info("Scenario results:");
-        for (BenchmarkScenarioResult scenarioResult : scenarioResults) {
-            log.info("{} -> avg={} ms, p95={} ms, max={} ms, qps={}", scenarioResult.getScenarioName(), scenarioResult.getLatencyStats().getAvgMillis(), scenarioResult.getLatencyStats().getP95Millis(), scenarioResult.getLatencyStats().getMaxMillis(), scenarioResult.getLatencyStats().getQps());
-        }
-        log.info("Repeat the same command with a different Maven profile to compare driver impact on query latency.");
+//        if (!benchmarkProperties.isEnabled()) {
+//            log.info("MySQL driver benchmark is disabled.");
+//            return;
+//        }
+//        logDriverMetadata();
+//        List<BenchmarkScenarioResult> scenarioResults = new ArrayList<>();
+////        scenarioResults.add(queryBenchmarkService.run("succeed", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
+////            IndexVO indexVO = indexService.getIndexVOToday();
+////            IndexVO result = indexMapper.getIndexorderBysucceed(indexVO);
+////            log.info("getIndexorderBysucceed:{}", result.toString());
+////        }));
+////        scenarioResults.add(queryBenchmarkService.run("total", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
+////            IndexVO indexVO = indexService.getIndexVOToday();
+////            Long total = indexMapper.getIndexorderBytotal(indexVO);
+////            log.info("getIndexorderBytotal:{}", total);
+////        }));
+//
+//        scenarioResults.add(queryBenchmarkService.run("fail", benchmarkProperties.getWarmupRounds(), benchmarkProperties.getMeasureRounds(), (QueryBenchmarkService.QueryTask) iteration -> {
+//            IndexVO indexVO = indexService.getIndexVOToday();
+//            Long fail = indexMapper.getIndexorderByfail(indexVO);
+//            log.info("getIndexorderByfail:{}", fail);
+//        }));
+//
+//        log.info("Benchmark profiles: {}", Arrays.toString(environment.getActiveProfiles()));
+//        log.info("Scenario results:");
+//        for (BenchmarkScenarioResult scenarioResult : scenarioResults) {
+//            log.info("{} -> avg={} ms, p95={} ms, max={} ms, qps={}", scenarioResult.getScenarioName(), scenarioResult.getLatencyStats().getAvgMillis(), scenarioResult.getLatencyStats().getP95Millis(), scenarioResult.getLatencyStats().getMaxMillis(), scenarioResult.getLatencyStats().getQps());
+//        }
+//        log.info("Repeat the same command with a different Maven profile to compare driver impact on query latency.");
+        indexMapper.sleep();
     }
 
     private void logDriverMetadata() throws SQLException {
