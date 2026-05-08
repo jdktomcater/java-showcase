@@ -79,7 +79,7 @@ public class FriendCircleService {
     public List<PersonSummary> listPeople() {
         return fetchPersonSummaries("MATCH (person:Person) "
                 + "RETURN person.userId AS userId, person.name AS name, person.city AS city, person.bio AS bio "
-                + "ORDER BY person.name", Collections.<String, Object>emptyMap());
+                + "ORDER BY person.name", Collections.emptyMap());
     }
 
     @Transactional(readOnly = true)
@@ -101,7 +101,7 @@ public class FriendCircleService {
 
     @Transactional(readOnly = true)
     public List<PersonSummary> findMutualFriends(String firstUserId, String secondUserId) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("firstUserId", firstUserId);
         parameters.put("secondUserId", secondUserId);
         return fetchPersonSummaries("MATCH (first:Person {userId: $firstUserId})-[:FRIEND_WITH]-(mutual:Person)-[:FRIEND_WITH]-(second:Person {userId: $secondUserId}) "
@@ -144,7 +144,7 @@ public class FriendCircleService {
                 + "post.content AS content, post.topic AS topic, post.city AS city, post.createdAt AS createdAt "
                 + "ORDER BY post.createdAt DESC";
 
-        return new ArrayList<MomentFeedItem>(neo4jClient.query(cypher)
+        return new ArrayList<>(neo4jClient.query(cypher)
                 .bind(userId).to("userId")
                 .fetchAs(MomentFeedItem.class)
                 .mappedBy((typeSystem, record) -> new MomentFeedItem(
@@ -159,7 +159,7 @@ public class FriendCircleService {
     }
 
     private List<PersonSummary> fetchPersonSummaries(String cypher, Map<String, Object> parameters) {
-        return new ArrayList<PersonSummary>(neo4jClient.query(cypher)
+        return new ArrayList<>(neo4jClient.query(cypher)
                 .bindAll(parameters)
                 .fetchAs(PersonSummary.class)
                 .mappedBy((typeSystem, record) -> new PersonSummary(
@@ -201,7 +201,7 @@ public class FriendCircleService {
     }
 
     private Map<String, Object> singletonParameter(String name, Object value) {
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put(name, value);
         return parameters;
     }
