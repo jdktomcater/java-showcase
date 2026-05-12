@@ -42,12 +42,12 @@ public class DbJasyptUtil {
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
         config.setPassword(password);
         config.setAlgorithm(StandardPBEByteEncryptor.DEFAULT_ALGORITHM);
-//        config.setKeyObtentionIterations("1000");
+        config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");
-//        config.setProviderName(null);
-//        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
-//        config.setIvGeneratorClassName("org.jasypt.iv.NoIvGenerator");
-//        config.setStringOutputType("base64");
+        config.setProviderName(null);
+        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
+        config.setIvGeneratorClassName("org.jasypt.iv.RandomIvGenerator");
+        config.setStringOutputType("base64");
         return config;
     }
 
