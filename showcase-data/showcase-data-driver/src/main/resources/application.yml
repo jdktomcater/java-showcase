@@ -3,7 +3,7 @@ spring:
     name: showcase-data-driver
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+    url: jdbc:mysql://172.30.3.16:3366/typayv2?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&sessionVariables=max_execution_time=1000
     username: ${MYSQL_USERNAME:tx_test}
     password: ${MYSQL_PASSWORD:WQR2A0uUVMjGon1puQ}
     driver-class-name: com.mysql.cj.jdbc.Driver
