@@ -44,15 +44,9 @@ public class SentinelRuleConfig {
     // ── 1. 流量控制规则 ────────────────────────────────────────────────────
     private void initFlowRules() {
         // order:query  QPS ≤ 2
-        FlowRule queryRule = new FlowRule(RESOURCE_QUERY)
-                .setCount(2)                             // 阈值 2 QPS
-                .setGrade(RuleConstant.FLOW_GRADE_QPS);  // 基于 QPS
-
+        FlowRule queryRule = new FlowRule(RESOURCE_QUERY).setCount(2).setGrade(RuleConstant.FLOW_GRADE_QPS);  // 基于 QPS
         // order:pay  并发线程数 ≤ 1（模拟慢接口保护）
-        FlowRule payRule = new FlowRule(RESOURCE_PAY)
-                .setCount(1)
-                .setGrade(RuleConstant.FLOW_GRADE_THREAD);  // 基于并发线程数
-
+        FlowRule payRule = new FlowRule(RESOURCE_PAY).setCount(1).setGrade(RuleConstant.FLOW_GRADE_THREAD);  // 基于并发线程数
         FlowRuleManager.loadRules(List.of(queryRule, payRule));
     }
 
@@ -70,11 +64,11 @@ public class SentinelRuleConfig {
         // order:pay  异常比例熔断：异常比例超 50% 时熔断 5s
         DegradeRule exceptionRule = new DegradeRule(RESOURCE_PAY)
                 .setGrade(RuleConstant.DEGRADE_GRADE_EXCEPTION_RATIO)
-                .setCount(0.5)                             // 异常比例 50%
+                // 异常比例 50%
+                .setCount(0.5)
                 .setMinRequestAmount(5)
                 .setStatIntervalMs(10_000)
                 .setTimeWindow(5);
-
         DegradeRuleManager.loadRules(List.of(slowCallRule, exceptionRule));
     }
 
@@ -82,16 +76,10 @@ public class SentinelRuleConfig {
     private void initParamFlowRules() {
         // order:hot  对第 0 个参数 (itemId) 限流：默认 QPS ≤ 1
         // 特例：itemId=100 (爆款) QPS ≤ 5
-        ParamFlowItem hotItem = new ParamFlowItem()
-                .setObject("100")
-                .setClassType(String.class.getName())
-                .setCount(5);
-
-        ParamFlowRule hotRule = new ParamFlowRule(RESOURCE_HOT)
-                .setParamIdx(0)      // 第 0 个方法参数
+        ParamFlowItem hotItem = new ParamFlowItem().setObject("100").setClassType(String.class.getName()).setCount(5);
+        ParamFlowRule hotRule = new ParamFlowRule(RESOURCE_HOT).setParamIdx(0)      // 第 0 个方法参数
                 .setCount(1)         // 通用阈值 QPS ≤ 1
                 .setParamFlowItemList(List.of(hotItem));  // 特例覆盖
-
         ParamFlowRuleManager.loadRules(List.of(hotRule));
     }
 
@@ -100,7 +88,6 @@ public class SentinelRuleConfig {
         // 系统入口 QPS 总量 ≤ 100（防止机器过载）
         SystemRule systemRule = new SystemRule();
         systemRule.setQps(100);
-
         SystemRuleManager.loadRules(List.of(systemRule));
     }
 }

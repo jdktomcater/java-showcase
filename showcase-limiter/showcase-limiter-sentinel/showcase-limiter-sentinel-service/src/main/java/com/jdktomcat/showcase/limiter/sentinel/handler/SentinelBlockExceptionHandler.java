@@ -36,14 +36,9 @@ public class SentinelBlockExceptionHandler implements BlockExceptionHandler {
     private ObjectMapper objectMapper;
 
     @Override
-    public void handle(HttpServletRequest request,
-                       HttpServletResponse response,
-                       BlockException ex) throws Exception {
-
+    public void handle(HttpServletRequest request, HttpServletResponse response, BlockException ex) throws Exception {
         String resource = ex.getRule() != null ? ex.getRule().getResource() : "unknown";
-        log.warn("Sentinel blocked uri={} resource={} type={}",
-                request.getRequestURI(), resource, ex.getClass().getSimpleName());
-
+        log.warn("Sentinel blocked uri={} resource={} type={}", request.getRequestURI(), resource, ex.getClass().getSimpleName());
         String msg;
         if (ex instanceof FlowException) {
             msg = "请求过于频繁，请稍后重试 (flow)";
@@ -58,7 +53,6 @@ public class SentinelBlockExceptionHandler implements BlockExceptionHandler {
         } else {
             msg = "请求被限流，请稍后重试";
         }
-
         response.setStatus(429);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
