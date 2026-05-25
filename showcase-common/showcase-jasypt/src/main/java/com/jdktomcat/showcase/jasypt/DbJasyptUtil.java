@@ -4,6 +4,9 @@ import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DbJasyptUtil {
 
     /**
@@ -52,9 +55,9 @@ public class DbJasyptUtil {
     }
 
     public static void main(String[] args) {
-        String password= "WmXu4M1!9*oxAdWAM";
-        String value = "vKyAJ7Ndl4McwojLp38IcAwIdIDq904o+74pS8dZI9Uiw6MGD5SmeHMfkxFXoszbva6HxFt31cQ=";
-        System.out.println(dencryptPwd(password, value));
+//        String password= "WmXu4M1!9*oxAdWAM";
+//        String value = "vKyAJ7Ndl4McwojLp38IcAwIdIDq904o+74pS8dZI9Uiw6MGD5SmeHMfkxFXoszbva6HxFt31cQ=";
+//        System.out.println(dencryptPwd(password, value));
 
 //        String encrypted = "vKyAJ7Ndl4McwojLp38IcAwIdIDq904o+74pS8dZI9Uiw6MGD5SmeHMfkxFXoszbva6HxFt31cQ=";
 //        String password = "WmXu4M1!9*oxAdWAM";
@@ -64,5 +67,10 @@ public class DbJasyptUtil {
 //        encryptor.setAlgorithm(StandardPBEByteEncryptor.DEFAULT_ALGORITHM);
 //        String plain = encryptor.decrypt(encrypted);
 //        System.out.println(plain);
+        List<String> dataList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            dataList.add("str-" + i);
+        }
+        System.out.println(String.join(",",dataList.toArray(new String[0])));
     }
 }
