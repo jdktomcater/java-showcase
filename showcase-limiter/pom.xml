@@ -15,6 +15,7 @@
         <module>showcase-limiter-mq-consumer</module>
         <module>showcase-limiter-redis-fixed-window</module>
         <module>showcase-limiter-redis-token</module>
+        <module>showcase-limiter-sentinel</module>
     </modules>
 
     <properties>

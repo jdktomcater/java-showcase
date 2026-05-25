@@ -1,0 +1,19 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: sentinel-demo
+
+  cloud:
+    sentinel:
+      transport:
+        # Sentinel Dashboard 地址；本地启动 Dashboard 后可实时推送规则
+        dashboard: localhost:8080
+        port: 8719          # 本服务与 Dashboard 通信的端口（心跳/规则推送）
+      # 懒加载关闭：服务启动即向 Dashboard 注册
+      eager: true
+
+logging:
+  level:
+    com.jdktomcat.showcase.limiter.sentinel: debug
