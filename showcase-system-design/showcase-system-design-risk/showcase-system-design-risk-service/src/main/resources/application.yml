@@ -1,11 +1,13 @@
 server:
   port: 8083
+
 spring:
   application:
     name: risk-service
+
+  # ── Redis / Redisson ──────────────────────────────────────────────────────
   redis:
     redisson:
-      # redisson-spring-boot-starter 需要通过 config/file 注入配置
       config: |
         singleServerConfig:
           address: "redis://redis:6379"
@@ -13,40 +15,83 @@ spring:
           timeout: 3000
           connectionPoolSize: 64
           connectionMinimumIdleSize: 24
+
+  # ── MySQL / JPA ──────────────────────────────────────────────────────────
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/pay?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: pay
+    url: jdbc:mysql://mysql:3306/risk_db?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: risk
     password: 123456
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
 
+  # ── Kafka ────────────────────────────────────────────────────────────────
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # Idempotent producer: exactly-once delivery within a single producer session.
+      # Requires acks=all and retries > 0 (both set automatically when enable.idempotence=true).
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        acks: all
+    consumer:
+      group-id: risk-analysis
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      # Manual ack mode so we commit only after successful processing
+      enable-auto-commit: false
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      concurrency: 4
+
+  # ── Eureka ───────────────────────────────────────────────────────────────
   cloud:
     openfeign:
       circuitbreaker:
         enabled: true
 
-logging:
-  level:
-    root: info
-  config: classpath:logback.xml
-  file:
-    name: /data/log/pay-service.log
-
+# ── Eureka client ──────────────────────────────────────────────────────────
 eureka:
   client:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
+# ── Resilience4j circuit breaker ──────────────────────────────────────────
 resilience4j:
   circuitbreaker:
     instances:
-      channel-service:
-        failureRateThreshold: 50        # 失败率 %
+      account-service:
+        failureRateThreshold: 50
         slowCallRateThreshold: 50
         slowCallDurationThreshold: 2s
         slidingWindowSize: 20
         minimumNumberOfCalls: 10
         waitDurationInOpenState: 10s
+
+# ── Logging ───────────────────────────────────────────────────────────────
+logging:
+  level:
+    root: info
+    com.jdktomcat.showcase.system.design.risk: debug
+  config: classpath:logback.xml
+  file:
+    name: /data/log/risk-service.log
+
+# ── Actuator ──────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
