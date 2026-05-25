@@ -50,21 +50,14 @@ public class StructuringDetectionRule implements RiskRule {
         if (!"WITHDRAWAL".equals(ctx.getEventType())) {
             return RuleResult.pass(name());
         }
-
         BigDecimal singleUsd     = ctx.getAmountUsd();
-        BigDecimal cumulativeUsd = ctx.getWithdrawal24HrUsd() != null
-                ? ctx.getWithdrawal24HrUsd() : BigDecimal.ZERO;
+        BigDecimal cumulativeUsd = ctx.getWithdrawal24HrUsd() != null ? ctx.getWithdrawal24HrUsd() : BigDecimal.ZERO;
         long txCount24Hr         = ctx.getVelocityCount24Hr();
-
         boolean belowCtr         = singleUsd != null && singleUsd.compareTo(CTR_THRESHOLD_USD) < 0;
         boolean highCumulative   = cumulativeUsd.compareTo(CUMULATIVE_SUSPECT_USD) >= 0;
         boolean manyTransactions = txCount24Hr >= MIN_TX_COUNT;
-
         if (belowCtr && highCumulative && manyTransactions) {
-            return RuleResult.review(name(), 50,
-                    String.format("Potential structuring: %d withdrawals in 24hr, "
-                                    + "cumulative $%.2f USD with each below CTR threshold $%s",
-                            txCount24Hr, cumulativeUsd, CTR_THRESHOLD_USD));
+            return RuleResult.review(name(), 50, String.format("Potential structuring: %d withdrawals in 24hr, " + "cumulative $%.2f USD with each below CTR threshold $%s", txCount24Hr, cumulativeUsd, CTR_THRESHOLD_USD));
         }
         return RuleResult.pass(name());
     }

@@ -46,11 +46,8 @@ public class VelocityRule implements RiskRule {
     public RuleResult evaluate(RiskContext ctx) {
         // Hard blocks first (terminal)
         if (ctx.getVelocityCount1Min() > ANY_EVENT_PER_MIN_BLOCK) {
-            return RuleResult.block(name(),
-                    String.format("User %d exceeded %d events/min (actual: %d)",
-                            ctx.getUserId(), ANY_EVENT_PER_MIN_BLOCK, ctx.getVelocityCount1Min()));
+            return RuleResult.block(name(), String.format("User %d exceeded %d events/min (actual: %d)", ctx.getUserId(), ANY_EVENT_PER_MIN_BLOCK, ctx.getVelocityCount1Min()));
         }
-
         // Aggregate score from soft signals
         int score = 0;
         StringBuilder reason = new StringBuilder();
@@ -58,13 +55,11 @@ public class VelocityRule implements RiskRule {
         if ("WITHDRAWAL".equals(ctx.getEventType())) {
             if (ctx.getVelocityCount1Min() > WITHDRAWAL_PER_MIN_REVIEW) {
                 score += 30;
-                reason.append(String.format("withdrawal velocity %d/min exceeds %d; ",
-                        ctx.getVelocityCount1Min(), WITHDRAWAL_PER_MIN_REVIEW));
+                reason.append(String.format("withdrawal velocity %d/min exceeds %d; ", ctx.getVelocityCount1Min(), WITHDRAWAL_PER_MIN_REVIEW));
             }
             if (ctx.getVelocityCount1Hr() > WITHDRAWAL_PER_HR_REVIEW) {
                 score += 20;
-                reason.append(String.format("withdrawal velocity %d/hr exceeds %d; ",
-                        ctx.getVelocityCount1Hr(), WITHDRAWAL_PER_HR_REVIEW));
+                reason.append(String.format("withdrawal velocity %d/hr exceeds %d; ", ctx.getVelocityCount1Hr(), WITHDRAWAL_PER_HR_REVIEW));
             }
         }
 

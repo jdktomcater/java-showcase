@@ -45,12 +45,8 @@ public class RiskEngine {
      * We sort by priority at construction time so the runtime evaluation loop is O(n).
      */
     public RiskEngine(List<RiskRule> rules) {
-        this.rules = rules.stream()
-                .sorted(Comparator.comparingInt(RiskRule::priority))
-                .toList();
-        log.info("RiskEngine initialised with {} rules: {}",
-                this.rules.size(),
-                this.rules.stream().map(RiskRule::name).toList());
+        this.rules = rules.stream().sorted(Comparator.comparingInt(RiskRule::priority)).toList();
+        log.info("RiskEngine initialised with {} rules: {}", this.rules.size(), this.rules.stream().map(RiskRule::name).toList());
     }
 
     /**
@@ -64,7 +60,6 @@ public class RiskEngine {
         List<String> triggeredRules = new ArrayList<>();
         List<String> reasons = new ArrayList<>();
         RiskLevel highestLevel = RiskLevel.PASS;
-
         for (RiskRule rule : rules) {
             RuleResult result;
             try {
@@ -72,11 +67,9 @@ public class RiskEngine {
             } catch (Exception e) {
                 // Fail open: a buggy rule must not take down the entire risk check.
                 // Log the error and continue with the next rule.
-                log.error("Rule [{}] threw an exception; skipping. requestId={}",
-                        rule.name(), context.getRequestId(), e);
+                log.error("Rule [{}] threw an exception; skipping. requestId={}", rule.name(), context.getRequestId(), e);
                 continue;
             }
-
             if (result.getLevel() != RiskLevel.PASS) {
                 triggeredRules.add(rule.name());
                 if (result.getReason() != null) {
@@ -87,17 +80,14 @@ public class RiskEngine {
                     highestLevel = result.getLevel();
                 }
             }
-
             if (result.isTerminal()) {
-                log.debug("Terminal rule [{}] hit; stopping chain. requestId={}",
-                        rule.name(), context.getRequestId());
+                log.debug("Terminal rule [{}] hit; stopping chain. requestId={}", rule.name(), context.getRequestId());
                 break;
             }
         }
 
         RiskLevel finalLevel = deriveLevel(totalScore, highestLevel);
         String reason = String.join("; ", reasons);
-
         return EngineResult.builder()
                 .riskLevel(finalLevel)
                 .riskScore(totalScore)

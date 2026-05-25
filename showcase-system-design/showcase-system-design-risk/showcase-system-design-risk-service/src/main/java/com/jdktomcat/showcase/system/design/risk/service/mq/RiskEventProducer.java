@@ -37,14 +37,10 @@ public class RiskEventProducer {
     public void publish(RiskEvent event) {
         String payload = JSON.toJSONString(event);
         String partitionKey = String.valueOf(event.getUserId());
-
-        CompletableFuture<SendResult<String, String>> future =
-                kafkaTemplate.send(TOPIC, partitionKey, payload);
-
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(TOPIC, partitionKey, payload);
         future.whenComplete((result, ex) -> {
             if (ex != null) {
-                log.error("Failed to publish risk event requestId={} userId={}",
-                        event.getRequestId(), event.getUserId(), ex);
+                log.error("Failed to publish risk event requestId={} userId={}", event.getRequestId(), event.getUserId(), ex);
             } else {
                 log.debug("Risk event published requestId={} partition={} offset={}",
                         event.getRequestId(),

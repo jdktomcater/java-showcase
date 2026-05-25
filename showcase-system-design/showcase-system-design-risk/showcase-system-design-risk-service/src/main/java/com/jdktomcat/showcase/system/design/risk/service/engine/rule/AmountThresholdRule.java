@@ -55,9 +55,7 @@ public class AmountThresholdRule implements RiskRule {
 
         // Hard block: single withdrawal exceeds absolute ceiling
         if (usd.compareTo(HARD_BLOCK_USD) >= 0) {
-            return RuleResult.block(name(),
-                    String.format("Single withdrawal $%.2f USD exceeds hard limit $%s",
-                            usd, HARD_BLOCK_USD));
+            return RuleResult.block(name(), String.format("Single withdrawal $%.2f USD exceeds hard limit $%s", usd, HARD_BLOCK_USD));
         }
 
         int score = 0;
@@ -66,26 +64,20 @@ public class AmountThresholdRule implements RiskRule {
         // CTR threshold
         if (usd.compareTo(CTR_THRESHOLD_USD) >= 0) {
             score += 40;
-            reason.append(String.format("Single withdrawal $%.2f USD triggers AML CTR threshold ($%s); ",
-                    usd, CTR_THRESHOLD_USD));
+            reason.append(String.format("Single withdrawal $%.2f USD triggers AML CTR threshold ($%s); ", usd, CTR_THRESHOLD_USD));
         }
 
         // Cumulative 24-hr limit
-        BigDecimal cumulative = ctx.getWithdrawal24HrUsd() != null
-                ? ctx.getWithdrawal24HrUsd() : BigDecimal.ZERO;
+        BigDecimal cumulative = ctx.getWithdrawal24HrUsd() != null ? ctx.getWithdrawal24HrUsd() : BigDecimal.ZERO;
         if (cumulative.compareTo(DAILY_REVIEW_USD) >= 0) {
             score += 30;
-            reason.append(String.format("Cumulative 24-hr withdrawal $%.2f USD exceeds $%s; ",
-                    cumulative, DAILY_REVIEW_USD));
+            reason.append(String.format("Cumulative 24-hr withdrawal $%.2f USD exceeds $%s; ", cumulative, DAILY_REVIEW_USD));
         }
-
         // No-KYC limit
         if (ctx.getKycLevel() == 0 && usd.compareTo(NO_KYC_LIMIT_USD) >= 0) {
             score += 25;
-            reason.append(String.format("KYC level 0 user attempting $%.2f USD withdrawal (limit $%s); ",
-                    usd, NO_KYC_LIMIT_USD));
+            reason.append(String.format("KYC level 0 user attempting $%.2f USD withdrawal (limit $%s); ", usd, NO_KYC_LIMIT_USD));
         }
-
         if (score > 0) {
             return RuleResult.review(name(), score, reason.toString().stripTrailing());
         }

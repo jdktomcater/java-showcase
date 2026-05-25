@@ -35,16 +35,13 @@ public class BlacklistRule implements RiskRule {
     @Override
     public RuleResult evaluate(RiskContext ctx) {
         if (ctx.isUserBlacklisted()) {
-            return RuleResult.block(name(),
-                    "User " + ctx.getUserId() + " is on the global blacklist");
+            return RuleResult.block(name(), "User " + ctx.getUserId() + " is on the global blacklist");
         }
         if (ctx.isIpBlacklisted()) {
-            return RuleResult.block(name(),
-                    "Source IP " + ctx.getUserIp() + " is on the global blacklist");
+            return RuleResult.block(name(), "Source IP " + ctx.getUserIp() + " is on the global blacklist");
         }
         if (ctx.isAddressBlacklisted()) {
-            return RuleResult.block(name(),
-                    "Destination address " + ctx.getToAddress() + " is on the sanctions list");
+            return RuleResult.block(name(), "Destination address " + ctx.getToAddress() + " is on the sanctions list");
         }
         return RuleResult.pass(name());
     }
