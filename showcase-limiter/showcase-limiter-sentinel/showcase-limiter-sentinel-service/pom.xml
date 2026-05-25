@@ -50,6 +50,18 @@
             <artifactId>sentinel-spring-webmvc-adapter</artifactId>
             <version>1.8.6</version>
         </dependency>
+
+        <!--
+          Nacos DataSource：服务从 Nacos 拉取规则，Dashboard 推规则到 Nacos
+          两端共享同一份规则，重启不丢失，Dashboard 可见
+          注：需启动 Nacos；不用 Nacos 时注释此依赖即可，编程式规则仍然生效
+        -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+            <version>1.8.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

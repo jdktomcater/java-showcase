@@ -8,12 +8,49 @@ spring:
   cloud:
     sentinel:
       transport:
-        # Sentinel Dashboard 地址；本地启动 Dashboard 后可实时推送规则
+        # Sentinel Dashboard 地址
         dashboard: localhost:8080
-        port: 8719          # 本服务与 Dashboard 通信的端口（心跳/规则推送）
-      # 懒加载关闭：服务启动即向 Dashboard 注册
+        # 本服务暴露给 Dashboard 的通信端口（心跳 + 规则推拉）
+        port: 8719
+      # 服务启动立即注册到 Dashboard，不等第一次请求
       eager: true
+
+      # ── Nacos DataSource（推荐，Dashboard 可见且规则重启不丢失）──────────
+      # 需要先启动 Nacos: docker run -d -p 8848:8848 nacos/nacos-server:v2.2.3 -e MODE=standalone
+      # 启用时去掉下面的注释，并确保 Nacos 已运行
+      datasource:
+        # 流控规则
+        flow:
+          nacos:
+            server-addr: localhost:8848
+            namespace:                      # 默认 public，可填 namespace-id
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-flow-rules
+            data-type: json
+            rule-type: flow
+        # 熔断降级规则
+        degrade:
+          nacos:
+            server-addr: localhost:8848
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-degrade-rules
+            data-type: json
+            rule-type: degrade
+        # 热点参数规则
+        param-flow:
+          nacos:
+            server-addr: localhost:8848
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-param-flow-rules
+            data-type: json
+            rule-type: param-flow
 
 logging:
   level:
     com.jdktomcat.showcase.limiter.sentinel: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,sentinel
