@@ -24,3 +24,5 @@ spring:
         missing-topics-fatal: false
         # 设置并发消费的线程数，不能超过partitions的大小
         concurrency: 3
+server:
+  port: -1

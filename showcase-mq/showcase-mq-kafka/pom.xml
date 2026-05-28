@@ -14,9 +14,6 @@
         <module>showcase-kafka-consumer</module>
         <module>showcase-kafka-common</module>
     </modules>
-    <properties>
-        <spring-kafka-version>2.3.4.RELEASE</spring-kafka-version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -30,7 +27,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-            <version>${spring-kafka-version}</version>
         </dependency>
     </dependencies>
 </project>
