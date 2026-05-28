@@ -4,7 +4,7 @@ spring:
     # Kafka配置
   kafka:
     # 集群配置
-    bootstrap-servers: 172.20.10.3:9192,172.20.10.3:9292,172.20.10.3:9392
+    bootstrap-servers: localhost:9192,localhost:9292,localhost:9392
     # 消费者配置
     consumer:
       # 消费者组

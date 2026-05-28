@@ -28,7 +28,7 @@ services:
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
       ### broker配置
       # 外部客户端走宿主机ip，容器内部（kafka-ui等）走容器hostname
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://172.20.10.3:9192,INTERNAL://kafka_broker_1:29092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9192,INTERNAL://kafka_broker_1:29092
       # node.id，必须唯一（KRaft模式替代broker.id）
       - KAFKA_NODE_ID=1
     volumes:
@@ -66,7 +66,7 @@ services:
       # 不允许自动创建主题
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
       ### broker配置
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://172.20.10.3:9292,INTERNAL://kafka_broker_2:29092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9292,INTERNAL://kafka_broker_2:29092
       # node.id，必须唯一（KRaft模式替代broker.id）
       - KAFKA_NODE_ID=2
     volumes:
@@ -100,7 +100,7 @@ services:
       # 不允许自动创建主题
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
       ### broker配置
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://172.20.10.3:9392,INTERNAL://kafka_broker_3:29092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9392,INTERNAL://kafka_broker_3:29092
       # node.id，必须唯一（KRaft模式替代broker.id）
       - KAFKA_NODE_ID=3
     volumes:
