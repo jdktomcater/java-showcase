@@ -19,8 +19,8 @@ public class ProducerMessageController {
     @RequestMapping("/send")
     public String sendMessage(@RequestParam("key") String key, @RequestParam("value") String value) {
         try {
-            for (int i = 0; i < 3; i++) {
-                kafkaTemplate.send("test_topic", 0, key + i, value + i);
+            for (int i = 0; i < 300; i++) {
+                kafkaTemplate.send("test_topic",key + i, value + i);
             }
             return "发送成功";
         } catch (Exception e) {

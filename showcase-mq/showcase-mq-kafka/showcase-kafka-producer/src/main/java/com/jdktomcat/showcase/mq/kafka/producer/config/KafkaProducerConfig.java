@@ -73,14 +73,4 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    /**
-     * 初始化一个Topic
-     *
-     * @return NewTopic
-     */
-    @Bean
-    public NewTopic initialTopic() {
-        // 设置Topic名称、分区数、副本数，这里是创建了3个分区
-        return new NewTopic("test_topic", 3, (short) 1);
-    }
 }
