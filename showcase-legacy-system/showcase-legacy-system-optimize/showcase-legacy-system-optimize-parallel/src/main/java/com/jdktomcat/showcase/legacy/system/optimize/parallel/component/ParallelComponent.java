@@ -52,8 +52,6 @@ public class ParallelComponent {
      * @return 处理结果列表，顺序与 items 一致，已过滤 null
      */
     public <T, R> List<R> executeSerial(List<T> items, Function<T, R> mapper) {
-        log.info("password:{}", parallelConfig.getPassword());
-        log.info("password:{}", parallelConfig.getPassword());
         return items.stream().map(mapper).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
@@ -102,9 +100,6 @@ public class ParallelComponent {
                 results.add(Pair.of(result.getLeft(), res));
             }
         });
-        log.info("password:{}", parallelConfig.getPassword());
-        log.info("password:{}", parallelConfig.getPassword());
-        log.info("password:{}", parallelConfig.getPassword());
         // 保证原先顺序
         results.sort(Comparator.comparing(Pair::getLeft));
         return results.stream().map(Pair::getRight).collect(Collectors.toList());
