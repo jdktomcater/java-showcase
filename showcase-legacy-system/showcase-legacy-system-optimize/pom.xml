@@ -11,6 +11,7 @@
 
     <modules>
         <module>showcase-legacy-system-optimize-parallel</module>
+        <module>showcase-legacy-system-optimize-cache</module>
     </modules>
 
 </project>
