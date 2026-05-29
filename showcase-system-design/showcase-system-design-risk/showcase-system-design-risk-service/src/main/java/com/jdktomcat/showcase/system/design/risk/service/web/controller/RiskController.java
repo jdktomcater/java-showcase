@@ -1,9 +1,9 @@
 package com.jdktomcat.showcase.system.design.risk.service.web.controller;
 
+import com.jdktomcat.showcase.system.design.risk.client.dto.RiskCheckRequest;
+import com.jdktomcat.showcase.system.design.risk.client.dto.RiskCheckResponse;
 import com.jdktomcat.showcase.system.design.risk.service.service.BlacklistService;
 import com.jdktomcat.showcase.system.design.risk.service.service.RiskCheckService;
-import com.jdktomcat.showcase.system.design.risk.service.web.dto.RiskCheckRequest;
-import com.jdktomcat.showcase.system.design.risk.service.web.dto.RiskCheckResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

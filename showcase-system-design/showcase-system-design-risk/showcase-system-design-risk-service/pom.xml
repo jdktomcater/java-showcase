@@ -73,6 +73,13 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- 依赖客户端 -->
+        <dependency>
+            <groupId>com.jdktomcater.showcase</groupId>
+            <artifactId>showcase-system-design-risk-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>

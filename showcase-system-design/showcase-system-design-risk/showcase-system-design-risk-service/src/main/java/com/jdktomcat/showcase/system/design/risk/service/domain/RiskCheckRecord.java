@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.system.design.risk.service.domain;
 
+import com.jdktomcat.showcase.system.design.risk.client.enums.RiskLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

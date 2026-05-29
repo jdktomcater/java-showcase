@@ -3,6 +3,8 @@ package com.jdktomcat.showcase.system.design.order.service.web.controller;
 
 import com.jdktomcat.showcase.system.design.common.web.response.Response;
 import com.jdktomcat.showcase.system.design.order.service.service.PaymentService;
+import com.jdktomcat.showcase.system.design.order.service.web.interceptor.risk.Risk;
+import com.jdktomcat.showcase.system.design.order.service.web.interceptor.risk.CheckLevel;
 import com.jdktomcat.showcase.system.design.order.service.web.request.DeductRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ public class OrderController {
      * @param deductRequest deduct request
      * @return response
      */
+    @Risk(level = CheckLevel.HIGH)
     @PostMapping("/deduct")
     public Response<String> deduct(@RequestBody DeductRequest deductRequest) {
         // param validate

@@ -1,6 +1,6 @@
 package com.jdktomcat.showcase.system.design.risk.service.engine;
 
-import com.jdktomcat.showcase.system.design.risk.service.domain.RiskLevel;
+import com.jdktomcat.showcase.system.design.risk.client.enums.RiskLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

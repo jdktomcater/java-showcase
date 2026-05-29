@@ -1,7 +1,7 @@
 package com.jdktomcat.showcase.system.design.risk.service.repository;
 
+import com.jdktomcat.showcase.system.design.risk.client.enums.RiskLevel;
 import com.jdktomcat.showcase.system.design.risk.service.domain.RiskCheckRecord;
-import com.jdktomcat.showcase.system.design.risk.service.domain.RiskLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

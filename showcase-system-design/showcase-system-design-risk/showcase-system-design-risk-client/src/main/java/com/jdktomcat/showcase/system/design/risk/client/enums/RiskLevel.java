@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.system.design.risk.service.domain;
+package com.jdktomcat.showcase.system.design.risk.client.enums;
 
 /**
  * Risk decision levels returned by the risk engine.

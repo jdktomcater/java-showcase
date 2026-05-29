@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.system.design.risk.service.web.dto;
+package com.jdktomcat.showcase.system.design.risk.client.dto;
 
-import com.jdktomcat.showcase.system.design.risk.service.domain.RiskLevel;
+import com.jdktomcat.showcase.system.design.risk.client.enums.RiskLevel;
 import lombok.Builder;
 import lombok.Data;
 

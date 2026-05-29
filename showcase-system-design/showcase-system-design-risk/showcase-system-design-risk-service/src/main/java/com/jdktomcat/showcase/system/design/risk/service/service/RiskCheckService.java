@@ -1,16 +1,16 @@
 package com.jdktomcat.showcase.system.design.risk.service.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.jdktomcat.showcase.system.design.risk.client.dto.RiskCheckRequest;
+import com.jdktomcat.showcase.system.design.risk.client.dto.RiskCheckResponse;
+import com.jdktomcat.showcase.system.design.risk.client.enums.RiskLevel;
 import com.jdktomcat.showcase.system.design.risk.service.domain.RiskCheckRecord;
 import com.jdktomcat.showcase.system.design.risk.service.domain.RiskEvent;
-import com.jdktomcat.showcase.system.design.risk.service.domain.RiskLevel;
 import com.jdktomcat.showcase.system.design.risk.service.engine.RiskContext;
 import com.jdktomcat.showcase.system.design.risk.service.engine.RiskEngine;
 import com.jdktomcat.showcase.system.design.risk.service.limiter.SlidingWindowRateLimiter;
 import com.jdktomcat.showcase.system.design.risk.service.mq.RiskEventProducer;
 import com.jdktomcat.showcase.system.design.risk.service.repository.RiskCheckRecordRepository;
-import com.jdktomcat.showcase.system.design.risk.service.web.dto.RiskCheckRequest;
-import com.jdktomcat.showcase.system.design.risk.service.web.dto.RiskCheckResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RAtomicDouble;

@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.system.design.risk.service.web.dto;
+package com.jdktomcat.showcase.system.design.risk.client.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

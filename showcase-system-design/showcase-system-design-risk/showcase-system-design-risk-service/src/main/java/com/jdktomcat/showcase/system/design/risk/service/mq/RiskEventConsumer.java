@@ -2,7 +2,6 @@ package com.jdktomcat.showcase.system.design.risk.service.mq;
 
 import com.alibaba.fastjson2.JSON;
 import com.jdktomcat.showcase.system.design.risk.service.domain.RiskEvent;
-import com.jdktomcat.showcase.system.design.risk.service.domain.RiskLevel;
 import com.jdktomcat.showcase.system.design.risk.service.service.BlacklistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
