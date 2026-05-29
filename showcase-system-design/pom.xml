@@ -218,7 +218,12 @@
                     <configuration>
                         <skip>${jib.skip}</skip>
                         <from>
-                            <image>eclipse-temurin@sha256:4a3d699d5bc3bd63a2361dbb346562e8f0aaff1b513f70fbb457c1e9392ea137</image>
+                            <!--
+                              docker:// 前缀让 Jib 直接从本地 Docker daemon 读取基础镜像，无需 Docker Hub 凭据。
+                              首次使用前执行一次：docker pull eclipse-temurin:17-jre-jammy
+                              digest 锁定 linux/amd64 层，保证构建可复现。
+                            -->
+                            <image>docker://eclipse-temurin:17-jre-jammy@sha256:47c73dc23524b031bed0a5030410c722af6a8b49d4b25898ea8f4615895065f0</image>
                         </from>
                         <to>
                             <image>${docker.image.prefix}/${project.artifactId}:${project.version}</image>

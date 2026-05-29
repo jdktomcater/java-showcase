@@ -10,7 +10,7 @@ services:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
-      - ./skywalking/agent:/skywalking/agent:ro
+      - ././skywalking/agent:/skywalking/agent:ro
     networks:
       - showcase-net
 
@@ -30,7 +30,7 @@ services:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
-      - ./skywalking/agent:/skywalking/agent:ro
+      - ././skywalking/agent:/skywalking/agent:ro
     networks:
       - showcase-net
 
@@ -50,7 +50,7 @@ services:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
-      - ./skywalking/agent:/skywalking/agent:ro
+      - ././skywalking/agent:/skywalking/agent:ro
     networks:
       - showcase-net
 

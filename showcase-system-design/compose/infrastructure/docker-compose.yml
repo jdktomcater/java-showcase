@@ -105,7 +105,7 @@ services:
     ports:
       - "8761:8761"
     volumes:
-      - ./skywalking/agent:/skywalking/agent:ro
+      - ././skywalking/agent:/skywalking/agent:ro
     environment:
       JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
       SW_AGENT_NAME: eureka-server
@@ -135,7 +135,7 @@ services:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
       SW_LOGGING_DIR: /tmp/skywalking/logs
     volumes:
-      - ./skywalking/agent:/skywalking/agent:ro
+      - ././skywalking/agent:/skywalking/agent:ro
     networks:
       - showcase-net
 
@@ -145,7 +145,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ././nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - gateway
     networks:
