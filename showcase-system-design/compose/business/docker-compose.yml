@@ -1,0 +1,59 @@
+services:
+  fef:
+    image: showcase/showcase-system-design-fef-service:1.0.0-SNAPSHOT
+    container_name: fef
+    platform: linux/amd64
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: fep
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+      SW_LOGGING_DIR: /tmp/skywalking/logs
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
+    networks:
+      - showcase-net
+
+  pay:
+    image: showcase/showcase-system-design-pay-service:1.0.0-SNAPSHOT
+    platform: linux/amd64
+    expose:
+      - 8081
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # redisson-spring-boot-starter 使用 spring.redis.redisson.config
+      SPRING_REDIS_REDISSON_CONFIG: |
+        singleServerConfig:
+          address: "redis://redis:6379"
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: pay-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+      SW_LOGGING_DIR: /tmp/skywalking/logs
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
+    networks:
+      - showcase-net
+
+  channel:
+    image: showcase/showcase-system-design-channel-service:1.0.0-SNAPSHOT
+    platform: linux/amd64
+    expose:
+      - 8082
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # redisson-spring-boot-starter 使用 spring.redis.redisson.config
+      SPRING_REDIS_REDISSON_CONFIG: |
+        singleServerConfig:
+          address: "redis://redis:6379"
+      JAVA_TOOL_OPTIONS: -javaagent:/skywalking/agent/skywalking-agent.jar
+      SW_AGENT_NAME: channel-service
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: skywalking-oap:11800
+      SW_LOGGING_DIR: /tmp/skywalking/logs
+    volumes:
+      - ./skywalking/agent:/skywalking/agent:ro
+    networks:
+      - showcase-net
+
+networks:
+  showcase-net:
+    external: true
