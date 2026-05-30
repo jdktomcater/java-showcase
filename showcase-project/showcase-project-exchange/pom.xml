@@ -14,6 +14,15 @@
 
     <modules>
         <module>showcase-project-exchange-order</module>
+        <module>showcase-project-exchange-wallet</module>
+        <module>showcase-project-exchange-risk</module>
+        <module>showcase-project-exchange-push</module>
+        <module>showcase-project-exchange-match</module>
+        <module>showcase-project-exchange-settlement</module>
+        <module>showcase-project-exchange-trade</module>
+        <module>showcase-project-exchange-market</module>
+        <module>showcase-project-exchange-ledger</module>
+        <module>showcase-project-exchange-account</module>
     </modules>
 
     <properties>
