@@ -11,6 +11,9 @@
 
     <artifactId>showcase-project-exchange-match</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>showcase-project-exchange-match-engine</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
