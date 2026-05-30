@@ -9,8 +9,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>showcase-project-exchange</module>
-        <module>showcase-project-exchange/showcase-project-exchange-order/showcase-project-exchange-order-service
-        </module>
     </modules>
 
     <properties>
