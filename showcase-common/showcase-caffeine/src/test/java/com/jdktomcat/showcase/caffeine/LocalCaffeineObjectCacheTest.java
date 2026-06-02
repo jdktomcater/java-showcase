@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
