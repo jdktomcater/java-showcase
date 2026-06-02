@@ -5,6 +5,12 @@ spring:
   application:
     name: exchange-risk-admin
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
   datasource:
     url: jdbc:h2:mem:exchange_risk;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
@@ -34,6 +40,11 @@ logging:
   level:
     com.jdktomcat.showcase.project.exchange.risk: info
 
+exchange:
+  risk:
+    redis:
+      enabled: true
+
 ---
 # MySQL profile for production-like deployment
 spring:
@@ -54,3 +65,19 @@ spring:
   sql:
     init:
       mode: never
+
+---
+# Local dev without Redis
+spring:
+  config:
+    activate:
+      on-profile: no-redis
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+exchange:
+  risk:
+    redis:
+      enabled: false

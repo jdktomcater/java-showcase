@@ -2,6 +2,7 @@ package com.jdktomcat.showcase.project.exchange.risk.admin.service;
 
 import com.jdktomcat.showcase.project.exchange.risk.admin.domain.RiskRuleChangeLogEntity;
 import com.jdktomcat.showcase.project.exchange.risk.admin.domain.RiskRuleEntity;
+import com.jdktomcat.showcase.project.exchange.risk.admin.event.RiskRuleChangedEvent;
 import com.jdktomcat.showcase.project.exchange.risk.admin.exception.RiskRuleBusinessException;
 import com.jdktomcat.showcase.project.exchange.risk.admin.repository.RiskRuleChangeLogRepository;
 import com.jdktomcat.showcase.project.exchange.risk.admin.repository.RiskRuleRepository;
@@ -9,6 +10,7 @@ import com.jdktomcat.showcase.project.exchange.risk.common.dto.*;
 import com.jdktomcat.showcase.project.exchange.risk.common.enums.*;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,6 +31,7 @@ public class RiskRuleAdminService {
     private final RiskRuleChangeLogRepository changeLogRepository;
     private final RiskRuleConverter converter;
     private final RiskRuleAuditService auditService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PageResult<RiskRuleDTO> listRules(String ruleType, String scope, String status,
                                              String keyword, int page, int size) {
@@ -96,6 +99,7 @@ public class RiskRuleAdminService {
 
         RiskRuleEntity saved = riskRuleRepository.save(entity);
         auditService.recordCreate(saved, request.getOperator());
+        publishChanged("CREATE", saved.getRuleCode(), request.getOperator());
         return converter.toDto(saved);
     }
 
@@ -115,6 +119,7 @@ public class RiskRuleAdminService {
 
         RiskRuleEntity saved = riskRuleRepository.save(entity);
         auditService.recordUpdate(before, saved, request.getOperator());
+        publishChanged("UPDATE", saved.getRuleCode(), request.getOperator());
         return converter.toDto(saved);
     }
 
@@ -129,6 +134,7 @@ public class RiskRuleAdminService {
 
         RiskRuleEntity saved = riskRuleRepository.save(entity);
         auditService.recordStatusChange(before, saved, request.getOperator());
+        publishChanged("STATUS", saved.getRuleCode(), request.getOperator());
         return converter.toDto(saved);
     }
 
@@ -137,6 +143,7 @@ public class RiskRuleAdminService {
         RiskRuleEntity entity = findRuleOrThrow(id);
         auditService.recordDelete(entity, operator);
         riskRuleRepository.delete(entity);
+        publishChanged("DELETE", entity.getRuleCode(), operator);
     }
 
     public PageResult<RiskRuleChangeLogDTO> listChangeLogs(Long ruleId, int page, int size) {
@@ -171,6 +178,10 @@ public class RiskRuleAdminService {
                 .stream()
                 .map(converter::toDto)
                 .toList();
+    }
+
+    private void publishChanged(String changeType, String ruleCode, String operator) {
+        eventPublisher.publishEvent(new RiskRuleChangedEvent(changeType, ruleCode, operator));
     }
 
     private RiskRuleEntity findRuleOrThrow(Long id) {

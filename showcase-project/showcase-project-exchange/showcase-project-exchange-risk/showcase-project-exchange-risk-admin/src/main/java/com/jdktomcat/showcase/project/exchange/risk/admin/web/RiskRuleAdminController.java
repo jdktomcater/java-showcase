@@ -1,7 +1,10 @@
 package com.jdktomcat.showcase.project.exchange.risk.admin.web;
 
+import com.jdktomcat.showcase.project.exchange.risk.admin.redis.RiskRuleRedisPublisher;
 import com.jdktomcat.showcase.project.exchange.risk.admin.service.RiskRuleAdminService;
 import com.jdktomcat.showcase.project.exchange.risk.common.dto.*;
+import com.jdktomcat.showcase.project.exchange.risk.common.redis.RiskRuleRedisSnapshot;
+import com.jdktomcat.showcase.project.exchange.risk.common.redis.RiskRuleRedisSyncResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import java.util.List;
 public class RiskRuleAdminController {
 
     private final RiskRuleAdminService riskRuleAdminService;
+    private final RiskRuleRedisPublisher redisSyncService;
 
     @GetMapping("/rules")
     public ApiResult<PageResult<RiskRuleDTO>> listRules(
@@ -77,5 +81,26 @@ public class RiskRuleAdminController {
     @GetMapping("/rules/enabled")
     public ApiResult<List<RiskRuleDTO>> listEnabledRules() {
         return ApiResult.ok(riskRuleAdminService.listEnabledRules());
+    }
+
+    @PostMapping("/rules/sync-redis")
+    public ApiResult<RiskRuleRedisSyncResult> syncRedis(
+            @RequestParam(value = "operator", defaultValue = "admin") String operator) {
+        return ApiResult.ok(redisSyncService.syncAll("MANUAL", null, operator));
+    }
+
+    @GetMapping("/rules/redis-version")
+    public ApiResult<RiskRuleRedisSyncResult> getRedisVersion() {
+        return ApiResult.ok(redisSyncService.getCurrentVersion());
+    }
+
+    /**
+     * Read enabled rules from Redis snapshot — same data consumed by matching / order services.
+     */
+    @GetMapping("/rules/enabled/cache")
+    public ApiResult<RiskRuleRedisSnapshot> getEnabledRulesFromRedis() {
+        return redisSyncService.loadSnapshotFromRedis()
+                .map(ApiResult::ok)
+                .orElseGet(() -> ApiResult.fail("Redis 中暂无规则快照，请先执行 sync-redis"));
     }
 }

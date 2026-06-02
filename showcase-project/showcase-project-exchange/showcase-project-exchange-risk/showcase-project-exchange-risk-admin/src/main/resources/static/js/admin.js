@@ -50,7 +50,8 @@ const els = {
     logEmpty: document.getElementById('logEmpty'),
     logModalTitle: document.getElementById('logModalTitle'),
     loadingOverlay: document.getElementById('loadingOverlay'),
-    toastContainer: document.getElementById('toastContainer')
+    toastContainer: document.getElementById('toastContainer'),
+    redisStatus: document.getElementById('redisStatus')
 };
 
 function showLoading(show) {
@@ -273,6 +274,39 @@ function escapeHtml(value) {
         .replaceAll("'", '&#39;');
 }
 
+async function loadRedisVersion() {
+    try {
+        const data = await request(`${API_BASE}/rules/redis-version`);
+        if (data.published && data.version) {
+            els.redisStatus.textContent = `Redis v${data.version} · ${data.ruleCount} 条`;
+            els.redisStatus.className = 'redis-status ok';
+        } else {
+            els.redisStatus.textContent = data.message || 'Redis 未同步';
+            els.redisStatus.className = 'redis-status warn';
+        }
+    } catch (error) {
+        els.redisStatus.textContent = 'Redis 不可用';
+        els.redisStatus.className = 'redis-status warn';
+    }
+}
+
+async function syncRedis() {
+    showLoading(true);
+    try {
+        const data = await request(`${API_BASE}/rules/sync-redis?operator=admin`, { method: 'POST' });
+        if (data.published) {
+            toast(`Redis 已同步：v${data.version}，${data.ruleCount} 条规则`);
+        } else {
+            toast(data.message || 'Redis 同步未完成', 'error');
+        }
+        await loadRedisVersion();
+    } catch (error) {
+        toast(error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
 async function loadRules() {
     showLoading(true);
     try {
@@ -289,6 +323,7 @@ async function loadRules() {
         state.total = data.total || 0;
         renderRules(data.records || []);
         updatePagination();
+        await loadRedisVersion();
     } catch (error) {
         toast(error.message, 'error');
     } finally {
@@ -417,6 +452,7 @@ function resetFilters() {
 function bindEvents() {
     document.getElementById('btnCreate').addEventListener('click', openCreateModal);
     document.getElementById('btnRefresh').addEventListener('click', loadRules);
+    document.getElementById('btnSyncRedis').addEventListener('click', syncRedis);
     document.getElementById('btnSearch').addEventListener('click', () => {
         state.page = 0;
         loadRules();
@@ -473,6 +509,7 @@ async function bootstrap() {
     try {
         await loadMetadata();
         await loadRules();
+        await loadRedisVersion();
     } catch (error) {
         toast(error.message, 'error');
     } finally {
