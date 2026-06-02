@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交易所风控规则管理</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <div class="header-title">
+            <h1>交易所风控规则管理</h1>
+            <p>配置预交易风控规则，供撮合引擎与订单网关实时加载</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" id="btnRefresh">刷新</button>
+            <button class="btn btn-primary" id="btnCreate">新建规则</button>
+        </div>
+    </header>
+
+    <section class="card filters">
+        <div>
+            <label for="filterKeyword">关键词</label>
+            <input id="filterKeyword" type="text" placeholder="规则编码 / 名称">
+        </div>
+        <div>
+            <label for="filterRuleType">规则类型</label>
+            <select id="filterRuleType">
+                <option value="">全部类型</option>
+            </select>
+        </div>
+        <div>
+            <label for="filterScope">作用范围</label>
+            <select id="filterScope">
+                <option value="">全部范围</option>
+            </select>
+        </div>
+        <div>
+            <label for="filterStatus">状态</label>
+            <select id="filterStatus">
+                <option value="">全部状态</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="btn btn-primary" id="btnSearch">查询</button>
+            <button class="btn btn-secondary" id="btnReset">重置</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>编码</th>
+                    <th>名称</th>
+                    <th>类型</th>
+                    <th>范围</th>
+                    <th>阈值</th>
+                    <th>动作</th>
+                    <th>优先级</th>
+                    <th>状态</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="ruleTableBody"></tbody>
+            </table>
+        </div>
+        <div id="emptyState" class="empty-state hidden">暂无规则数据</div>
+        <div class="pagination">
+            <div class="pagination-info" id="paginationInfo">共 0 条</div>
+            <div class="pagination-controls">
+                <button class="btn btn-secondary btn-sm" id="btnPrev">上一页</button>
+                <button class="btn btn-secondary btn-sm" id="btnNext">下一页</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal-backdrop" id="ruleModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">新建规则</h2>
+            <button class="btn btn-secondary btn-sm" id="btnCloseModal">关闭</button>
+        </div>
+        <form id="ruleForm">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div id="ruleCodeGroup">
+                        <label for="ruleCode">规则编码</label>
+                        <input id="ruleCode" name="ruleCode" required maxlength="64" placeholder="GLOBAL_ORDER_SIZE_001">
+                    </div>
+                    <div>
+                        <label for="ruleName">规则名称</label>
+                        <input id="ruleName" name="ruleName" required maxlength="128">
+                    </div>
+                    <div>
+                        <label for="ruleType">规则类型</label>
+                        <select id="ruleType" name="ruleType" required></select>
+                        <div class="form-hint" id="ruleTypeHint"></div>
+                    </div>
+                    <div>
+                        <label for="scope">作用范围</label>
+                        <select id="scope" name="scope" required></select>
+                    </div>
+                    <div id="targetUserGroup" class="hidden">
+                        <label for="targetUserId">目标用户 ID</label>
+                        <input id="targetUserId" name="targetUserId" maxlength="64">
+                    </div>
+                    <div id="targetSymbolGroup" class="hidden">
+                        <label for="targetSymbol">目标交易对</label>
+                        <input id="targetSymbol" name="targetSymbol" maxlength="32" placeholder="BTCUSDT">
+                    </div>
+                    <div>
+                        <label for="thresholdValue">阈值数值</label>
+                        <input id="thresholdValue" name="thresholdValue" type="number" step="any" placeholder="可选">
+                    </div>
+                    <div>
+                        <label for="action">触发动作</label>
+                        <select id="action" name="action" required></select>
+                    </div>
+                    <div>
+                        <label for="priority">优先级</label>
+                        <input id="priority" name="priority" type="number" min="1" value="10" required>
+                    </div>
+                    <div>
+                        <label for="operator">操作人</label>
+                        <input id="operator" name="operator" value="admin" required maxlength="64">
+                    </div>
+                    <div>
+                        <label for="effectiveFrom">生效开始</label>
+                        <input id="effectiveFrom" name="effectiveFrom" type="datetime-local">
+                    </div>
+                    <div>
+                        <label for="effectiveTo">生效结束</label>
+                        <input id="effectiveTo" name="effectiveTo" type="datetime-local">
+                    </div>
+                    <div class="full">
+                        <label for="thresholdConfig">阈值配置 JSON</label>
+                        <textarea id="thresholdConfig" name="thresholdConfig" placeholder='{"windowSeconds":60,"maxOrders":20}'></textarea>
+                    </div>
+                    <div class="full">
+                        <label for="description">描述</label>
+                        <textarea id="description" name="description" maxlength="512"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelForm">取消</button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitForm">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="logModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="logModalTitle">变更日志</h2>
+            <button class="btn btn-secondary btn-sm" id="btnCloseLogModal">关闭</button>
+        </div>
+        <div class="modal-body">
+            <div id="logList" class="log-list"></div>
+            <div id="logEmpty" class="empty-state hidden">暂无变更记录</div>
+        </div>
+    </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>

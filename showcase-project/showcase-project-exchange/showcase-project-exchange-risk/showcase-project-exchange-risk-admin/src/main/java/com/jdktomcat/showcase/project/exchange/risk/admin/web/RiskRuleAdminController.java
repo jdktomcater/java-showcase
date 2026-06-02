@@ -20,17 +20,17 @@ public class RiskRuleAdminController {
 
     @GetMapping("/rules")
     public ApiResult<PageResult<RiskRuleDTO>> listRules(
-            @RequestParam(required = false) String ruleType,
-            @RequestParam(required = false) String scope,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(value = "ruleType", required = false) String ruleType,
+            @RequestParam(value = "scope", required = false) String scope,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
         return ApiResult.ok(riskRuleAdminService.listRules(ruleType, scope, status, keyword, page, size));
     }
 
     @GetMapping("/rules/{id}")
-    public ApiResult<RiskRuleDTO> getRule(@PathVariable Long id) {
+    public ApiResult<RiskRuleDTO> getRule(@PathVariable("id") Long id) {
         return ApiResult.ok(riskRuleAdminService.getRule(id));
     }
 
@@ -40,29 +40,29 @@ public class RiskRuleAdminController {
     }
 
     @PutMapping("/rules/{id}")
-    public ApiResult<RiskRuleDTO> updateRule(@PathVariable Long id,
+    public ApiResult<RiskRuleDTO> updateRule(@PathVariable("id") Long id,
                                              @Valid @RequestBody RiskRuleUpdateRequest request) {
         return ApiResult.ok(riskRuleAdminService.updateRule(id, request));
     }
 
     @PatchMapping("/rules/{id}/status")
-    public ApiResult<RiskRuleDTO> updateStatus(@PathVariable Long id,
+    public ApiResult<RiskRuleDTO> updateStatus(@PathVariable("id") Long id,
                                                @Valid @RequestBody RiskRuleStatusRequest request) {
         return ApiResult.ok(riskRuleAdminService.updateStatus(id, request));
     }
 
     @DeleteMapping("/rules/{id}")
-    public ApiResult<Void> deleteRule(@PathVariable Long id,
-                                      @RequestParam(defaultValue = "admin") String operator) {
+    public ApiResult<Void> deleteRule(@PathVariable("id") Long id,
+                                      @RequestParam(value = "operator", defaultValue = "admin") String operator) {
         riskRuleAdminService.deleteRule(id, operator);
         return ApiResult.ok();
     }
 
     @GetMapping("/rules/{id}/change-logs")
     public ApiResult<PageResult<RiskRuleChangeLogDTO>> listChangeLogs(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @PathVariable("id") Long id,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
         return ApiResult.ok(riskRuleAdminService.listChangeLogs(id, page, size));
     }
 
