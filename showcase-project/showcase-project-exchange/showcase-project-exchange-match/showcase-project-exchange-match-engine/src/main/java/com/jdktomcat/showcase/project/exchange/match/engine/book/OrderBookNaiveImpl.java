@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 public final class OrderBookNaiveImpl implements IOrderBook {
 
     private final NavigableMap<Long, OrdersBucketNaive> askBuckets;
+
     private final NavigableMap<Long, OrdersBucketNaive> bidBuckets;
 
     private final CoreSymbolSpecification symbolSpec;
@@ -43,10 +44,7 @@ public final class OrderBookNaiveImpl implements IOrderBook {
 
     private final boolean logDebug;
 
-    public OrderBookNaiveImpl(final CoreSymbolSpecification symbolSpec,
-                              final OrderBookEventsHelper eventsHelper,
-                              final LoggingConfiguration loggingCfg) {
-
+    public OrderBookNaiveImpl(final CoreSymbolSpecification symbolSpec, final OrderBookEventsHelper eventsHelper, final LoggingConfiguration loggingCfg) {
         this.symbolSpec = symbolSpec;
         this.askBuckets = new TreeMap<>();
         this.bidBuckets = new TreeMap<>(Collections.reverseOrder());
