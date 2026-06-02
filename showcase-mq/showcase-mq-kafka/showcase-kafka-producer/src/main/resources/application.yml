@@ -13,7 +13,7 @@ spring:
       # 重试次数
       retries: 3
       # ack（可选0、1、all/-1）
-      acks: 1
+      acks: all
       # 批量大小（字节）
       batch-size: 1024
       # 提交延时（ms）
