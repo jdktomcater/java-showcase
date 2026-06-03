@@ -39,7 +39,7 @@ services:
       TZ: Asia/Shanghai
       NAMESRV_ADDR: "rmq-name-srv-a:9876"
       JAVA_OPTS: " -Duser.home=/opt"
-      JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+      JAVA_OPT_EXT: "-server -Xms1g -Xmx1g -Xmn512m -XX:MaxDirectMemorySize=512m"
     command: sh mqbroker -c /home/rocketmq/rocketmq-4.5.2/conf/broker.conf
     links:
       - rmq-name-srv-a:rmq-name-srv-a
@@ -61,7 +61,7 @@ services:
       TZ: Asia/Shanghai
       NAMESRV_ADDR: "rmq-name-srv-b:9876"
       JAVA_OPTS: " -Duser.home=/opt"
-      JAVA_OPT_EXT: "-server -Xms256m -Xmx256m -Xmn256m"
+      JAVA_OPT_EXT: "-server -Xms1g -Xmx1g -Xmn512m -XX:MaxDirectMemorySize=512m"
     command: sh mqbroker -c /home/rocketmq/rocketmq-4.5.2/conf/broker.conf
     links:
       - rmq-name-srv-a:rmq-name-srv-a
@@ -71,12 +71,13 @@ services:
         aliases:
           - rmq-broker-b
   rmq-console:
-    image: apacherocketmq/rocketmq-dashboard
+    platform: linux/amd64
+    image: apacherocketmq/rocketmq-dashboard:1.0.0
     container_name: rmq-console
     ports:
-      - "8087:8082"
+      - "8087:8080"
     environment:
-      JAVA_OPTS: -Drocketmq.namesrv.addr=rmq-name-srv-a:9876;rmq-name-srv-b:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Drocketmq.config.accessKey=rocketmq2 -Drocketmq.config.secretKey=12345678
+      JAVA_OPTS: -Drocketmq.namesrv.addr=rmq-name-srv-a:9876;rmq-name-srv-b:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
     volumes:
       - /Users/yuhata/workspace/github/jdktomcater/java-showcase/showcase-mq/showcase-mq-rocketmq/data:/tmp/rocketmq-console/data
     networks:
