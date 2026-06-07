@@ -98,15 +98,11 @@ public class WalletService {
         return executeIdempotent(request.getBizRequestId(), WalletOperationType.DEPOSIT, () -> {
             WalletAccountEntity account = lockAccount(request.getUserId(), request.getCurrency());
             BalanceSnapshot before = BalanceSnapshot.of(account);
-
             account.setTotal(account.getTotal().add(amount));
             account.setAvailable(account.getAvailable().add(amount));
             WalletConverter.assertInvariant(account);
             account = accountRepository.save(account);
-
-            appendLedger(account, request.getBizRequestId(), WalletOperationType.DEPOSIT,
-                    LedgerEntryType.CREDIT_AVAILABLE, amount, before, request.getRemark());
-
+            appendLedger(account, request.getBizRequestId(), WalletOperationType.DEPOSIT, LedgerEntryType.CREDIT_AVAILABLE, amount, before, request.getRemark());
             WalletOperationEntity operation = saveOperation(
                     request.getBizRequestId(),
                     WalletOperationType.DEPOSIT,
@@ -116,7 +112,6 @@ public class WalletService {
                     amount,
                     account.getId(),
                     request.getRemark());
-
             return WalletConverter.toOperationResult(operation, account, false);
         });
     }
@@ -375,26 +370,18 @@ public class WalletService {
         });
     }
 
-    private WalletOperationResultDTO executeIdempotent(String bizRequestId,
-                                                       WalletOperationType operationType,
-                                                       OperationExecutor executor) {
+    private WalletOperationResultDTO executeIdempotent(String bizRequestId, WalletOperationType operationType, OperationExecutor executor) {
         var existing = operationRepository.findByBizRequestIdAndOperationType(bizRequestId, operationType);
         if (existing.isPresent()) {
             WalletOperationEntity operation = existing.get();
-            WalletAccountEntity account = accountRepository.findByUserIdAndCurrency(
-                            operation.getUserId(), operation.getCurrency())
-                    .orElse(null);
+            WalletAccountEntity account = accountRepository.findByUserIdAndCurrency(operation.getUserId(), operation.getCurrency()).orElse(null);
             return WalletConverter.toOperationResult(operation, account, true);
         }
-
         try {
             return executor.execute();
         } catch (DataIntegrityViolationException ex) {
-            var replay = operationRepository.findByBizRequestIdAndOperationType(bizRequestId, operationType)
-                    .orElseThrow(() -> ex);
-            WalletAccountEntity account = accountRepository.findByUserIdAndCurrency(
-                            replay.getUserId(), replay.getCurrency())
-                    .orElse(null);
+            var replay = operationRepository.findByBizRequestIdAndOperationType(bizRequestId, operationType).orElseThrow(() -> ex);
+            WalletAccountEntity account = accountRepository.findByUserIdAndCurrency(replay.getUserId(), replay.getCurrency()).orElse(null);
             return WalletConverter.toOperationResult(replay, account, true);
         }
     }
@@ -421,8 +408,7 @@ public class WalletService {
     }
 
     private WalletAccountEntity requireAccount(Long userId, String currency) {
-        return accountRepository.findByUserIdAndCurrency(userId, currency)
-                .orElseThrow(() -> new WalletBusinessException("wallet account not found"));
+        return accountRepository.findByUserIdAndCurrency(userId, currency).orElseThrow(() -> new WalletBusinessException("wallet account not found"));
     }
 
     private WalletAccountEntity newWalletAccount(Long userId, String currency) {
@@ -455,8 +441,7 @@ public class WalletService {
                               BigDecimal amount,
                               BalanceSnapshot before,
                               String remark) {
-        WalletLedgerEntity ledger = WalletConverter.buildLedger(
-                account, bizRequestId, operationType, entryType, amount, before, remark);
+        WalletLedgerEntity ledger = WalletConverter.buildLedger(account, bizRequestId, operationType, entryType, amount, before, remark);
         ledgerRepository.save(ledger);
     }
 

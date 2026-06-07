@@ -8,6 +8,5 @@ import java.util.Optional;
 
 public interface WalletOperationRepository extends JpaRepository<WalletOperationEntity, Long> {
 
-    Optional<WalletOperationEntity> findByBizRequestIdAndOperationType(String bizRequestId,
-                                                                       WalletOperationType operationType);
+    Optional<WalletOperationEntity> findByBizRequestIdAndOperationType(String bizRequestId, WalletOperationType operationType);
 }
