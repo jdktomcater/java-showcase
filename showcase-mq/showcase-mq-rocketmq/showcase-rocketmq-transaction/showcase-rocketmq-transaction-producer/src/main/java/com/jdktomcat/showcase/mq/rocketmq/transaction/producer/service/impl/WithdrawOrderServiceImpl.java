@@ -48,7 +48,7 @@ public class WithdrawOrderServiceImpl implements IWithdrawOrderService {
     @Transactional
     public WithdrawOrder createOrder(OrderTO orderTO) throws InterruptedException {
         Integer merchantId = orderTO.getMerchantId();
-        redisComponent.exeDistSync(MERCHANT_BALANCE_LOCK + merchantId, 8, 10,orderTO, (order) -> {
+        redisComponent.exeDistSync(MERCHANT_BALANCE_LOCK + merchantId, 8, 10, orderTO, (order) -> {
             Merchant preMerchant = merchantMapper.selectById(order.getMerchantId());
             // 扣款
             int update = merchantMapper.subtract(merchantId, order.getAmount().add(preMerchant.getFee()));

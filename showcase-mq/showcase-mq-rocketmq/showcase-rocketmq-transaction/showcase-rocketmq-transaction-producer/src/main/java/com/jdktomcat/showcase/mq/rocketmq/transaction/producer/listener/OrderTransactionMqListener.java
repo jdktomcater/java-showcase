@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 @Slf4j
-@RocketMQTransactionListener(corePoolSize = 3,maximumPoolSize = 10)
+@RocketMQTransactionListener(corePoolSize = 3, maximumPoolSize = 10)
 public class OrderTransactionMqListener implements RocketMQLocalTransactionListener {
 
     @Override

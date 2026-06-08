@@ -38,10 +38,10 @@ public class MqProducerComponent {
      * @return 发送结果
      */
     public WithdrawOrder sendTransactionMessage(OrderTO orderTO, Function<OrderTO, WithdrawOrder> function) {
-        TransactionSendResult transactionSendResult = rocketMQTemplate.sendMessageInTransaction(transactionTopic, MessageBuilder.withPayload(JSONObject.toJSONString(orderTO)).build(),function);
-        log.info("transactionSendResult:{}",transactionSendResult);
+        TransactionSendResult transactionSendResult = rocketMQTemplate.sendMessageInTransaction(transactionTopic, MessageBuilder.withPayload(JSONObject.toJSONString(orderTO)).build(), function);
+        log.info("transactionSendResult:{}", transactionSendResult);
         WithdrawOrder withdrawOrder = ThreadLocalUtil.WITHDRAW_ORDER_THREAD_LOCAL.get();
-        if(withdrawOrder!=null){
+        if (withdrawOrder != null) {
             ThreadLocalUtil.WITHDRAW_ORDER_THREAD_LOCAL.remove();
         }
         return withdrawOrder;
