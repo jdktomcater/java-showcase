@@ -1,0 +1,19 @@
+server:
+  port: -1
+
+spring:
+  application:
+    name: showcase-job-provider
+  main:
+    keep-alive: true
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8080/
+    executor:
+      appname: showcase-job-provider
+      port: 2309
+      logpath: ./logs/xxl-job/jobhandler
+      logretentiondays: 7
+    accessToken: default_token

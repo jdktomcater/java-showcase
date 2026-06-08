@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 @Configuration
 @ComponentScan(basePackages = "com.jdktomcater.showcase.job.provider.commands")
@@ -25,7 +26,7 @@ public class XxlJobConfig {
     @Value("${xxl.job.accessToken}")
     private String accessToken;
 
-    @Value("${xxl.job.executor.logpath: }")
+    @Value("${xxl.job.executor.logpath}")
     private String logPath;
 
     @Value("${xxl.job.executor.logretentiondays}")
@@ -42,7 +43,9 @@ public class XxlJobConfig {
             xxlJobSpringExecutor.setIp(IpUtils.getLocalIp());
             xxlJobSpringExecutor.setPort(port);
             xxlJobSpringExecutor.setAccessToken(accessToken);
-            xxlJobSpringExecutor.setLogPath(logPath);
+            if (StringUtils.hasLength(logPath)) {
+                xxlJobSpringExecutor.setLogPath(logPath);
+            }
             xxlJobSpringExecutor.setLogRetentionDays(logRetentionDays);
         }catch (Exception ex){
             log.error(">>>>>>>>>>> xxl-job config init error.", ex);
