@@ -26,7 +26,7 @@ class ParallelPerformanceTest {
     @BeforeEach
     void setUp() {
         ExecutorService executor = Executors.newFixedThreadPool(20);
-        ParallelComponent component = new ParallelComponent(executor);
+        ParallelComponent component = new ParallelComponent(executor,null);
         BusinessService businessService = new BusinessService();
         parallelService = new ParallelService(component, businessService);
     }

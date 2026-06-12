@@ -22,7 +22,7 @@ class ParallelComponentTest {
     @BeforeEach
     void setUp() {
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        component = new ParallelComponent(executor);
+        component = new ParallelComponent(executor,null);
     }
 
     @Test
@@ -42,8 +42,8 @@ class ParallelComponentTest {
     void resultOrderMatchesInput() {
         List<String> input = Arrays.asList("c", "a", "b");
 
-        List<String> serial = component.executeSerial(input, s -> s.toUpperCase());
-        List<String> parallel = component.executeParallel(input, s -> s.toUpperCase());
+        List<String> serial = component.executeSerial(input, String::toUpperCase);
+        List<String> parallel = component.executeParallel(input, String::toUpperCase);
 
         assertEquals(Arrays.asList("C", "A", "B"), serial);
         assertEquals(Arrays.asList("C", "A", "B"), parallel);
