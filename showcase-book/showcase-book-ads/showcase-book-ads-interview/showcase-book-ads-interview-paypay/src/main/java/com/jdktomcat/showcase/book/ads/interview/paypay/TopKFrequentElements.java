@@ -26,22 +26,21 @@ public class TopKFrequentElements {
      * @return result nums
      */
     public static int[] topKFrequentElements(int[] nums, int k) {
-        HashMap<Integer, Integer> map = new HashMap<>();
+        Map<Integer, Integer> frequency = new HashMap<>();
         for (int num : nums) {
-            map.put(num, map.getOrDefault(num, 0) + 1);
+            frequency.put(num, frequency.getOrDefault(num, 0) + 1);
         }
         PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(Map.Entry.comparingByValue());
-        map.entrySet().forEach(entry -> {
+        for (Map.Entry<Integer, Integer> entry : frequency.entrySet()) {
             minHeap.offer(entry);
             if (minHeap.size() > k) {
                 minHeap.poll();
             }
-        });
+        }
         int[] result = new int[k];
         for (int i = k - 1; i >= 0; i--) {
-            result[i] = Objects.requireNonNull(minHeap.poll()).getKey();
+            result[i] = minHeap.poll().getKey();
         }
-        Arrays.sort(result);
         return result;
     }
 }

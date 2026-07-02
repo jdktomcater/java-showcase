@@ -1,5 +1,6 @@
 package com.jdktomcat.showcase.book.ads.interview.paypay;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ public class LRUCache {
         moveToHead(node);
         return node.value;
     }
+
+    ArrayDeque
     public void put(int key, int value) {
         if (!cache.containsKey(key)) {
             Node node = new Node(key, value);

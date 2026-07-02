@@ -1,6 +1,7 @@
 package com.jdktomcat.showcase.book.ads.interview.paypay;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Two Sum is a classic coding problem (LeetCode #1) where you’re given:
@@ -25,12 +26,12 @@ public class TwoSum {
      * @return indices
      */
     public static int[] twoSum(int[] nums, int target) {
-        HashMap<Integer, Integer> numIndexMap = new HashMap<>();
+        Map<Integer, Integer> numIndexMap = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
-            if (numIndexMap.containsKey(target - nums[i])) {
-                return new int[]{numIndexMap.get(target - nums[i]), i};
+            Integer index = numIndexMap.get(target - nums[i]);
+            if (index != null) {
+                return new int[]{index, i};
             }
-            // put if absent prevent same num occur something wrong
             numIndexMap.putIfAbsent(nums[i], i);
         }
         throw new IllegalArgumentException("No two sum solution");
