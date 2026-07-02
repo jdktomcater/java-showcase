@@ -47,7 +47,7 @@ public class LRUCache {
         return node.value;
     }
 
-    public voisd put(int key, int value) {
+    public void put(int key, int value) {
         if (!cache.containsKey(key)) {
             Node node = new Node(key, value);
             cache.put(key, node);
