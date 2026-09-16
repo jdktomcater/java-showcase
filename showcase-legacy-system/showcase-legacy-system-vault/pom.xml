@@ -17,5 +17,6 @@
         <module>showcase-legacy-system-vault-ob</module>
         <module>showcase-legacy-system-vault-verify</module>
         <module>showcase-legacy-system-vault-hikaricp</module>
+        <module>showcase-legacy-system-vault-ob-hikaricp</module>
     </modules>
 </project>
