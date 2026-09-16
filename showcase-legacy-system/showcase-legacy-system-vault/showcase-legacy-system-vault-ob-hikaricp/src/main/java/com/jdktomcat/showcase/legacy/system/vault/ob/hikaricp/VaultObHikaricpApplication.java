@@ -9,8 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @MapperScan(value = "com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.mapper")
 @SpringBootApplication
-public class VaultHikaricpApplication {
+public class VaultObHikaricpApplication {
     public static void main(String[] args) {
-        SpringApplication.run(VaultHikaricpApplication.class, args);
+        SpringApplication.run(VaultObHikaricpApplication.class, args);
     }
 }
