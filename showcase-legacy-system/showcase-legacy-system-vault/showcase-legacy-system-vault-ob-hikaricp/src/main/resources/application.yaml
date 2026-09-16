@@ -7,18 +7,18 @@ spring:
     import: optional:vault://
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.30.3.16:3366/tyadmin?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=GMT%2b8
+    driverClassName: com.oceanbase.jdbc.Driver
+    url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
   cloud:
     vault:
       enabled: true
       fail-fast: true
       authentication: ${VAULT_AUTHENTICATION:APPROLE}
       app-role:
-        role: ${VAULT_AUTHENTICATION_ROLE:tx-fat-role-v1}
-        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:a50e2030-f64f-7f76-07a9-1df661cf4b1a}
-        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:6dc37a71-e64f-be45-a9bb-6ea0139ecf8c}
-      uri: ${VAULT_URI:https://txdev-vault.qwasn.com}
+        role: ${VAULT_AUTHENTICATION_ROLE:agent-hub-fat-role-v0}
+        role-id: ${VAULT_AUTHENTICATION_ROLE_ID:08123f4-9d97-c86b-8fe9-98505f53ce61}
+        secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:43725835-00eb-1320-c4a4-b28a48bc3915}
+      uri: ${VAULT_URI:https://txfat-vault.fbnma.com/}
       kv:
         enabled: false
       config:
@@ -32,6 +32,7 @@ spring:
         role: tx-tyadmin-role-v1
         username-property: spring.datasource.username
         password-property: spring.datasource.password
+      namespace: agent-fat
 logging:
   level:
     org.springframework.cloud.vault: debug

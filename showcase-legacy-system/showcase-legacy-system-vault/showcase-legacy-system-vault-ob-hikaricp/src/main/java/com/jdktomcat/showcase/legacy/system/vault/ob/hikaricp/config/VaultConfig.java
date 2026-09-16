@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp.config;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.config;
 
-import com.jdktomcat.showcase.legacy.system.vault.hikaricp.listener.MultiDbLeaseListener;
+import com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.listener.MultiDbLeaseListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

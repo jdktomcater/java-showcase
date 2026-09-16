@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp.mapper;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

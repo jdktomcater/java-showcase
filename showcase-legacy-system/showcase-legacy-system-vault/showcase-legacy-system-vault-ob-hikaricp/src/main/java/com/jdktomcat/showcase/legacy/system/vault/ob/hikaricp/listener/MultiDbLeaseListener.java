@@ -1,6 +1,6 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp.listener;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.listener;
 
-import com.jdktomcat.showcase.legacy.system.vault.hikaricp.config.SwitchableDataSource;
+import com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.config.SwitchableDataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariPoolMXBean;

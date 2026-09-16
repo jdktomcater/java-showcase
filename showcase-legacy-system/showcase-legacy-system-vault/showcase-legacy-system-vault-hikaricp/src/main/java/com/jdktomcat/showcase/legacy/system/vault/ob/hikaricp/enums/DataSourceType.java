@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp.enums;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.enums;
 
 /**
  * 数据源

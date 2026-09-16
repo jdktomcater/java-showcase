@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

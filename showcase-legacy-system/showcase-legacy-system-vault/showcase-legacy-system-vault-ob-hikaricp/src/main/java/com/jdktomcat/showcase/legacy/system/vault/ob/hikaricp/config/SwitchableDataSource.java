@@ -1,4 +1,4 @@
-package com.jdktomcat.showcase.legacy.system.vault.hikaricp.config;
+package com.jdktomcat.showcase.legacy.system.vault.ob.hikaricp.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
