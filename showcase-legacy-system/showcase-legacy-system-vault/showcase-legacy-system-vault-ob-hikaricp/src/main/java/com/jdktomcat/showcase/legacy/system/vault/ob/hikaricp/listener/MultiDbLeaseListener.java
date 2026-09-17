@@ -332,7 +332,6 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
             log.warn("当前连接池已使用备份数据库账号，无需重复切换。");
             return;
         }
-
         HikariDataSource fallbackDataSource = null;
         try {
             fallbackDataSource = createReplacementDataSource(old, loginUsername, fallbackPassword);
