@@ -9,6 +9,8 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.oceanbase.jdbc.Driver
     url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: vault_test_user@tx_test_agentdata#txobserver
+    password: Jz6m8up8vNoH%NuJt7JMCp@MU#TJxj
   cloud:
     vault:
       enabled: true
@@ -33,6 +35,12 @@ spring:
         username-property: spring.datasource.username
         password-property: spring.datasource.password
       namespace: agent-fat
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+        health-indicator:
+          enabled: false
 
 oceanbase:
   tenant-name: tx_test_agentdata
@@ -43,4 +51,4 @@ logging:
     org.springframework.vault: debug
   config: classpath:logback.xml
   file:
-    name: /data/logs/showcase/showcase-vault-simple.log
+    name: /data/logs/showcase/showcase-vault-ob-hikaricp.log
