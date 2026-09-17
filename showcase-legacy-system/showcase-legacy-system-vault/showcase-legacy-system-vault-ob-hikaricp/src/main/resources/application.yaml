@@ -29,11 +29,11 @@ spring:
           min-renewal: 10s
           lease-endpoints: leases
       database:
-        enabled: true
+        enabled: false
         backend: database
         role: agent-hub-ob-role-v0
-        username-property: spring.datasource.username
-        password-property: spring.datasource.password
+#        username-property: spring.datasource.username
+#        password-property: spring.datasource.password
       namespace: agent-fat
     discovery:
       client:

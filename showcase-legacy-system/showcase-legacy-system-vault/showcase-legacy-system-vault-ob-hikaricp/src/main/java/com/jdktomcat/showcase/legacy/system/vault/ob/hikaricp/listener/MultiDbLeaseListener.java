@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.vault.core.lease.event.LeaseErrorListener;
 import org.springframework.vault.core.lease.event.LeaseListener;
+import org.springframework.vault.core.lease.event.AfterSecretLeaseRenewedEvent;
 import org.springframework.vault.core.lease.event.SecretLeaseCreatedEvent;
 import org.springframework.vault.core.lease.event.SecretLeaseEvent;
+import org.springframework.vault.core.lease.event.SecretLeaseExpiredEvent;
 
 import javax.annotation.PreDestroy;
 import java.sql.Connection;
@@ -22,7 +24,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -56,34 +58,19 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
     @Value("${spring.datasource.driver-class-name:${spring.datasource.driverClassName:}}")
     private String configuredDriverClassName;
 
-    @Value("${vault.datasource.fallback.enabled:${VAULT_DATASOURCE_FALLBACK_ENABLED:true}}")
-    private boolean fallbackEnabled;
-
-    @Value("${vault.datasource.fallback-after-ms:${VAULT_DATASOURCE_FALLBACK_AFTER_MS:172800000}}")
-    private long fallbackAfterMs;
-
-    @Value("${vault.datasource.fallback.jdbc-url:${VAULT_DATASOURCE_FALLBACK_JDBC_URL:}}")
-    private String fallbackJdbcUrl;
-
-    @Value("${vault.datasource.fallback.driver-class-name:${VAULT_DATASOURCE_FALLBACK_DRIVER_CLASS_NAME:}}")
-    private String fallbackDriverClassName;
-
-    @Value("${vault.datasource.fallback.username:${VAULT_DATASOURCE_FALLBACK_USERNAME:}}")
+    @Value("${spring.datasource.username:}")
     private String fallbackUsername;
 
-    @Value("${vault.datasource.fallback.password:${VAULT_DATASOURCE_FALLBACK_PASSWORD:}}")
+    @Value("${spring.datasource.password:}")
     private String fallbackPassword;
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
-    private final ScheduledExecutorService fallbackScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
-        Thread thread = new Thread(runnable, "vault-ds-fallback");
-        thread.setDaemon(true);
-        return thread;
-    });
-
-    private ScheduledFuture<?> fallbackTask;
 
     private boolean fallbackActive;
+
+    private String lastVaultUsername;
+
+    private String lastVaultPassword;
 
 
     @Override
@@ -92,20 +79,42 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
             log.info("应用正在关闭，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
             return;
         }
+        if (event instanceof SecretLeaseExpiredEvent) {
+            log.error("Vault租约已过期，切换到备份数据库账号，path={}", event.getSource().getPath());
+            switchToFallbackDataSource();
+            return;
+        }
+        if (event instanceof AfterSecretLeaseRenewedEvent) {
+            switchBackToVaultAfterRenewal(event);
+            return;
+        }
         if (!(event instanceof SecretLeaseCreatedEvent)) {
             log.info("收到Vault租约事件，类型={}, source={}", event.getClass().getSimpleName(), event.getSource());
             return;
         }
+
         SecretLeaseCreatedEvent secretLeaseCreatedEvent = (SecretLeaseCreatedEvent) event;
         String path = secretLeaseCreatedEvent.getSource().getPath();
         Map<String, Object> data = secretLeaseCreatedEvent.getSecrets();
         String username = (String) data.get("username");
         String password = (String) data.get("password");
-        log.info("发生相关事件路径：{} username:{} password:{}", path, username, password);
+        log.info("收到Vault数据库凭证，path={}, username={}", path, username);
         synchronized (this) {
-            cancelFallbackTask();
+            lastVaultUsername = username;
+            lastVaultPassword = password;
+            if (rotate(username, password)) {
+                fallbackActive = false;
+            }
+        }
+    }
+
+    private synchronized void switchBackToVaultAfterRenewal(SecretLeaseEvent event) {
+        if (!fallbackActive || !hasText(lastVaultUsername) || !hasText(lastVaultPassword)) {
+            return;
+        }
+        log.info("Vault租约续期恢复，尝试回切Vault数据库凭证，path={}", event.getSource().getPath());
+        if (rotate(lastVaultUsername, lastVaultPassword)) {
             fallbackActive = false;
-            rotate(username, password);
         }
     }
 
@@ -115,26 +124,28 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
      * @param user 新用户名
      * @param pwd  新密码
      */
-    private synchronized void rotate(String user, String pwd) {
+    private synchronized boolean rotate(String user, String pwd) {
         HikariDataSource old = dataSourceWrapper.getCurrent();
-        if (Objects.equals(old.getUsername(), user) && Objects.equals(old.getPassword(), pwd)) {
+        String loginUsername = oceanBaseUsernameFormatter.buildOceanBaseUsername(user);
+        if (Objects.equals(old.getUsername(), loginUsername) && Objects.equals(old.getPassword(), pwd)) {
             log.warn("数据库连接用户名及密码未发生变化，不做切换！");
-            return;
+            return true;
         }
         HikariDataSource newDs = null;
         try {
-            newDs = createReplacementDataSource(old, user, pwd);
+            newDs = createReplacementDataSource(old, loginUsername, pwd);
             validateConnection(newDs);
             dataSourceWrapper.switchTo(newDs);
             log.info("Vault数据库凭证轮换成功，已切换到新连接池。");
-        } catch (SQLException sqlException) {
+        } catch (Exception exception) {
             closeQuietly(newDs);
-            log.error("切换数据源异常！", sqlException);
-            return;
+            log.error("切换数据源异常！", exception);
+            return false;
         }
         // 异步关闭旧数据源，避免仍持有旧连接的请求立即失败。
         log.info("旧数据源：{}，即将被回收！。", old.getUsername());
         safeCloseAsync(old);
+        return true;
     }
 
     /**
@@ -146,13 +157,10 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
      * @return 新的数据源
      */
     private HikariDataSource createReplacementDataSource(HikariDataSource old, String user, String pwd) {
-        return createReplacementDataSource(old, user, pwd, null, null);
-    }
-
-    private HikariDataSource createReplacementDataSource(HikariDataSource old, String user, String pwd, String jdbcUrlOverride, String driverClassNameOverride) {
         HikariConfig config = new HikariConfig();
-        String jdbcUrl = firstNonBlank(jdbcUrlOverride, old.getJdbcUrl(), old.getDataSourceProperties().getProperty("jdbcUrl"), old.getDataSourceProperties().getProperty("url"), configuredJdbcUrl);
-        String driverClassName = firstNonBlank(driverClassNameOverride, old.getDriverClassName(), configuredDriverClassName);
+        String jdbcUrl = firstNonBlank(old.getJdbcUrl(), old.getDataSourceProperties().getProperty("jdbcUrl"),
+                old.getDataSourceProperties().getProperty("url"), configuredJdbcUrl);
+        String driverClassName = firstNonBlank(old.getDriverClassName(), configuredDriverClassName);
         if (hasText(driverClassName)) {
             config.setDriverClassName(driverClassName);
         }
@@ -301,62 +309,51 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
     }
 
     @Override
-    public void onLeaseError(SecretLeaseEvent leaseEvent, Exception exception) {
-        if (shuttingDown.get() || !fallbackEnabled || fallbackActive) {
+    public void onLeaseError(@NonNull SecretLeaseEvent leaseEvent, @NonNull Exception exception) {
+        if (shuttingDown.get()) {
             return;
         }
-        synchronized (this) {
-            if (shuttingDown.get() || fallbackActive || fallbackTask != null && !fallbackTask.isDone()) {
-                return;
-            }
-            if (fallbackAfterMs < 0) {
-                log.warn("Vault租约持续失败，已禁用静态数据源降级：fallbackAfterMs={}", fallbackAfterMs);
-                return;
-            }
-            fallbackTask = fallbackScheduler.schedule(this::switchToFallbackDataSource, fallbackAfterMs, TimeUnit.MILLISECONDS);
-            leaseEvent.getSource();
-            log.warn("Vault租约访问失败，将在{}毫秒后尝试切换静态数据源，path={}", fallbackAfterMs, leaseEvent.getSource().getPath(), exception);
-        }
+        log.error("Vault租约获取或续期失败，立即切换到备份数据库账号，path={}",
+                leaseEvent.getSource().getPath(), exception);
+        switchToFallbackDataSource();
     }
 
     private synchronized void switchToFallbackDataSource() {
-        fallbackTask = null;
         if (shuttingDown.get() || fallbackActive) {
             return;
         }
         if (!hasText(fallbackUsername) || !hasText(fallbackPassword)) {
-            log.error("Vault长时间不可用，但未配置静态数据源账号密码，继续使用当前数据源。"
-                    + "请配置vault.datasource.fallback.username/password。");
+            log.error("Vault不可用，但未配置备份数据库账号密码，继续使用当前数据源。"
+                    + "请配置spring.datasource.username/password。");
             return;
         }
 
         HikariDataSource old = dataSourceWrapper.getCurrent();
+        String loginUsername = oceanBaseUsernameFormatter.buildOceanBaseUsername(fallbackUsername);
+        if (Objects.equals(old.getUsername(), loginUsername)
+                && Objects.equals(old.getPassword(), fallbackPassword)) {
+            fallbackActive = true;
+            log.warn("当前连接池已使用备份数据库账号，无需重复切换。");
+            return;
+        }
+
         HikariDataSource fallbackDataSource = null;
         try {
-            fallbackDataSource = createReplacementDataSource(old, fallbackUsername, fallbackPassword, fallbackJdbcUrl, fallbackDriverClassName);
+            fallbackDataSource = createReplacementDataSource(old, loginUsername, fallbackPassword);
             validateConnection(fallbackDataSource);
             dataSourceWrapper.switchTo(fallbackDataSource);
             fallbackActive = true;
-            log.error("Vault已持续不可用{}毫秒，已切换到静态数据源。", fallbackAfterMs);
+            log.warn("Vault不可用，已切换到spring.datasource配置的备份数据库账号。");
             safeCloseAsync(old);
         } catch (Exception exception) {
             closeQuietly(fallbackDataSource);
-            log.error("Vault长时间不可用，切换静态数据源失败，继续使用当前数据源。", exception);
-        }
-    }
-
-    private synchronized void cancelFallbackTask() {
-        if (fallbackTask != null) {
-            fallbackTask.cancel(false);
-            fallbackTask = null;
+            log.error("Vault不可用，切换备份数据源失败，继续使用当前数据源。", exception);
         }
     }
 
     @PreDestroy
     public void onShutdown() {
         shuttingDown.set(true);
-        cancelFallbackTask();
-        fallbackScheduler.shutdownNow();
         log.info("触发优雅下线:MultiDbLeaseListener 开始关闭，不再处理新的Vault租约事件。");
     }
 }
