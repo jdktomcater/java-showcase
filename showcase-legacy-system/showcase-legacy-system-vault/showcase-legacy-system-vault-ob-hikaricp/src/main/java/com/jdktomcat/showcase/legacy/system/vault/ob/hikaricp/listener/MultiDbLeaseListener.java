@@ -313,8 +313,7 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
         if (shuttingDown.get()) {
             return;
         }
-        log.error("Vault租约获取或续期失败，立即切换到备份数据库账号，path={}",
-                leaseEvent.getSource().getPath(), exception);
+        log.error("Vault租约获取或续期失败，立即切换到备份数据库账号，path={}", leaseEvent.getSource().getPath(), exception);
         switchToFallbackDataSource();
     }
 
@@ -323,15 +322,12 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
             return;
         }
         if (!hasText(fallbackUsername) || !hasText(fallbackPassword)) {
-            log.error("Vault不可用，但未配置备份数据库账号密码，继续使用当前数据源。"
-                    + "请配置spring.datasource.username/password。");
+            log.error("Vault不可用，但未配置备份数据库账号密码，继续使用当前数据源。" + "请配置spring.datasource.username/password。");
             return;
         }
-
         HikariDataSource old = dataSourceWrapper.getCurrent();
         String loginUsername = oceanBaseUsernameFormatter.buildOceanBaseUsername(fallbackUsername);
-        if (Objects.equals(old.getUsername(), loginUsername)
-                && Objects.equals(old.getPassword(), fallbackPassword)) {
+        if (Objects.equals(old.getUsername(), loginUsername) && Objects.equals(old.getPassword(), fallbackPassword)) {
             fallbackActive = true;
             log.warn("当前连接池已使用备份数据库账号，无需重复切换。");
             return;
