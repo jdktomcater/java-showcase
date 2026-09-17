@@ -149,13 +149,10 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
         return createReplacementDataSource(old, user, pwd, null, null);
     }
 
-    private HikariDataSource createReplacementDataSource(HikariDataSource old, String user, String pwd,
-                                                         String jdbcUrlOverride, String driverClassNameOverride) {
+    private HikariDataSource createReplacementDataSource(HikariDataSource old, String user, String pwd, String jdbcUrlOverride, String driverClassNameOverride) {
         HikariConfig config = new HikariConfig();
-        String jdbcUrl = firstNonBlank(jdbcUrlOverride, old.getJdbcUrl(), old.getDataSourceProperties().getProperty("jdbcUrl"),
-                old.getDataSourceProperties().getProperty("url"), configuredJdbcUrl);
+        String jdbcUrl = firstNonBlank(jdbcUrlOverride, old.getJdbcUrl(), old.getDataSourceProperties().getProperty("jdbcUrl"), old.getDataSourceProperties().getProperty("url"), configuredJdbcUrl);
         String driverClassName = firstNonBlank(driverClassNameOverride, old.getDriverClassName(), configuredDriverClassName);
-
         if (hasText(driverClassName)) {
             config.setDriverClassName(driverClassName);
         }
