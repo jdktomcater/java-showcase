@@ -36,13 +36,15 @@ public class VaultConfig {
     }
 
     @Bean(destroyMethod = "destroy")
-    public SecretLeaseContainer leaseContainer(VaultOperations operations,
-                                               @Qualifier("vaultLeaseTaskScheduler") TaskScheduler vaultLeaseTaskScheduler) {
+    public SecretLeaseContainer leaseContainer(VaultOperations operations,@Qualifier("vaultLeaseTaskScheduler") TaskScheduler vaultLeaseTaskScheduler) {
         if (role == null || role.trim().isEmpty()) {
             throw new IllegalStateException("Missing Vault database role configuration.");
         }
         SecretLeaseContainer container = new SecretLeaseContainer(operations, vaultLeaseTaskScheduler);
+        // 正常轮转监听器
         container.addLeaseListener(multiDbLeaseListener);
+        // 异常场景监听器
+        container.addErrorListener(multiDbLeaseListener);
         // 必须添加 RequestedSecret，否则容器不会向 Vault 请求凭证，也就不会触发任何事件
         container.requestRotatingSecret("database/creds/" + role);
         // 设置网络相关策略 网络/I/O 错误时保留租约并继续重试，网络恢复后自动恢复续期

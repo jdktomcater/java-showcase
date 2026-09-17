@@ -33,6 +33,10 @@ spring:
         username-property: spring.datasource.username
         password-property: spring.datasource.password
       namespace: agent-fat
+
+oceanbase:
+  tenant-name: tx_test_agentdata
+  cluster-name: txobserver
 logging:
   level:
     org.springframework.cloud.vault: debug

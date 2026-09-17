@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface HealthMapper {
 
-    @Select("select count(0) from t_bankcard_agent")
+    @Select("select count(0) from t_merchant_agent_info")
     int ping();
 
     @Select("select current_user()")
