@@ -29,6 +29,8 @@ spring:
           min-renewal: 10s
           lease-endpoints: leases
       namespace: agent-fat
+      database:
+        role: agent-hub-ob-role-v0
     discovery:
       client:
         composite-indicator:
