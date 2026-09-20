@@ -16,7 +16,6 @@ public class OceanBaseUsernameFormatter {
         if (username == null || username.trim().isEmpty()) {
             return username;
         }
-
         String suffix = "@" + tenantName + "#" + clusterName;
         return username.endsWith(suffix) ? username : username + suffix;
     }
