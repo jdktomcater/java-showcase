@@ -88,7 +88,7 @@ public class NumberIslands {
         if (i < points.length - 1 && points[i + 1][j] == 1 && !visited[i + 1][j]) {
             travelAndMark(points, visited, i + 1, j);
         }
-        if (i > 0 && points[i - 1][j] == 1 && !visited[i - 1][j]) {
+        if (i > 0 && points[i - 1][j] == 1 && !visited[i - 1][j]) { 
             travelAndMark(points, visited, i - 1, j);
         }
         if (j < points[0].length - 1 && points[i][j + 1] == 1 && !visited[i][j + 1]) {
