@@ -20,7 +20,8 @@ spring:
         role: ${VAULT_AUTHENTICATION_ROLE:agent-hub-fat-role-v0}
         role-id: ${VAULT_AUTHENTICATION_ROLE_ID:c08123f4-9d97-c86b-8fe9-98505f53ce61}
         secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:43725835-00eb-1320-c4a4-b28a48bc3915}
-      uri: ${VAULT_URI:https://txfat-vault.fbnma.com/}
+      uri: ${VAULT_URI:http://127.0.0.1:18200/}
+      # uri: ${VAULT_URI:https://txfat-vault.fbnma.com/}
       kv:
         enabled: false
       config:
