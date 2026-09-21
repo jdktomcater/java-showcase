@@ -11,5 +11,4 @@ public class LimiterConsumerApplication {
     public static void main(String[] args) {
         SpringApplication.run(LimiterConsumerApplication.class, args);
     }
-
 }
