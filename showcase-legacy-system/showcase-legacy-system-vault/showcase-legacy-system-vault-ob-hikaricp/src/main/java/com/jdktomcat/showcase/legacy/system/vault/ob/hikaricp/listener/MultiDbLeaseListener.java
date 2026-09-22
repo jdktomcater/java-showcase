@@ -66,6 +66,8 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
 
     private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
+    private final AtomicBoolean renewalFailed = new AtomicBoolean(false);
+
     private boolean fallbackActive;
 
     private String lastVaultUsername;
@@ -85,6 +87,10 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
             return;
         }
         if (event instanceof AfterSecretLeaseRenewedEvent) {
+            if (renewalFailed.getAndSet(false)) {
+                log.warn("忽略续租异常后产生的AfterSecretLeaseRenewedEvent，path={}", event.getSource().getPath());
+                return;
+            }
             switchBackToVaultAfterRenewal(event);
             return;
         }
@@ -313,6 +319,7 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
         if (shuttingDown.get()) {
             return;
         }
+        renewalFailed.set(true);
         log.error("Vault租约获取或续期失败，立即切换到备份数据库账号，path={}", leaseEvent.getSource().getPath(), exception);
         switchToFallbackDataSource();
     }
