@@ -30,6 +30,15 @@
         <module>showcase-spring-cloud-service</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>issue-4103</id>
+            <modules>
+                <module>showcase-spring-cloud-eureka-4103-repro</module>
+            </modules>
+        </profile>
+    </profiles>
+
     <dependencyManagement>
         <dependencies>
             <!-- 显式引入 Spring Boot BOM，避免 Spring Framework 版本在多模块/IDE 解析时发生漂移 -->

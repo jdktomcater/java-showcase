@@ -1,0 +1,7 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>%level %logger{40} - %msg%n</pattern></encoder>
+    </appender>
+    <!-- HTTP 500 is intentional; keep results readable without repeated INFO stack traces. -->
+    <root level="WARN"><appender-ref ref="CONSOLE"/></root>
+</configuration>
