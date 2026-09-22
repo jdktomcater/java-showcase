@@ -326,6 +326,7 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
 
     private synchronized void switchToFallbackDataSource() {
         if (shuttingDown.get() || fallbackActive) {
+            log.warn("目前是已经是降级备份数据源，无需切换！");
             return;
         }
         if (!hasText(fallbackUsername) || !hasText(fallbackPassword)) {
