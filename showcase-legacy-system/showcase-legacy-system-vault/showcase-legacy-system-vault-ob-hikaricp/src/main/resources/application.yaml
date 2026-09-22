@@ -11,6 +11,13 @@ spring:
     url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: vault_test_user@tx_test_agentdata#txobserver
     password: Jz6m8up8vNoH%NuJt7JMCp@MU#TJxj
+    hikari:
+      # 从连接池获取连接的等待超时，单位毫秒
+      connection-timeout: 5000
+      # 连接存活检查超时，单位毫秒
+      validation-timeout: 2000
+      # 连接池初始化时获取连接失败，抛出异常
+      initialization-fail-timeout: 1
   cloud:
     vault:
       enabled: true
@@ -20,8 +27,8 @@ spring:
         role: ${VAULT_AUTHENTICATION_ROLE:agent-hub-fat-role-v0}
         role-id: ${VAULT_AUTHENTICATION_ROLE_ID:c08123f4-9d97-c86b-8fe9-98505f53ce61}
         secret-id: ${VAULT_AUTHENTICATION_SECRET_ID:43725835-00eb-1320-c4a4-b28a48bc3915}
-      uri: ${VAULT_URI:http://127.0.0.1:18200/}
-      # uri: ${VAULT_URI:https://txfat-vault.fbnma.com/}
+      # uri: ${VAULT_URI:http://127.0.0.1:18200/}
+      uri: ${VAULT_URI:https://txfat-vault.fbnma.com/}
       kv:
         enabled: false
       config:
