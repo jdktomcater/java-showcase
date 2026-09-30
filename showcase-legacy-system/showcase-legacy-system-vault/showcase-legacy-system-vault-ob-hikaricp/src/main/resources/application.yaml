@@ -9,7 +9,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.oceanbase.jdbc.Driver
     # url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=true&trustServerCertificate=true
-    url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:oceanbase://172.30.3.220:2883/agentdata_common?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     # username: vault_test_user@tx_test_agentdata#txobserver
     # password: Jz6m8up8vNoH%NuJt7JMCp@MU#TJxj
     username: agentdata_test@tx_test_agentdata#txobserver
