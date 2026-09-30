@@ -7,9 +7,9 @@ import java.nio.charset.StandardCharsets;
 
 public class AesUtil {
     private static final String IV = "typay!@#qwerasdf";
-    private static final String password = "tianxiazhifuxbtx";
+    private static final String password = "typay#generalfront";
     private static final String IV_TOKEN = "typay!@#xt.gcdry";
-    private static final String PASSWORD_TOKEN = "tianxiazhifuxbtx";
+    private static final String PASSWORD_TOKEN = "typay#generalfront";
     private static final String wallpassword = "6b25f28603634c9fb86401a1f71dc056";
 
 
@@ -179,6 +179,6 @@ public class AesUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(AesUtil.encryptToken("3f4ed53a134abcfa2190573a0c215919"));
+        System.out.println(AesUtil.decrypt("dDuWrqY8mq4QSJyocFYmsIs6Zv0DszQTKyV/BJKqHcw="));
     }
 }
