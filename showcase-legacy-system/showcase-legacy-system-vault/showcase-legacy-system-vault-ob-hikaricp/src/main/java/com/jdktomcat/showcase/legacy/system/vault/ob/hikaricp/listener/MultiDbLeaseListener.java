@@ -81,6 +81,10 @@ public class MultiDbLeaseListener implements LeaseListener, LeaseErrorListener {
             log.info("应用正在关闭，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
             return;
         }
+        if(fallbackActive){
+            log.warn("应用数据库连接已经降级，忽略Vault租约事件，type={}", event.getClass().getSimpleName());
+            return;
+        }
         if (event instanceof SecretLeaseExpiredEvent) {
             log.error("Vault租约已过期，切换到备份数据库账号，path={}", event.getSource().getPath());
             switchToFallbackDataSource();
